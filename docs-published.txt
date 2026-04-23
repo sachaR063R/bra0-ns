@@ -27,3 +27,4 @@
 #
 # Bootstrap phase (2026-04-23): empty whitelist. The site serves a minimal
 # landing page until the first Keet-audited ontology is published.
+ns/evidence-os/evidence-os.ttl;DRAFT;audit/evidence-os-keet-2026-04-22.md;2026-04-23

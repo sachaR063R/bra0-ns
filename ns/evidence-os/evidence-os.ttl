@@ -1,0 +1,402 @@
+@prefix evo:    <https://schema.bra0.org/evidence-os#> .
+@prefix evoQ:   <https://schema.bra0.org/evidence-os/query#> .
+@prefix ess:    <https://hypersimpl.com/ns/essence-kernel#> .
+@prefix asc:    <https://hypersimpl.com/ns/agent-service-contract#> .
+@prefix prov:   <http://www.w3.org/ns/prov#> .
+@prefix dcat:   <http://www.w3.org/ns/dcat#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix vann:   <http://purl.org/vocab/vann/> .
+@prefix odrl:   <http://www.w3.org/ns/odrl/2/> .
+@prefix skos:   <http://www.w3.org/2004/02/skos/core#> .
+@prefix sosa:   <http://www.w3.org/ns/sosa/> .
+@prefix sd:     <http://www.w3.org/ns/sparql-service-description#> .
+@prefix sh:     <http://www.w3.org/ns/shacl#> .
+@prefix owl:    <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+
+# =============================================================================
+# Evidence OS TBox — Formal Class and Predicate Declarations
+# =============================================================================
+#
+# Owner:    Nael (Architect) — D16 absolute authority
+# Version:  0.2.0
+# Date:     2026-04-23
+# Status:   Post-ADR-053 strict purge — top-level Decision/Change/Evidence/
+#           UserStory/AcceptanceCriterion removed, sub-classes re-parented
+#           on PROV-O directly, FrameworkMapping dropped (SKOS mapping used),
+#           hasAcceptanceCriterion dropped (Essence alpha states used),
+#           ComplianceFramework sole parent skos:ConceptScheme (post-ADR-052
+#           deholon). v0.1.0 entities retired; no compatibility shim.
+#
+# Source:   ADR-053 (Strict evo: purge), ADR-052 (Defer holonic OWL apparatus)
+# Method:   NL→OWL translation per Mateiu & Groza (2023), human-validated
+#
+# Namespace convention (Q-alpha signed 2026-04-17):
+#   evo:  = https://schema.bra0.org/evidence-os#       (product-facing)
+#   evoQ: = https://schema.bra0.org/evidence-os/query#  (query result structures)
+#   asc:  = https://hypersimpl.com/ns/agent-service-contract# (agent governance)
+#   ess:  = https://hypersimpl.com/ns/essence-kernel#   (strategic layer)
+#
+# Design principles:
+#   I5  — W3C reuse before extension (PROV-O, DCAT, SKOS, ODRL, SOSA)
+#   I10 — KE precision: TBox/ABox separation strict
+#   Keet — no speculative classes; every class justified by 2+ use cases
+#   Naming — UpperCamelCase classes, lowerCamelCase predicates
+#
+# License:  MIT OR Apache-2.0 (per repo root)
+# =============================================================================
+
+<https://schema.bra0.org/evidence-os> a owl:Ontology ;
+    rdfs:label "Evidence Ontology"@en ;
+    owl:versionInfo "0.2.0" ;
+    owl:versionIRI <https://schema.bra0.org/evidence-os/0.2.0> ;
+    dcterms:title "Evidence Ontology"@en ;
+    dcterms:description "Product-facing vocabulary for the Evidence OS 90-day reframe cycle. Post-ADR-053: one surviving top-level class (Control), sub-classes re-parented directly on PROV-O (prov:Activity / prov:Entity), compliance framework layer on SKOS, requirements traceability on OMG Essence alpha states (via ess:advancesAlpha in ABox). No bra0-namespace re-statement of PROV-O patterns."@en ;
+    dcterms:creator "Nael (Architect)" ;
+    dcterms:created "2026-04-18"^^xsd:date ;
+    dcterms:modified "2026-04-23"^^xsd:date ;
+    vann:preferredNamespacePrefix "evo" ;
+    vann:preferredNamespaceUri "https://schema.bra0.org/evidence-os#" ;
+    owl:imports <http://www.w3.org/ns/prov-o#> ,
+                <https://hypersimpl.com/ns/agent-service-contract#> .
+
+# =============================================================================
+# §3.2 — Surviving Top-Level Class (post-ADR-053 strict purge)
+# =============================================================================
+# Dropped v0.2.0 (ADR-053 §D2): evo:Decision, evo:Evidence, evo:Change,
+# evo:UserStory, evo:AcceptanceCriterion. Each re-stated a PROV-O pattern
+# with no added inference. Consumers use prov:Activity / prov:Entity directly;
+# evo: sub-classes re-parent accordingly (see §3.2.1). Requirements
+# traceability is now expressed via OMG Essence alpha states on prov:Entity
+# instances carrying ess:advancesAlpha ess:Requirements. evo:Control
+# survives because skos:Concept semantics are not covered by PROV-O.
+
+evo:Control a owl:Class ;
+    rdfs:subClassOf skos:Concept ;
+    rdfs:label "Control"@en ;
+    rdfs:comment "A policy or compliance control that demands evidence. Maps to framework nodes (NIS2, DORA, ISO 27001, HDS, EHDS). A Control is a normative requirement grounded in skos:Concept semantics (an information entity that can migrate between frameworks). Orthogonal to PROV-O Activity/Entity."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os> .
+
+# =============================================================================
+# §3.2.1 — Product-Cycle Sub-Classes (re-parented on PROV-O directly)
+# =============================================================================
+# Dropped v0.2.0 (ADR-053 §D2): evo:UserStory, evo:AcceptanceCriterion.
+# Requirement instances are prov:Entity typed and declare
+# ess:advancesAlpha ess:Requirements (OMG Essence 2.0 alpha states —
+# Conceived / Bounded / Coherent / Acceptable / Addressed / Fulfilled —
+# carry the acceptance-criterion semantics natively). See ADR-053 §D5.
+
+# --- Change sub-classes (parent now prov:Activity) ---
+
+evo:Commit a owl:Class ;
+    rdfs:subClassOf prov:Activity ;
+    rdfs:label "Commit"@en ;
+    rdfs:comment "Atomic code change. Links to its informing requirement instance via prov:wasInformedBy."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os> .
+
+evo:MergeRequest a owl:Class ;
+    rdfs:subClassOf prov:Activity ;
+    rdfs:label "Merge Request"@en ;
+    rdfs:comment "Change-control gate. Links to its reviewer agent via prov:wasAssociatedWith."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os> .
+
+evo:Deployment a owl:Class ;
+    rdfs:subClassOf prov:Activity ;
+    rdfs:label "Deployment"@en ;
+    rdfs:comment "Change-to-environment binding event. Links to the target environment via evo:targetEnvironment (a dcat:DataService)."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os> .
+
+# --- Evidence sub-classes (parent now prov:Entity) ---
+
+evo:TestRun a owl:Class ;
+    rdfs:subClassOf prov:Entity ;
+    rdfs:label "Test Run"@en ;
+    rdfs:comment "A single test execution result. Uses prov:Revision for re-runs. Links to the tested commit via evo:onCommit and to the fixture via evo:onDataset."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os> .
+
+evo:CoverageReport a owl:Class ;
+    rdfs:subClassOf prov:Entity ;
+    rdfs:label "Coverage Report"@en ;
+    rdfs:comment "Aggregate coverage evidence (line, branch, E2E). Uses sosa:Observation for time-series tracking."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os> .
+
+evo:DatasetFixture a owl:Class ;
+    rdfs:subClassOf prov:Entity ;
+    rdfs:label "Dataset Fixture"@en ;
+    rdfs:comment "A test dataset as first-class evidence. Typed as dcat:Distribution for dataset discovery."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os> .
+
+# =============================================================================
+# §3.2.2 — RQ2/RQ3 Instrumentation Vocabulary
+# =============================================================================
+
+evo:Workflow a owl:Class ;
+    rdfs:subClassOf skos:Concept ;
+    rdfs:label "Workflow"@en ;
+    rdfs:comment "A demo-eligible workflow as a first-class entity in the evidence graph. Operational anchor for the dogfood discipline (RQ3 §4.3). Pairs with WorkflowExecution (one instance per invocation)."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os> .
+
+evo:WorkflowExecution a owl:Class ;
+    rdfs:subClassOf prov:Activity ;
+    rdfs:label "Workflow Execution"@en ;
+    rdfs:comment "A single execution of a Workflow. Reused class (subclass of prov:Activity), not a new sub-class addition to the §3.2.1 eight. Operational instrumentation (v0.1.4 non-breaking widening)."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os> .
+
+evo:AmbientAgentInvocation a owl:Class ;
+    rdfs:subClassOf prov:Activity ;
+    rdfs:label "Ambient Agent Invocation"@en ;
+    rdfs:comment "A single ambient-agent run (per RQ2 §3.2). One-to-one with a prov:Activity but carries ambient-specific attributes: bounded context, policy, run metadata."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os> .
+
+# =============================================================================
+# Co-Storm Q3 — Compliance Framework Classes
+# =============================================================================
+
+evo:ComplianceFramework a owl:Class ;
+    rdfs:subClassOf skos:ConceptScheme ;
+    rdfs:label "Compliance Framework"@en ;
+    rdfs:comment "A regulatory or standards framework (NIS2, DORA, ISO 27001, HDS, EHDS) modeled as a skos:ConceptScheme. Its controls are skos:Concept instances organized by skos:broader/narrower. Cross-framework relations between FrameworkArticle instances are expressed directly with SKOS mapping properties (skos:exactMatch, skos:closeMatch, skos:broadMatch, skos:relatedMatch) — no intermediate mapping class. Justified by UC-2, UC-4, UC-5, UC-12."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os> .
+
+evo:FrameworkArticle a owl:Class ;
+    rdfs:subClassOf skos:Concept ;
+    rdfs:label "Framework Article"@en ;
+    rdfs:comment "A structural element of a compliance framework: article, clause, or annex. Uses skos:broader/narrower for hierarchy, skos:notation for article numbers, skos:prefLabel for title. Controls (evo:Control) reference articles via evo:derivedFromArticle. Cross-framework equivalences use SKOS mapping properties directly on article instances. Justified by UC-2, UC-5, UC-6."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os> .
+
+# evo:FrameworkMapping removed v0.2.0 (ADR-053 §D3 + Q-A ruling O1).
+# Cross-framework mapping is expressed via SKOS mapping properties
+# (skos:exactMatch, skos:closeMatch, skos:broadMatch, skos:relatedMatch)
+# directly between evo:FrameworkArticle instances. Mapping provenance,
+# when required, is reified as a prov:Entity carrying the SKOS triple.
+
+# =============================================================================
+# §3.2 — Predicates (top-level)
+# =============================================================================
+
+evo:justifies a owl:ObjectProperty ;
+    rdfs:domain prov:Entity ;
+    rdfs:range prov:Activity ;
+    rdfs:label "justifies"@en ;
+    rdfs:comment "Links an Entity (evidence, rationale document) to the Activity (decision-as-activity, sprint, review) it justifies. Post-ADR-053: range widened from evo:Decision to prov:Activity directly."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os> .
+
+evo:linkedChange a owl:ObjectProperty ;
+    rdfs:domain prov:Activity ;
+    rdfs:label "linked change"@en ;
+    rdfs:comment "Links a change-activity (Commit / MergeRequest / Deployment) to the Entity or Activity that informed it. Reuses the prov:wasInformedBy pattern. Post-ADR-053: domain widened from evo:Change to prov:Activity directly."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os> .
+
+evo:evidences a owl:ObjectProperty ;
+    rdfs:domain prov:Entity ;
+    rdfs:range evo:Control ;
+    rdfs:label "evidences"@en ;
+    rdfs:comment "Links an Entity (evidence artefact) to the Control it proves or disproves. Post-ADR-053: domain widened from evo:Evidence to prov:Entity directly."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os> .
+
+evo:requiredBy a owl:ObjectProperty ;
+    rdfs:domain evo:Control ;
+    rdfs:label "required by"@en ;
+    rdfs:comment "Links a Control to the compliance framework or regulatory node that requires it."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os> .
+
+# =============================================================================
+# §3.2.1 — Predicates (sub-class cross-cutting)
+# =============================================================================
+
+# evo:hasAcceptanceCriterion removed v0.2.0 (ADR-053 §D4 + Q-B ruling O1).
+# Acceptance semantics are carried by OMG Essence alpha-state transitions
+# on the requirement entity: ess:Requirements:Acceptable →
+# ess:Requirements:Addressed → ess:Requirements:Fulfilled. Narrative AC text
+# lives on the transition prov:Activity as rdfs:label.
+
+evo:targetEnvironment a owl:ObjectProperty ;
+    rdfs:domain evo:Deployment ;
+    rdfs:range dcat:DataService ;
+    rdfs:label "target environment"@en ;
+    rdfs:comment "Links a Deployment to its target environment, typed as a dcat:DataService."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os> .
+
+evo:onCommit a owl:ObjectProperty ;
+    rdfs:domain evo:TestRun ;
+    rdfs:range evo:Commit ;
+    rdfs:label "on commit"@en ;
+    rdfs:comment "Provenance edge: which commit was tested by this TestRun."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os> .
+
+evo:onDataset a owl:ObjectProperty ;
+    rdfs:domain evo:TestRun ;
+    rdfs:range evo:DatasetFixture ;
+    rdfs:label "on dataset"@en ;
+    rdfs:comment "Provenance edge: which fixture dataset was used by this TestRun."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os> .
+
+evo:chosenAlternative a owl:ObjectProperty ;
+    rdfs:domain prov:Activity ;
+    rdfs:range prov:Entity ;
+    rdfs:label "chosen alternative"@en ;
+    rdfs:comment "The alternative selected by a decision-activity. Domain = prov:Activity (typically the decision-as-activity that generated an ADR), Range = prov:Entity (typically prov:used by the activity). Post-ADR-053: domain widened from evo:Decision to prov:Activity directly."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os> .
+
+# =============================================================================
+# §3.2.2 — Predicates (instrumentation)
+# =============================================================================
+
+evo:demoEligible a owl:DatatypeProperty ;
+    rdfs:domain evo:Workflow ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "demo eligible"@en ;
+    rdfs:comment "Operational flag: is this Workflow eligible for demo/dogfood measurement? Per RQ3 §4.4."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os> .
+
+evo:runsWorkflow a owl:ObjectProperty ;
+    rdfs:domain evo:WorkflowExecution ;
+    rdfs:range evo:Workflow ;
+    rdfs:label "runs workflow"@en ;
+    rdfs:comment "Links a WorkflowExecution to the Workflow it executes."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os> .
+
+evo:runContext a owl:DatatypeProperty ;
+    rdfs:domain evo:WorkflowExecution ;
+    rdfs:range xsd:string ;
+    rdfs:label "run context"@en ;
+    rdfs:comment "Controlled vocabulary: 'internal' | 'pilot' | 'demo' | 'external'. Per RQ3 §4.3; 'internal' gates dogfood-rate measurement."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os> .
+
+evo:byAgentService a owl:ObjectProperty ;
+    rdfs:subPropertyOf prov:wasAssociatedWith ;
+    rdfs:domain evo:AmbientAgentInvocation ;
+    rdfs:range asc:AgentService ;
+    rdfs:label "by agent service"@en ;
+    rdfs:comment "The asc:AgentService that performed this ambient-agent invocation. Sub-property of prov:wasAssociatedWith — every invocation MUST be attributable to exactly one AgentService (Quinn invariant, enforced by the evo-ambient-agent-policy shape)."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os> .
+
+evo:underMandate a owl:ObjectProperty ;
+    rdfs:domain evo:AmbientAgentInvocation ;
+    rdfs:range asc:Mandate ;
+    rdfs:label "under mandate"@en ;
+    rdfs:comment "The asc:Mandate whose policies governed this invocation at runtime. Supports auditable delegation chain per ADR-025 governance hardening. Complements evo:byAgentService — the pair answers CQ-X-1."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os> .
+
+evo:declaredContext a owl:ObjectProperty ;
+    rdfs:domain evo:AmbientAgentInvocation ;
+    rdfs:range sd:NamedGraph ;
+    rdfs:label "declared context"@en ;
+    rdfs:comment "The bounded context (union of named-graph IRIs) the agent declared it would access. Per §3.1.1 Reader/Writer/Trigger roles. CANONICAL predicate for bounded context (P0-2 convergence: supersedes proposed asc:boundedContext and evo:boundedContext). Range sd:NamedGraph per SPARQL 1.1 Service Description (W3C REC 2013)."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os> .
+
+evo:agentRoleProfile a owl:DatatypeProperty ;
+    rdfs:domain odrl:Policy ;
+    rdfs:range xsd:string ;
+    rdfs:label "agent role profile"@en ;
+    rdfs:comment "The ambient-agent role: 'Reader' | 'Writer' | 'Trigger'. Renamed from evo:role to avoid collision with asc:role (P0-5 resolution)."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os> .
+
+evo:groundingMode a owl:DatatypeProperty ;
+    rdfs:domain odrl:Policy ;
+    rdfs:range xsd:string ;
+    rdfs:label "grounding mode"@en ;
+    rdfs:comment "Operational mode: 'observe' (log only) | 'relaxed' (best-effort citation) | 'strict' (every claim cites quads) | 'none' (pure ingest, no grounding). Co-storm Q5 resolution — grounding is a policy property, not a class."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os> .
+
+# =============================================================================
+# Co-Storm Q3 — Framework Predicates
+# =============================================================================
+
+evo:hasArticle a owl:ObjectProperty ;
+    rdfs:domain evo:ComplianceFramework ;
+    rdfs:range evo:FrameworkArticle ;
+    rdfs:label "has article"@en ;
+    rdfs:comment "Links a ComplianceFramework to its structural articles/clauses."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os> .
+
+evo:derivedFromArticle a owl:ObjectProperty ;
+    rdfs:domain evo:Control ;
+    rdfs:range evo:FrameworkArticle ;
+    rdfs:label "derived from article"@en ;
+    rdfs:comment "Links a Control to the framework article(s) from which it derives."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os> .
+
+# evo:mapsFramework removed v0.2.0 (ADR-053 §D3 — consequence of
+# evo:FrameworkMapping drop). Cross-framework relations are SKOS mapping
+# triples on evo:FrameworkArticle instances directly.
+
+evo:jurisdictionalScope a owl:DatatypeProperty ;
+    rdfs:domain evo:ComplianceFramework ;
+    rdfs:range xsd:string ;
+    rdfs:label "jurisdictional scope"@en ;
+    rdfs:comment "Jurisdictional applicability: 'EU', 'FR', 'DE', 'international', etc."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os> .
+
+# =============================================================================
+# Rendering Predicates (pending broader refactor — kept on evo: temporarily)
+# =============================================================================
+# K2 leak remediation (2026-04-20): 6 dashboard-layout predicates
+# (dashboardLayout, visibleFacet, hiddenPanel, defaultView, domainColorToken,
+# domainIcon) migrated to bra0m: (Core module registry) — they are platform
+# infrastructure, not Evidence OS product vocabulary.
+# nodeLabel and nodeBadge kept on evo: as demo rendering queries pending
+# broader rendering primitive refactor.
+
+evo:nodeLabel a owl:DatatypeProperty ;
+    rdfs:domain dcat:Catalog ;
+    rdfs:range xsd:string ;
+    rdfs:label "node label query"@en ;
+    rdfs:comment "SPARQL SELECT query that produces ?node ?label ?subtitle bindings for graph visualization. Post-ADR-052: domain re-pointed from asc:Holon (retired) to dcat:Catalog, matching the new typing of domain/knowledge-space catalogs. Pending migration to a rendering-primitive namespace."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os> .
+
+evo:nodeBadge a owl:DatatypeProperty ;
+    rdfs:domain dcat:Catalog ;
+    rdfs:range xsd:string ;
+    rdfs:label "node badge query"@en ;
+    rdfs:comment "SPARQL SELECT query that produces ?node ?badge ?color bindings for compliance badge overlay. Post-ADR-052: domain re-pointed from asc:Holon (retired) to dcat:Catalog. Pending migration to a rendering-primitive namespace."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os> .
+
+# =============================================================================
+# Disjointness Axioms (Keet Accuracy — prevent conflation)
+# =============================================================================
+# Post-ADR-053: the top-level AllDisjointClasses block
+# ( evo:Decision evo:Evidence evo:Change evo:Control ) is dropped.
+# evo:Decision / Evidence / Change are retired; evo:Control remains but
+# a singleton cannot be pairwise disjoint. Disjointness with PROV-O
+# classes is not asserted here (would violate PROV-O's open stance and
+# conflict with consumers that type instances with multiple prov:* parents).
+
+# The three change-activity sub-classes are pairwise disjoint:
+[] a owl:AllDisjointClasses ;
+    owl:members ( evo:Commit evo:MergeRequest evo:Deployment ) .
+
+# The three evidence-entity sub-classes are pairwise disjoint:
+[] a owl:AllDisjointClasses ;
+    owl:members ( evo:TestRun evo:CoverageReport evo:DatasetFixture ) .
+
+# =============================================================================
+# Changelog
+# =============================================================================
+# 0.2.0 | 2026-04-23 | Strict purge per ADR-053 (Keet Consistency +
+#        Conciseness lift from CONDITIONAL to PASS). Removed top-level
+#        evo:Decision, evo:Evidence, evo:Change (re-stated PROV-O with
+#        no added inference). Removed evo:UserStory, evo:AcceptanceCriterion
+#        (requirements now carried by OMG Essence alpha states on
+#        prov:Entity instances via ess:advancesAlpha ess:Requirements).
+#        Removed evo:FrameworkMapping (Q-A O1 — SKOS mapping properties
+#        applied directly to evo:FrameworkArticle). Removed
+#        evo:hasAcceptanceCriterion (Q-B O1) and evo:mapsFramework.
+#        Re-parented evo:Commit/MergeRequest/Deployment on prov:Activity;
+#        evo:TestRun/CoverageReport/DatasetFixture on prov:Entity.
+#        evo:ComplianceFramework sole parent now skos:ConceptScheme
+#        (post-ADR-052 asc:Holon drop). Re-domained evo:justifies
+#        (range prov:Activity), evo:linkedChange (domain prov:Activity),
+#        evo:evidences (domain prov:Entity), evo:chosenAlternative
+#        (domain prov:Activity), evo:nodeLabel / evo:nodeBadge
+#        (domain dcat:Catalog). Pruned top-level AllDisjointClasses.
+#        No compatibility shim. Breaking change.
+# 0.1.0 | 2026-04-18 | First formal TBox. Resolves P0-1 (Keet audit).
+#        Translates arch-delta v0.1.4 §3.2 + §3.2.1 + §3.2.2 prose
+#        into OWL declarations. Integrates co-storm Q1 (Decision
+#        dual-nature), Q3 (ComplianceFramework, FrameworkArticle,
+#        FrameworkMapping), Q5 (groundingMode on Policy). Applies
+#        P0-2 (declaredContext convergence), P0-5 (evo:role renamed
+#        to evo:agentRoleProfile). Disjointness axioms per Keet
+#        Accuracy dimension. Method: NL→OWL per Mateiu & Groza (2023).
