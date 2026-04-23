@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="icon" href="https://bra0.org/favicon-32.png" type="image/png">
-<script>(function(){var d=document.documentElement,t=localStorage.getItem('bra0-theme')||(matchMedia('(prefers-color-scheme:light)').matches?'light':'dark'),l=localStorage.getItem('bra0-lang')||(navigator.language.startsWith('fr')?'fr':'en');d.setAttribute('data-theme',t);d.setAttribute('lang',l)})()</script>
+<script>(function(){var d=document.documentElement,u=new URLSearchParams(location.search),t=u.get('theme')||localStorage.getItem('bra0-theme')||(matchMedia('(prefers-color-scheme:light)').matches?'light':'dark'),l=u.get('lang')||localStorage.getItem('bra0-lang')||(navigator.language.startsWith('fr')?'fr':'en');if(u.get('theme'))localStorage.setItem('bra0-theme',t);if(u.get('lang'))localStorage.setItem('bra0-lang',l);d.setAttribute('data-theme',t);d.setAttribute('lang',l)})()</script>
 <link rel="stylesheet" href="https://bra0.org/site-theme.css">
 <link rel="stylesheet" href="https://bra0.org/docs/docs.css">
 <script src="https://bra0.org/site-nav.js" defer></script>
