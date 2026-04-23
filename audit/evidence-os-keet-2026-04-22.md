@@ -96,7 +96,7 @@ The conflict on `edgy:People` BFO typing propagates to the coupled stack because
 
 - `owl:versionIRI` on asc: (0.4.0) and evo: (0.1.0) (P0-5).
 - `owl:versionIRI` on bra0-stack (0.1.0).
-- Namespace canon respected: `hypersimpl.com/ns/*` for agent governance; `schema.bra0.org/*` for product vocabularies (CLAUDE.md).
+- Namespace canon respected: `schema.bra0.org/*` for agent governance; `schema.bra0.org/*` for product vocabularies (CLAUDE.md).
 - Stack file is meta-only; changing a layer version doesn't require changing the stack file (unless the import IRI changes).
 - Disjointness + inverseOf (P0-6/P0-10) are **forward-compatible** — they add TBox invariants without breaking any existing ABox or SPARQL.
 

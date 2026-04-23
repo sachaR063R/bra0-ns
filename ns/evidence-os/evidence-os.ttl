@@ -1,7 +1,7 @@
 @prefix evo:    <https://schema.bra0.org/evidence-os#> .
 @prefix evoQ:   <https://schema.bra0.org/evidence-os/query#> .
-@prefix ess:    <https://hypersimpl.com/ns/essence-kernel#> .
-@prefix asc:    <https://hypersimpl.com/ns/agent-service-contract#> .
+@prefix ess:    <https://schema.bra0.org/essence-kernel#> .
+@prefix asc:    <https://schema.bra0.org/agent-service-contract#> .
 @prefix prov:   <http://www.w3.org/ns/prov#> .
 @prefix dcat:   <http://www.w3.org/ns/dcat#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
@@ -35,8 +35,8 @@
 # Namespace convention (Q-alpha signed 2026-04-17):
 #   evo:  = https://schema.bra0.org/evidence-os#       (product-facing)
 #   evoQ: = https://schema.bra0.org/evidence-os/query#  (query result structures)
-#   asc:  = https://hypersimpl.com/ns/agent-service-contract# (agent governance)
-#   ess:  = https://hypersimpl.com/ns/essence-kernel#   (strategic layer)
+#   asc:  = https://schema.bra0.org/agent-service-contract# (agent governance)
+#   ess:  = https://schema.bra0.org/essence-kernel#   (strategic layer)
 #
 # Design principles:
 #   I5  — W3C reuse before extension (PROV-O, DCAT, SKOS, ODRL, SOSA)
@@ -59,7 +59,7 @@
     vann:preferredNamespacePrefix "evo" ;
     vann:preferredNamespaceUri "https://schema.bra0.org/evidence-os#" ;
     owl:imports <http://www.w3.org/ns/prov-o#> ,
-                <https://hypersimpl.com/ns/agent-service-contract#> .
+                <https://schema.bra0.org/agent-service-contract#> .
 
 # =============================================================================
 # §3.2 — Surviving Top-Level Class (post-ADR-053 strict purge)

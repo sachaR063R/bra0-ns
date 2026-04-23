@@ -17,8 +17,8 @@ Current in-scope namespaces (per Nael ratification 2026-04-17):
 
 Out of scope (hosted elsewhere):
 
-- `asc:` → `https://hypersimpl.com/ns/agent-service-contract#`
-- `ess:` → `https://hypersimpl.com/ns/essence-kernel#`
+- `asc:` → `https://schema.bra0.org/agent-service-contract#`
+- `ess:` → `https://schema.bra0.org/essence-kernel#`
 
 ## This repo is a publication target, not a source of truth
 
