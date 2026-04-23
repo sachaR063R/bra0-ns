@@ -1,0 +1,359 @@
+@prefix edcc:    <https://schema.bra0.org/evidence-os/edcc#> .
+@prefix evo:     <https://schema.bra0.org/evidence-os#> .
+@prefix evoQ:    <https://schema.bra0.org/evidence-os/query#> .
+@prefix prov:    <http://www.w3.org/ns/prov#> .
+@prefix dcat:    <http://www.w3.org/ns/dcat#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix odrl:    <http://www.w3.org/ns/odrl/2/> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix edccQ:   <https://schema.bra0.org/evidence-os/edcc/query#> .
+@prefix edgy:    <http://www.omyn.ai/schema/edgy#> .
+@prefix geo:     <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix qudt:    <http://qudt.org/schema/qudt/> .
+
+# =============================================================================
+# EDCC Bridge Ontology — Construction Circular Data Space ↔ Evidence OS
+# =============================================================================
+#
+# Owner:    Nael (Architect) — EDCC demo sprint
+# Version:  0.1.0
+# Date:     2026-04-17
+# Status:   Bridge ontology for EDCC consortium demonstration
+#
+# Purpose:  Maps opendthX / construction-domain concepts to Evidence OS
+#           governance classes. Evidence OS remains domain-agnostic;
+#           this bridge provides the construction-specific vocabulary.
+#
+# Alignment: ETSI ES 204 114 V1.0.0 (opendthX meta-model)
+#            ISO 19650 (PIM/AIM lifecycle)
+#            ISO 23386 (property dictionaries)
+#            ISO 16739 (IFC)
+#
+# Principle: rdfs:seeAlso for alignment claims (not owl:equivalentClass).
+#            We do NOT claim formal equivalence we cannot defend.
+#            Didier Balaguer (datBIM) will review these alignments.
+#
+# Namespace: edcc: = https://schema.bra0.org/evidence-os/edcc#
+#            (product-facing, under evo: umbrella, NOT a separate ontology)
+#
+# License:  MIT OR Apache-2.0 (per repo root)
+# =============================================================================
+
+<https://schema.bra0.org/evidence-os/edcc> a owl:Ontology ;
+    owl:versionInfo "0.1.0" ;
+    dcterms:title "EDCC Bridge Ontology"@en ;
+    dcterms:description "Construction Circular Data Space bridge linking opendthX (ETSI ES 204 114) and ISO 19650/23386 concepts to Evidence OS governance classes (Decision, Evidence, Change, Control). Designed for the EDCC consortium demonstration."@en ;
+    dcterms:creator "Nael (Architect)" ;
+    dcterms:created "2026-04-17"^^xsd:date ;
+    owl:imports <https://schema.bra0.org/evidence-os> .
+
+# =============================================================================
+# §1 — Construction Domain Classes (opendthX alignment)
+# =============================================================================
+
+# --- Physical domain ---
+
+edcc:Building a owl:Class ;
+    rdfs:subClassOf edgy:Object ;
+    rdfs:label "Building"@en ;
+    rdfs:comment "A built asset under circular economy governance. Corresponds to the opendthX Entity at building scale and s4bldg:Building in SAREF4BLDG. BFO grounding: edgy:Object → material entity (BFO:0000040)."@en ;
+    rdfs:seeAlso <https://saref.etsi.org/saref4bldg/Building> ;
+    rdfs:seeAlso <https://standards.buildingsmart.org/IFC/RELEASE/IFC4/ADD2_TC1/HTML/schema/ifcproductextension/lexical/ifcbuilding.htm> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+edcc:BuildingComponent a owl:Class ;
+    rdfs:subClassOf edgy:Object ;
+    rdfs:label "Building Component"@en ;
+    rdfs:comment "A physical component of a building (wall, slab, window, HVAC unit). Corresponds to the opendthX Entity at component scale and IFC IfcBuildingElement hierarchy. BFO grounding: edgy:Object → material entity (BFO:0000040)."@en ;
+    rdfs:seeAlso <https://standards.buildingsmart.org/IFC/RELEASE/IFC4/ADD2_TC1/HTML/schema/ifcproductextension/lexical/ifcbuildingelement.htm> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+edcc:Site a owl:Class ;
+    rdfs:subClassOf edgy:Object ;
+    rdfs:label "Site"@en ;
+    rdfs:comment "A construction or demolition site. Spatial container for Buildings and material flows. Corresponds to IFC IfcSite. BFO grounding: edgy:Object → material entity (BFO:0000040)."@en ;
+    rdfs:seeAlso <https://standards.buildingsmart.org/IFC/RELEASE/IFC4/ADD2_TC1/HTML/schema/ifcproductextension/lexical/ifcsite.htm> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+# --- Material domain ---
+
+edcc:Material a owl:Class ;
+    rdfs:subClassOf edgy:Object ;
+    rdfs:label "Material"@en ;
+    rdfs:comment "A construction material (concrete, wood, steel, insulation, etc.) with circular economy attributes. May be virgin, recycled, bio-sourced, or reused. Corresponds to IFC IfcMaterial and opendthX Property groups of type 'material'. BFO grounding: edgy:Object → material entity (BFO:0000040)."@en ;
+    rdfs:seeAlso <https://standards.buildingsmart.org/IFC/RELEASE/IFC4/ADD2_TC1/HTML/schema/ifcmaterialresource/lexical/ifcmaterial.htm> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+edcc:MaterialLot a owl:Class ;
+    rdfs:subClassOf edgy:Object ;
+    rdfs:label "Material Lot"@en ;
+    rdfs:comment "A specific quantity of a Material available for reuse or recycling. Output of a PEMD diagnostic. Carries mass, condition assessment, and reuse potential. Maps to an opendthX ConstructionObject with reuse-specific PropertyValues. BFO grounding: edgy:Object → material entity (BFO:0000040)."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+edcc:MaterialPassport a owl:Class ;
+    rdfs:subClassOf evo:Evidence ;
+    rdfs:label "Material Passport"@en ;
+    rdfs:comment "Digital Product Passport (DPP) for a construction material or component. An Evidence artifact proving material provenance, composition, and environmental performance. Aligned with EU Regulation 2024/1781 (Ecodesign)."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+# --- Diagnostic domain ---
+
+edcc:PEMDDiagnostic a owl:Class ;
+    rdfs:subClassOf evo:Evidence ;
+    rdfs:label "PEMD Diagnostic"@en ;
+    rdfs:comment "Diagnostic Produits Equipements Materiaux Dechets per Code de l'Environnement Art. L541-4-5 and RE2020. An Evidence artifact: the diagnostic report proving material inventory of a building before demolition/renovation. Replaces evo:TestRun in construction context."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+edcc:QualificationStudy a owl:Class ;
+    rdfs:subClassOf evo:Evidence ;
+    rdfs:label "Qualification Study"@en ;
+    rdfs:comment "Technical study qualifying reused materials for structural, thermal, acoustic, or fire safety use. Evidence artifact proving fitness-for-purpose."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+# --- Transaction domain ---
+
+edcc:CircularTransaction a owl:Class ;
+    rdfs:subClassOf evo:Change ;
+    rdfs:label "Circular Transaction"@en ;
+    rdfs:comment "A material exchange transaction in the circular construction marketplace. A Change event linking seller (diagnostiqueur/materiauthequeur) to buyer (MOA/MOE/entreprise). Carries PROV-O provenance for audit."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+edcc:LifecycleTransition a owl:Class ;
+    rdfs:subClassOf evo:Change ;
+    rdfs:label "Lifecycle Transition"@en ;
+    rdfs:comment "A change in the lifecycle phase of a building or component: design→construction→operation→demolition→reuse. Maps the ISO 19650 PIM→AIM transition and opendthX GOM→GO→SO progression as Change events in the evidence graph."@en ;
+    rdfs:seeAlso <https://www.iso.org/standard/68078.html> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+# --- Decision domain ---
+
+edcc:PrescriptionDecision a owl:Class ;
+    rdfs:subClassOf evo:Decision ;
+    rdfs:label "Prescription Decision"@en ;
+    rdfs:comment "A decision by a MOA/MOE/architect to prescribe circular materials in a construction project (CU4). Records alternatives considered, chosen material, and justification. Links to MaterialPassport evidence via evo:justifies."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+edcc:MatchingDecision a owl:Class ;
+    rdfs:subClassOf evo:Decision ;
+    rdfs:label "Matching Decision"@en ;
+    rdfs:comment "A supply-demand matching decision in the circular marketplace (CU3). Links available MaterialLots to project requirements. evo:chosenAlternative points to the selected supplier."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+# --- Control domain (regulatory) ---
+
+edcc:CircularControl a owl:Class ;
+    rdfs:subClassOf evo:Control ;
+    rdfs:label "Circular Control"@en ;
+    rdfs:comment "A compliance control specific to circular construction: PEMD completeness, DPP data requirements, RE2020 thresholds, AGEC obligations. Derived from framework articles via evo:derivedFromArticle."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+# --- Actor domain ---
+
+edcc:Stakeholder a owl:Class ;
+    rdfs:subClassOf prov:Agent ;
+    rdfs:label "Stakeholder"@en ;
+    rdfs:comment "An actor in the circular construction ecosystem: diagnostiqueur PEMD, materiauthequeur, MOA, MOE, architecte, entreprise, eco-organisme, assureur. Typed via edcc:stakeholderRole."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+# --- Reporting domain ---
+
+edcc:ImpactReport a owl:Class ;
+    rdfs:subClassOf evo:Evidence ;
+    rdfs:label "Impact Report"@en ;
+    rdfs:comment "A multi-level circular impact report (CU5): project, territory, or national scale. Covers CSRD E1/E2, REP, ACV indicators. Evidence artifact proving regulatory compliance."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+# =============================================================================
+# §2 — Construction Domain Predicates
+# =============================================================================
+
+edcc:hasMaterial a owl:ObjectProperty ;
+    rdfs:range edcc:Material ;
+    rdfs:label "has material"@en ;
+    rdfs:comment "Links a building component or material lot to its constituent material type. Domain intentionally unset (P1 Least Power) — SHACL shapes constrain per-class."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+edcc:producesLot a owl:ObjectProperty ;
+    rdfs:domain edcc:PEMDDiagnostic ;
+    rdfs:range edcc:MaterialLot ;
+    rdfs:label "produces lot"@en ;
+    rdfs:comment "Links a PEMD diagnostic to the material lots it identifies as reusable."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+edcc:onBuilding a owl:ObjectProperty ;
+    rdfs:domain edcc:PEMDDiagnostic ;
+    rdfs:range edcc:Building ;
+    rdfs:label "on building"@en ;
+    rdfs:comment "Links a PEMD diagnostic to the building it assesses."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+edcc:locatedAt a owl:ObjectProperty ;
+    rdfs:domain edcc:Building ;
+    rdfs:range edcc:Site ;
+    rdfs:label "located at"@en ;
+    rdfs:comment "Links a building to its site."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+edcc:passportOf a owl:ObjectProperty ;
+    rdfs:domain edcc:MaterialPassport ;
+    rdfs:range edcc:MaterialLot ;
+    rdfs:label "passport of"@en ;
+    rdfs:comment "Links a material passport (DPP) to the material lot it describes."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+edcc:transactedLot a owl:ObjectProperty ;
+    rdfs:domain edcc:CircularTransaction ;
+    rdfs:range edcc:MaterialLot ;
+    rdfs:label "transacted lot"@en ;
+    rdfs:comment "Links a circular transaction to the material lot exchanged."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+edcc:seller a owl:ObjectProperty ;
+    rdfs:domain edcc:CircularTransaction ;
+    rdfs:range edcc:Stakeholder ;
+    rdfs:label "seller"@en ;
+    rdfs:comment "The stakeholder providing materials in a circular transaction."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+edcc:buyer a owl:ObjectProperty ;
+    rdfs:domain edcc:CircularTransaction ;
+    rdfs:range edcc:Stakeholder ;
+    rdfs:label "buyer"@en ;
+    rdfs:comment "The stakeholder acquiring materials in a circular transaction."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+edcc:lifecyclePhase a owl:DatatypeProperty ;
+    rdfs:domain edcc:LifecycleTransition ;
+    rdfs:range xsd:string ;
+    rdfs:label "lifecycle phase"@en ;
+    rdfs:comment "Target phase: 'design' | 'construction' | 'operation' | 'demolition' | 'reuse'. Maps opendthX GOM→GO→SO and ISO 19650 PIM→AIM."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+edcc:stakeholderRole a owl:DatatypeProperty ;
+    rdfs:domain edcc:Stakeholder ;
+    rdfs:range xsd:string ;
+    rdfs:label "stakeholder role"@en ;
+    rdfs:comment "Role in EDCC ecosystem: 'diagnostiqueur' | 'materiauthequeur' | 'moa' | 'moe' | 'architecte' | 'entreprise' | 'eco_organisme' | 'assureur' | 'regulateur'."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+edcc:massKg a owl:DatatypeProperty ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "mass (kg)"@en ;
+    rdfs:comment "Mass of a material lot in kilograms."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+edcc:reusePotential a owl:DatatypeProperty ;
+    rdfs:range xsd:string ;
+    rdfs:label "reuse potential"@en ;
+    rdfs:comment "Assessed reuse potential: 'direct_reuse' | 'reuse_after_treatment' | 'recycling' | 'energy_recovery' | 'landfill'."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+edcc:wasteCode a owl:DatatypeProperty ;
+    rdfs:range xsd:string ;
+    rdfs:label "waste code"@en ;
+    rdfs:comment "European Waste Catalogue (EWC) code for the material. 6-digit format 'XX XX XX'. Corresponds to an ISO 23386 property of the material, managed as an opendthX PropertyDefinition with referenceDefinition pointing to the EWC catalogue."@en ;
+    rdfs:seeAlso <https://www.iso.org/standard/75401.html> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+edcc:co2EmbodiedKg a owl:DatatypeProperty ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "embodied CO2 (kg)"@en ;
+    rdfs:comment "Embodied carbon of the material in kg CO2eq. Used for counterfactual impact metrics."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+edcc:co2AvoidedKg a owl:DatatypeProperty ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "avoided CO2 (kg)"@en ;
+    rdfs:comment "Counterfactual CO2 avoided by reusing this material instead of virgin alternative. Per Wang, Bates, Aronow & Jordan counterfactual metric framework."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+edcc:naceCode a owl:DatatypeProperty ;
+    rdfs:range xsd:string ;
+    rdfs:label "NACE code"@en ;
+    rdfs:comment "NACE Rev. 2 activity code for CSRD sector classification."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+# =============================================================================
+# §2b — edccQ: Query-Result Predicates (Keet F2.2 — must be declared)
+# =============================================================================
+
+edccQ:reportingScope a owl:DatatypeProperty ;
+    rdfs:range xsd:string ;
+    rdfs:label "reporting scope"@en ;
+    rdfs:comment "Scope level: 'project' | 'organisation' | 'territory' | 'national'."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+edccQ:reportingPeriodStart a owl:DatatypeProperty ;
+    rdfs:range xsd:date ;
+    rdfs:label "reporting period start"@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+edccQ:reportingPeriodEnd a owl:DatatypeProperty ;
+    rdfs:range xsd:date ;
+    rdfs:label "reporting period end"@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+edccQ:tonnesReused a owl:DatatypeProperty ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "tonnes reused"@en ;
+    rdfs:comment "Total mass of materials reused in the reporting period (tonnes)."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+edccQ:co2AvoidedTonnes a owl:DatatypeProperty ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "CO2 avoided (tonnes)"@en ;
+    rdfs:comment "Counterfactual CO2 avoided by reuse vs virgin alternative (tonnes CO2eq)."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+edccQ:circularityRate a owl:DatatypeProperty ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "circularity rate"@en ;
+    rdfs:comment "Weighted circularity ratio [0.0, 1.0]."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+edccQ:economicSavingsEur a owl:DatatypeProperty ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "economic savings (EUR)"@en ;
+    rdfs:comment "Net cost savings vs virgin materials in EUR."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+edccQ:counterfactualMethod a owl:DatatypeProperty ;
+    rdfs:range xsd:string ;
+    rdfs:label "counterfactual method"@en ;
+    rdfs:comment "Estimation method: 'lca_baseline' | 'synthetic_control' | 'difference_in_differences' | 'expert_estimate'."@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
+
+# =============================================================================
+# §3 — Disjointness Axioms
+# =============================================================================
+
+# Evidence sub-classes specific to construction are disjoint:
+[] a owl:AllDisjointClasses ;
+    owl:members ( edcc:PEMDDiagnostic edcc:MaterialPassport edcc:QualificationStudy edcc:ImpactReport ) .
+
+# Change sub-classes specific to construction are disjoint:
+[] a owl:AllDisjointClasses ;
+    owl:members ( edcc:CircularTransaction edcc:LifecycleTransition ) .
+
+# Decision sub-classes specific to construction are disjoint:
+[] a owl:AllDisjointClasses ;
+    owl:members ( edcc:PrescriptionDecision edcc:MatchingDecision ) .
+
+# =============================================================================
+# §4 — Compliance Framework Instances
+# =============================================================================
+# EXTRACTED to edcc-frameworks.ttl (ABox) per Keet audit F8.1 (TBox/ABox separation).
+# Reference individuals: edcc:RE2020, edcc:CSRD, edcc:REP, edcc:AGEC, edcc:DPP, edcc:ETSI_ES_204_114
+# Load edcc-frameworks.ttl alongside this TBox for full dataset resolution.
+
+# =============================================================================
+# Changelog
+# =============================================================================
+# 0.1.0 | 2026-04-17 | Initial bridge ontology for EDCC demo.
+#        16 classes, 15 predicates, 6 framework instances.
+#        Alignment via rdfs:seeAlso (not owl:equivalentClass).
+#        Follows Evidence OS TBox patterns (Keet-compliant naming,
+#        disjointness axioms, PROV-O/DCAT reuse).

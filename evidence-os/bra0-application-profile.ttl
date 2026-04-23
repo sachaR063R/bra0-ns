@@ -1,0 +1,209 @@
+# =============================================================================
+# bra0 Application Profile (Level 5)
+# =============================================================================
+#
+# NOT an ontology. A profile that borrows from:
+#   Level 3: EDGY, SKOS, PROV-O, DCAT, ADMS, dcterms, ODRL, FnO
+#   Level 5: bra0-specific extensions (9 properties, 0 classes)
+#
+# ADR-028: Application Profile, Not Ontology
+# Date: 2026-04-06
+# Author: Sacha Roger
+# =============================================================================
+
+@prefix bra0:     <http://www.omyn.ai/ns/bra0#> .
+@prefix edgy:     <http://www.omyn.ai/schema/edgy#> .
+@prefix asc:      <https://schema.bra0.org/agent-service-contract#> .
+@prefix fno:      <https://w3id.org/function/ontology#> .
+@prefix prof:     <http://www.w3.org/ns/dx/prof/> .
+@prefix role:     <http://www.w3.org/ns/dx/prof/role/> .
+@prefix owl:      <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:      <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:     <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:      <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos:     <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms:  <http://purl.org/dc/terms/> .
+@prefix sh:       <http://www.w3.org/ns/shacl#> .
+@prefix p-plan:   <http://purl.org/net/p-plan#> .
+
+# =============================================================================
+# Profile Declaration (W3C PROF — https://www.w3.org/TR/dx-prof/)
+# =============================================================================
+# bra0 is an application profile, not an ontology (ADR-028).
+# W3C PROF formalizes this: prof:Profile + prof:isProfileOf hierarchy.
+# DCAT-AP Reuse Guidelines 1.0.0 (SEMIC, 2026) validates this pattern.
+
+<http://www.omyn.ai/ns/bra0#> a owl:Ontology, prof:Profile ;
+    rdfs:label "bra0 Application Profile"@en ;
+    rdfs:comment """Application profile for bra0 Knowledge Space Studio. Borrows from EDGY, SKOS, PROV-O, DCAT, ADMS, dcterms, ODRL, FnO. Defines ZERO classes; only 6 properties with no standard equivalent. ADR-028: bra0 borrows, it doesn't invent. Formalized as W3C PROF Profile for EU interoperability. Note on fno:Mapping: it appears below as the domain of bra0:role and bra0:scope because bra0 reuses the FnO reifier pattern for capability realization (N-ary relation — a capability realized by an asset, with role and scope). This is distinct from data-to-RDF source mapping, which in bra0 uses RML, R2RML, and SPARQL Anything / FacadeX."""@en ;
+    owl:versionInfo "1.2.0" ;
+    dcterms:license "https://creativecommons.org/licenses/by-sa/4.0/" ;
+    dcterms:creator "Sacha Roger" ;
+    dcterms:created "2026-04-06"^^xsd:date ;
+    dcterms:modified "2026-04-11"^^xsd:date ;
+    # W3C PROF: profile hierarchy
+    prof:isProfileOf <http://www.omyn.ai/schema/edgy#> ;
+    prof:isProfileOf <http://www.w3.org/2004/02/skos/core#> ;
+    prof:isProfileOf <https://w3id.org/function/ontology#> ;
+    prof:isProfileOf <http://purl.org/net/p-plan#> ;
+    # W3C PROF: profile resources
+    prof:hasResource bra0:resource-shapes ;
+    prof:hasResource bra0:resource-vocabularies .
+
+# Profile resources — link artifacts to the profile
+bra0:resource-shapes a prof:ResourceDescriptor ;
+    rdfs:label "bra0 SHACL validation shapes"@en ;
+    prof:hasRole role:constraints ;
+    prof:hasArtifact <bra0-shapes.ttl> ;
+    dcterms:format "text/turtle" ;
+    dcterms:conformsTo <http://www.w3.org/ns/shacl#> .
+
+bra0:resource-vocabularies a prof:ResourceDescriptor ;
+    rdfs:label "bra0 controlled vocabularies (SKOS concept schemes)"@en ;
+    prof:hasRole role:vocabulary ;
+    rdfs:comment "Realization roles, EDGY categories, technology stacks, migration phases — all as SKOS ConceptSchemes defined in this file."@en .
+
+# =============================================================================
+# § 1. Properties — EDGY Focus Scoring (Dowling & Goebl)
+# =============================================================================
+# focus = distinctiveness × (6 - performance)
+# No W3C/EDGY standard for capability investment scoring.
+
+bra0:focusDistinctiveness a owl:DatatypeProperty ;
+    rdfs:domain edgy:Capability ;
+    rdfs:range xsd:integer ;
+    rdfs:label "focus distinctiveness"@en ;
+    rdfs:comment "1-5: how distinctive is this capability? 5 = core differentiator."@en .
+
+bra0:focusPerformance a owl:DatatypeProperty ;
+    rdfs:domain edgy:Capability ;
+    rdfs:range xsd:integer ;
+    rdfs:label "focus performance"@en ;
+    rdfs:comment "1-5: current performance vs peers. 5 = best in class."@en .
+
+# =============================================================================
+# § 2. Properties — Realization Metadata (on fno:Mapping)
+# =============================================================================
+# FnO provides the reified bridge (fno:Mapping, fno:function, fno:implementation).
+# bra0 adds role and scope — not in FnO.
+
+bra0:role a owl:ObjectProperty ;
+    rdfs:domain fno:Mapping ;
+    rdfs:range skos:Concept ;
+    rdfs:label "realization role"@en ;
+    rdfs:comment "Role of this implementation for this capability: Canonical, Alternative, Deprecated, Planned. Attached to fno:Mapping used as an N-ary realization reifier (capability realized by an asset) — not to data-to-RDF source mappings, which use RML / R2RML / SPARQL Anything."@en .
+
+bra0:scope a owl:DatatypeProperty ;
+    rdfs:domain fno:Mapping ;
+    rdfs:range xsd:string ;
+    rdfs:label "realization scope"@en ;
+    rdfs:comment "What subset of the capability this realization covers. Attached to fno:Mapping used as an N-ary realization reifier (capability realized by an asset) — not to data-to-RDF source mappings, which use RML / R2RML / SPARQL Anything."@en .
+
+# =============================================================================
+# § 3. Properties — Pipeline Step Metadata (ADR-030, ADR-034)
+# =============================================================================
+# Minimal extensions on p-plan:Step for CLI activation and SHACL contracts.
+# P-Plan core properties are adopted as-is (no bra0 extension needed).
+
+bra0:cliCommand a owl:DatatypeProperty ;
+    rdfs:domain p-plan:Step ;
+    rdfs:range xsd:string ;
+    rdfs:label "CLI command"@en ;
+    rdfs:comment "The topo subcommand + argument template for this pipeline step."@en .
+
+bra0:inputShape a owl:ObjectProperty ;
+    rdfs:domain p-plan:Step ;
+    rdfs:range sh:NodeShape ;
+    rdfs:label "input shape"@en ;
+    rdfs:comment "SHACL NodeShape that the step input must conform to (ADR-030 D2)."@en .
+
+bra0:outputShape a owl:ObjectProperty ;
+    rdfs:domain p-plan:Step ;
+    rdfs:range sh:NodeShape ;
+    rdfs:label "output shape"@en ;
+    rdfs:comment "SHACL NodeShape that the step output must conform to (ADR-030 D2)."@en .
+
+# =============================================================================
+# § 4. Properties — Agent Governance (bridge to asc:)
+# =============================================================================
+# bra0-specific: links capabilities to agent mandates.
+
+bra0:governedByMandate a owl:ObjectProperty ;
+    rdfs:domain edgy:Capability ;
+    rdfs:range asc:Mandate ;
+    rdfs:label "governed by mandate"@en ;
+    rdfs:comment "Links a capability to the agent mandate(s) that govern it."@en .
+
+bra0:operatedByAgent a owl:ObjectProperty ;
+    rdfs:domain edgy:Capability ;
+    rdfs:range asc:AgentService ;
+    rdfs:label "operated by agent"@en ;
+    rdfs:comment "Links a capability to the agent(s) that operate it."@en .
+
+# =============================================================================
+# § 4. SKOS Concept Schemes (enumerations as vocabularies, not classes)
+# =============================================================================
+
+bra0:realization-roles a skos:ConceptScheme ;
+    rdfs:label "Realization Roles"@en ;
+    skos:hasTopConcept bra0:Canonical, bra0:Alternative, bra0:Deprecated, bra0:Planned .
+
+bra0:Canonical a skos:Concept ;
+    skos:inScheme bra0:realization-roles ;
+    skos:prefLabel "Canonical"@en ;
+    skos:definition "Primary implementation for this capability."@en .
+
+bra0:Alternative a skos:Concept ;
+    skos:inScheme bra0:realization-roles ;
+    skos:prefLabel "Alternative"@en ;
+    skos:definition "Secondary implementation. Canonical must be documented."@en .
+
+bra0:Deprecated a skos:Concept ;
+    skos:inScheme bra0:realization-roles ;
+    skos:prefLabel "Deprecated"@en ;
+    skos:definition "Scheduled for removal. Must reference replacement."@en .
+
+bra0:Planned a skos:Concept ;
+    skos:inScheme bra0:realization-roles ;
+    skos:prefLabel "Planned"@en ;
+    skos:definition "Identified for future adoption but not yet operational."@en .
+
+bra0:edgy-categories a skos:ConceptScheme ;
+    rdfs:label "EDGY Capability Categories"@en ;
+    skos:hasTopConcept bra0:CustomerFacing, bra0:Operational, bra0:Support, bra0:Change .
+
+bra0:CustomerFacing a skos:Concept ;
+    skos:inScheme bra0:edgy-categories ;
+    skos:prefLabel "Customer-facing"@en .
+
+bra0:Operational a skos:Concept ;
+    skos:inScheme bra0:edgy-categories ;
+    skos:prefLabel "Operational"@en .
+
+bra0:Support a skos:Concept ;
+    skos:inScheme bra0:edgy-categories ;
+    skos:prefLabel "Support"@en .
+
+bra0:Change a skos:Concept ;
+    skos:inScheme bra0:edgy-categories ;
+    skos:prefLabel "Change"@en .
+
+bra0:tech-stacks a skos:ConceptScheme ;
+    rdfs:label "Technology Stacks"@en ;
+    skos:hasTopConcept bra0:Rust, bra0:Python, bra0:TypeScript, bra0:WASM .
+
+bra0:Rust a skos:Concept ;
+    skos:inScheme bra0:tech-stacks ;
+    skos:prefLabel "Rust"@en .
+
+bra0:Python a skos:Concept ;
+    skos:inScheme bra0:tech-stacks ;
+    skos:prefLabel "Python"@en .
+
+bra0:TypeScript a skos:Concept ;
+    skos:inScheme bra0:tech-stacks ;
+    skos:prefLabel "TypeScript"@en .
+
+bra0:WASM a skos:Concept ;
+    skos:inScheme bra0:tech-stacks ;
+    skos:prefLabel "WebAssembly"@en .

@@ -1,0 +1,176 @@
+@prefix sh:      <http://www.w3.org/ns/shacl#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix prov:    <http://www.w3.org/ns/prov#> .
+@prefix evo:     <https://schema.bra0.org/evidence-os#> .
+@prefix edcc:    <https://schema.bra0.org/evidence-os/edcc#> .
+@prefix edccQ:   <https://schema.bra0.org/evidence-os/edcc/query#> .
+
+#
+# SHACL shapes — EDCC Construction Domain: PEMD Diagnostic + Material Passport
+# Scope: CU2 (circular supply) validation for EDCC demo
+# Validate: rudof shacl-validate -s edcc-pemd.shapes.ttl fixtures/edcc-pemd/<happy-path|failure>.ttl
+#
+
+<> dcterms:license <https://creativecommons.org/licenses/by-sa/4.0/> .
+
+#######################################################################
+# edcc:PEMDDiagnosticShape (S2)
+# Target: edcc:PEMDDiagnostic
+# Validates PEMD diagnostic completeness per RE2020 + Code Environnement
+#######################################################################
+
+edcc:PEMDDiagnosticShape
+    a sh:NodeShape ;
+    sh:targetClass edcc:PEMDDiagnostic ;
+    rdfs:label "PEMD diagnostic shape"@en ;
+    rdfs:comment "Validates structural integrity of a PEMD diagnostic evidence artifact. Every diagnostic MUST identify the assessed building, the diagnostician, carry at least one material lot, and declare its regulatory basis. Per Code de l'Environnement Art. L541-4-5 and RE2020."@en ;
+    sh:property [
+        sh:path rdfs:label ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "edcc:PEMDDiagnostic MUST declare exactly one rdfs:label (diagnostic report title)."@en ;
+    ] ,
+    [
+        sh:path dcterms:identifier ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "edcc:PEMDDiagnostic MUST carry dcterms:identifier (unique diagnostic reference number)."@en ;
+    ] ,
+    [
+        sh:path dcterms:created ;
+        sh:datatype xsd:date ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "edcc:PEMDDiagnostic MUST carry dcterms:created (diagnostic date)."@en ;
+    ] ,
+    [
+        sh:path edcc:onBuilding ;
+        sh:class edcc:Building ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "edcc:PEMDDiagnostic MUST link to exactly one edcc:Building via edcc:onBuilding."@en ;
+    ] ,
+    [
+        sh:path prov:wasAttributedTo ;
+        sh:class edcc:Stakeholder ;
+        sh:minCount 1 ;
+        sh:message "edcc:PEMDDiagnostic MUST carry prov:wasAttributedTo (diagnostician who performed it)."@en ;
+    ] ,
+    [
+        sh:path edcc:producesLot ;
+        sh:class edcc:MaterialLot ;
+        sh:minCount 1 ;
+        sh:message "edcc:PEMDDiagnostic MUST identify at least one edcc:MaterialLot via edcc:producesLot."@en ;
+    ] ,
+    [
+        sh:path evo:evidences ;
+        sh:class evo:Control ;
+        sh:minCount 1 ;
+        sh:message "edcc:PEMDDiagnostic MUST link to at least one evo:Control it evidences (regulatory basis: RE2020, AGEC, etc.)."@en ;
+    ] .
+
+#######################################################################
+# edcc:MaterialLotShape
+# Target: edcc:MaterialLot
+# Validates material lot data quality from PEMD diagnostic output
+#######################################################################
+
+edcc:MaterialLotShape
+    a sh:NodeShape ;
+    sh:targetClass edcc:MaterialLot ;
+    rdfs:label "Material lot shape"@en ;
+    rdfs:comment "Validates a material lot identified by a PEMD diagnostic. Every lot MUST carry mass, material type, waste code, and reuse potential assessment."@en ;
+    sh:property [
+        sh:path rdfs:label ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "edcc:MaterialLot MUST declare rdfs:label (human-readable description, e.g. 'Bois charpente batiment A')."@en ;
+    ] ,
+    [
+        sh:path edcc:massKg ;
+        sh:datatype xsd:decimal ;
+        sh:minInclusive 0.0 ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "edcc:MaterialLot MUST declare edcc:massKg (mass in kg, non-negative decimal)."@en ;
+    ] ,
+    [
+        sh:path edcc:hasMaterial ;
+        sh:class edcc:Material ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "edcc:MaterialLot MUST link to exactly one edcc:Material type via edcc:hasMaterial."@en ;
+    ] ,
+    [
+        sh:path edcc:wasteCode ;
+        sh:datatype xsd:string ;
+        sh:pattern "^[0-9]{2} [0-9]{2} [0-9]{2}$" ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "edcc:MaterialLot MUST carry edcc:wasteCode (EWC 6-digit format: 'XX XX XX')."@en ;
+    ] ,
+    [
+        sh:path edcc:reusePotential ;
+        sh:datatype xsd:string ;
+        sh:in ( "direct_reuse" "reuse_after_treatment" "recycling" "energy_recovery" "landfill" ) ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "edcc:MaterialLot MUST declare edcc:reusePotential from controlled vocabulary."@en ;
+    ] ,
+    [
+        sh:path edcc:co2EmbodiedKg ;
+        sh:datatype xsd:decimal ;
+        sh:minInclusive 0.0 ;
+        sh:minCount 0 ; sh:maxCount 1 ;
+        sh:message "edcc:co2EmbodiedKg if present MUST be non-negative decimal (kg CO2eq)."@en ;
+    ] .
+
+#######################################################################
+# edcc:MaterialPassportShape (S3)
+# Target: edcc:MaterialPassport
+# Validates DPP material passport per EU Regulation 2024/1781
+#######################################################################
+
+edcc:MaterialPassportShape
+    a sh:NodeShape ;
+    sh:targetClass edcc:MaterialPassport ;
+    rdfs:label "Material passport shape"@en ;
+    rdfs:comment "Validates a Digital Product Passport (DPP) for construction materials per EU Regulation 2024/1781. Every passport MUST identify the material lot, carry ISO 23386-aligned properties, and link to the regulatory control it evidences."@en ;
+    sh:property [
+        sh:path rdfs:label ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "edcc:MaterialPassport MUST declare rdfs:label."@en ;
+    ] ,
+    [
+        sh:path dcterms:identifier ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "edcc:MaterialPassport MUST carry dcterms:identifier (DPP unique ID)."@en ;
+    ] ,
+    [
+        sh:path dcterms:created ;
+        sh:datatype xsd:date ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "edcc:MaterialPassport MUST carry dcterms:created."@en ;
+    ] ,
+    [
+        sh:path edcc:passportOf ;
+        sh:class edcc:MaterialLot ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "edcc:MaterialPassport MUST link to exactly one edcc:MaterialLot."@en ;
+    ] ,
+    [
+        sh:path prov:wasAttributedTo ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ;
+        sh:message "edcc:MaterialPassport MUST carry prov:wasAttributedTo (issuing authority)."@en ;
+    ] ,
+    [
+        sh:path prov:wasDerivedFrom ;
+        sh:class edcc:PEMDDiagnostic ;
+        sh:minCount 0 ;
+        sh:message "edcc:MaterialPassport SHOULD link to its source edcc:PEMDDiagnostic via prov:wasDerivedFrom."@en ;
+    ] ,
+    [
+        sh:path evo:evidences ;
+        sh:class evo:Control ;
+        sh:minCount 1 ;
+        sh:message "edcc:MaterialPassport MUST evidence at least one evo:Control (DPP regulatory requirement)."@en ;
+    ] .

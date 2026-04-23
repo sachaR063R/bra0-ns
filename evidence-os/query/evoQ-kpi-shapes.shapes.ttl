@@ -1,0 +1,485 @@
+@prefix sh:      <http://www.w3.org/ns/shacl#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix prov:    <http://www.w3.org/ns/prov#> .
+@prefix odrl:    <http://www.w3.org/ns/odrl/2/> .
+@prefix evo:     <https://schema.bra0.org/evidence-os#> .
+@prefix evoQ:    <https://schema.bra0.org/evidence-os/query#> .
+
+#
+# SHACL shapes — KPI / query-result / structural validators
+# Scope: PRD V1 §6.2 KPI table + RQ1-RQ4 result structures + arch-delta v0.1.4 §3.2.2 operational predicates
+# Validate: rudof shacl-validate -s evoQ-kpi-shapes.shapes.ttl fixtures/evoQ-kpi-shapes/<happy-path|failure>.ttl
+# Quinn gates in CI; ship gates §2.3.1 + §3.3.1 + §4.3.1 per roadmap-evidence-os.md.
+#
+# Count: 13 canonical evoQ:*ResultShape (Nael Q-β 2026-04-17) + 2 extras (Nael Concern 1 discretion):
+# canonical 1-13 per Q-β decision memo + evoQ:PackBundleShape (structural, distinct from PackExportLatencyShape)
+# + evoQ:ConnectorIngestResultShape (PRD AC-W1.4 — added per Nael discretion clause, does not revise 22-count).
+#
+# Predicate declaration policy (Q-δ Bucket 1, W3C SHACL 1.2 §2.1): all evoQ:* result-structure predicates
+# declared inline here as sh:path IRIs; no separate TBox required.
+#
+
+<> dcterms:license <https://creativecommons.org/licenses/by-sa/4.0/> .
+
+#######################################################################
+# 1. evoQ:TraceabilityCompletenessResultShape (RQ1 §2.5)
+#######################################################################
+
+evoQ:TraceabilityCompletenessResultShape
+    a sh:NodeShape ;
+    rdfs:label "Traceability-completeness result shape (RQ1)"@en ;
+    rdfs:comment "Validates the SPARQL result row of the Trust Coverage (traceability-completeness) query per RQ1 §2.4 + §2.5 + PRD §6.1."@en ;
+    sh:targetNode evoQ:TraceabilityCompletenessResult ;
+    sh:property [
+        sh:path evoQ:withEvidence ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 0 ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "withEvidence MUST be a non-negative xsd:integer (count of controls with ≥1 evidence binding)."@en ;
+    ] ,
+    [
+        sh:path evoQ:demandingEvidence ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 0 ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "demandingEvidence MUST be a non-negative xsd:integer (total controls under evidence demand)."@en ;
+    ] ,
+    [
+        sh:path evoQ:completenessRatio ;
+        sh:datatype xsd:decimal ;
+        sh:minInclusive 0.0 ;
+        sh:maxInclusive 1.0 ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "completenessRatio MUST be xsd:decimal in [0.0, 1.0] (withEvidence / demandingEvidence)."@en ;
+    ] ,
+    [
+        sh:path evoQ:thresholdMode ;
+        sh:datatype xsd:string ;
+        sh:in ( "strict" "relaxed" ) ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "thresholdMode MUST be 'strict' (θ) or 'relaxed' (θ') per RQ1 §2.3."@en ;
+    ] .
+
+#######################################################################
+# 2. evoQ:TimeToRationaleSampleShape (PRD §6.2 row 1)
+#######################################################################
+
+evoQ:TimeToRationaleSampleShape
+    a sh:NodeShape ;
+    rdfs:label "Time-to-rationale sample shape"@en ;
+    rdfs:comment "Validates a single wallclock sample for time-to-rationale KPI (indexed ADR opened → trail entry visible) per PRD §6.2 row 1."@en ;
+    sh:targetNode evoQ:TimeToRationaleSample ;
+    sh:property [
+        sh:path evoQ:decisionIri ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "decisionIri MUST be an IRI (the indexed ADR sampled)."@en ;
+    ] ,
+    [
+        sh:path evoQ:latencyMillis ;
+        sh:datatype xsd:nonNegativeInteger ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "latencyMillis MUST be xsd:nonNegativeInteger (wallclock ms)."@en ;
+    ] ,
+    [
+        sh:path prov:generatedAtTime ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "PROV-O generation timestamp is mandatory."@en ;
+    ] .
+
+#######################################################################
+# 3. evoQ:ChangeLinkRatioShape (PRD §6.2 — canonical; deprecates evoQ:LinkRatioShape alias)
+#######################################################################
+
+evoQ:ChangeLinkRatioShape
+    a sh:NodeShape ;
+    rdfs:label "Change-link-ratio shape (canonical)"@en ;
+    rdfs:comment "Validates % changes linked to ticket + informing decision — PRD §6.2 KPI + D08 v0.7 dogfood gate ≥ 0.80 on bra0_meta corpus. Canonical name per Nael Concern 1; evoQ:LinkRatioShape is the deprecated alias."@en ;
+    sh:targetNode evoQ:ChangeLinkRatioResult ;
+    sh:property [
+        sh:path evoQ:linkedCount ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 0 ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "linkedCount MUST be a non-negative xsd:integer."@en ;
+    ] ,
+    [
+        sh:path evoQ:totalCount ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 0 ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "totalCount MUST be a non-negative xsd:integer."@en ;
+    ] ,
+    [
+        sh:path evoQ:ratio ;
+        sh:datatype xsd:decimal ;
+        sh:minInclusive 0.0 ;
+        sh:maxInclusive 1.0 ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "ratio MUST be xsd:decimal in [0.0, 1.0]; D08 v0.7 gate passes only at ratio ≥ 0.80 on bra0_meta corpus."@en ;
+    ] .
+
+#######################################################################
+# 4. evoQ:ControlGapResultShape (PRD §6.2 — canonical; deprecates evoQ:GapDetectorResultShape alias)
+#######################################################################
+
+evoQ:ControlGapResultShape
+    a sh:NodeShape ;
+    rdfs:label "Control-gap result shape (canonical)"@en ;
+    rdfs:comment "Validates a row in the 'controls without evidence' query result — PRD §6.2 row 3 + §4.3 W3 MUST gap detector. Canonical name per Nael Concern 1; evoQ:GapDetectorResultShape is the deprecated alias. Includes rogue-commit + AC-less variants (arch-delta §3.3 gap-detector family)."@en ;
+    sh:targetNode evoQ:ControlGapResult ;
+    sh:property [
+        sh:path evoQ:control ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "control MUST be an IRI (the control with a gap)."@en ;
+    ] ,
+    [
+        sh:path evoQ:framework ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 0 ;
+        sh:message "framework IRI is optional (per-framework variant filter)."@en ;
+    ] ,
+    [
+        sh:path evoQ:gapKind ;
+        sh:datatype xsd:string ;
+        sh:in ( "no-evidence" "rogue-commit" "ac-less" "framework-binding" ) ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "gapKind MUST be one of 'no-evidence'|'rogue-commit'|'ac-less'|'framework-binding' per arch-delta §3.3 gap-detector family."@en ;
+    ] ,
+    [
+        sh:path evoQ:wallLabel ;
+        sh:datatype xsd:string ;
+        sh:in ( "Unprovable evidence" "Fragmented decisions" "Data risks" "AI opacity" ) ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "wallLabel MUST be one of the 4 walls per H-UX-07 labelling rule."@en ;
+    ] ,
+    [
+        sh:path evoQ:severityTier ;
+        sh:datatype xsd:string ;
+        sh:in ( "critical" "major" "minor" ) ;
+        sh:minCount 0 ; sh:maxCount 1 ;
+        sh:message "severityTier is optional; if present MUST be 'critical'|'major'|'minor' (Q1 W05 may widen to controlled-vocabulary IRI per Nael Concern 4)."@en ;
+    ] ,
+    [
+        sh:path evoQ:detectionLatencyMillis ;
+        sh:datatype xsd:nonNegativeInteger ;
+        sh:minCount 0 ; sh:maxCount 1 ;
+        sh:message "detectionLatencyMillis is optional; measures Q7 budget (≤500ms on 100k-quad graph)."@en ;
+    ] .
+
+#######################################################################
+# 5. evoQ:PackExportLatencyShape (PRD §6.2 row 4 — time-to-prepare-audit)
+#######################################################################
+
+evoQ:PackExportLatencyShape
+    a sh:NodeShape ;
+    rdfs:label "Pack-export-latency shape"@en ;
+    rdfs:comment "Validates time-to-prepare-audit latency samples (wallclock frame 1 → bundle-ready). PRD §6.2 row 4; storyboard-audit-pack 4:51 live-measured post-W29 per Athena Finding 3."@en ;
+    sh:targetNode evoQ:PackExportLatencySample ;
+    sh:property [
+        sh:path evoQ:framework ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "framework IRI MUST identify the framework pack measured."@en ;
+    ] ,
+    [
+        sh:path evoQ:latencyMillis ;
+        sh:datatype xsd:nonNegativeInteger ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "latencyMillis MUST be xsd:nonNegativeInteger (wallclock ms)."@en ;
+    ] ,
+    [
+        sh:path evoQ:windowStart ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "windowStart MUST be xsd:dateTime (frame 1 wallclock)."@en ;
+    ] ,
+    [
+        sh:path evoQ:windowEnd ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "windowEnd MUST be xsd:dateTime (bundle-ready wallclock)."@en ;
+    ] .
+
+#######################################################################
+# 6. evoQ:RogueCommitDetectionShape (PRD §6.2 row 5 — D19 cascade)
+#######################################################################
+
+evoQ:RogueCommitDetectionShape
+    a sh:NodeShape ;
+    rdfs:label "Rogue-commit-detection shape (D19 cascade)"@en ;
+    rdfs:comment "Validates rogue-commit detector output (commits without prov:wasInformedBy ADR linkage). Relocated to E4 per Nael Finding 6 — arch-delta §3.3 Data Plane gap-detector authority."@en ;
+    sh:targetNode evoQ:RogueCommitDetectionResult ;
+    sh:property [
+        sh:path evoQ:commit ;
+        sh:class evo:Commit ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "commit MUST be an evo:Commit instance (the rogue commit)."@en ;
+    ] ,
+    [
+        sh:path evoQ:detectionLatencyMillis ;
+        sh:datatype xsd:nonNegativeInteger ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "detectionLatencyMillis MUST be xsd:nonNegativeInteger (Q7 budget ≤500ms / 100k-quad)."@en ;
+    ] ,
+    [
+        sh:path prov:generatedAtTime ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "PROV-O generation timestamp mandatory (when the detector surfaced the rogue commit)."@en ;
+    ] .
+
+#######################################################################
+# 7. evoQ:OnboardingLatencyShape (PRD §6.2 — Kokoro H-UX-04 ≤10-min gate)
+#######################################################################
+
+evoQ:OnboardingLatencyShape
+    a sh:NodeShape ;
+    rdfs:label "Onboarding-latency shape (H-UX-04 gate)"@en ;
+    rdfs:comment "Validates `topo connect → ask → pack` end-to-end wallclock per Kokoro H-UX-04 ≤10-min gate. Held at v0.7 ship per D-α 2026-04-17 (seed templates)."@en ;
+    sh:targetNode evoQ:OnboardingLatencySample ;
+    sh:property [
+        sh:path evoQ:latencyMillis ;
+        sh:datatype xsd:nonNegativeInteger ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "latencyMillis MUST be xsd:nonNegativeInteger (wallclock ms; gate passes at ≤ 600000 = 10 min)."@en ;
+    ] ,
+    [
+        sh:path evoQ:windowStart ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "windowStart MUST be xsd:dateTime (topo connect invocation)."@en ;
+    ] ,
+    [
+        sh:path evoQ:windowEnd ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "windowEnd MUST be xsd:dateTime (topo pack completion)."@en ;
+    ] .
+
+#######################################################################
+# 8. evoQ:GroundingResultShape (RQ2 §3.5)
+#######################################################################
+
+evoQ:GroundingResultShape
+    a sh:NodeShape ;
+    rdfs:label "Grounding-result shape (RQ2)"@en ;
+    rdfs:comment "Validates grounding-protocol output row — RQ2 §3.5 + PRD §6.2 (ship-blocking hard gate per Noam Finding 2). Every W4 answer carries PROV-O OR refusal artifact."@en ;
+    sh:targetNode evoQ:GroundingResult ;
+    sh:property [
+        sh:path evoQ:invocation ;
+        sh:class evo:AmbientAgentInvocation ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "invocation MUST be an evo:AmbientAgentInvocation (arch-delta v0.1.4 §3.2.2)."@en ;
+    ] ,
+    [
+        sh:path evoQ:grounded ;
+        sh:datatype xsd:boolean ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "grounded MUST be xsd:boolean. True = PROV-O trace present; False = RefusalArtifact emitted (see evo:Evidence + dcterms:type 'RefusalArtifact' per Nael Q-γ)."@en ;
+    ] ,
+    [
+        sh:path evoQ:entity ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ;
+        sh:message "entity MUST be an IRI (the evidence-graph entity the agent accessed or refused to claim against)."@en ;
+    ] ,
+    [
+        sh:path evoQ:policyViolations ;
+        sh:datatype xsd:nonNegativeInteger ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "policyViolations MUST be xsd:nonNegativeInteger (count of ODRL prohibitions triggered; must be 0 for a grounded answer)."@en ;
+    ] .
+
+#######################################################################
+# 9. evoQ:DemoReadinessShape (RQ3 §4.5)
+#######################################################################
+
+evoQ:DemoReadinessShape
+    a sh:NodeShape ;
+    rdfs:label "Demo-readiness shape (RQ3 dogfood gate)"@en ;
+    rdfs:comment "Validates demo-readiness result — RQ3 §4.5 dogfood-rate = 1.0 CI gate per release. D08 v0.7 / v0.8 + D21 v0.9 release-demo cross-epic."@en ;
+    sh:targetNode evoQ:DemoReadinessResult ;
+    sh:property [
+        sh:path evoQ:ratio ;
+        sh:datatype xsd:decimal ;
+        sh:minInclusive 0.0 ;
+        sh:maxInclusive 1.0 ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "dogfood-rate MUST be xsd:decimal in [0.0, 1.0]; CI gate passes only at 1.0 per D08/D21."@en ;
+    ] ,
+    [
+        sh:path prov:generatedAtTime ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "PROV-O generation timestamp mandatory."@en ;
+    ] .
+
+#######################################################################
+# 10. evoQ:DogfoodFreshnessResultShape (RQ3 §4.5 — distinct from DemoReadinessShape)
+#######################################################################
+
+evoQ:DogfoodFreshnessResultShape
+    a sh:NodeShape ;
+    rdfs:label "Dogfood-freshness result shape (RQ3)"@en ;
+    rdfs:comment "Validates dogfood-corpus freshness in days since last snapshot pin. RQ3 §4.5 — distinct from DemoReadinessShape; tracks whether the dogfood snapshot lags reality."@en ;
+    sh:targetNode evoQ:DogfoodFreshnessResult ;
+    sh:property [
+        sh:path evoQ:freshDays ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 0 ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "freshDays MUST be xsd:integer ≥ 0 (days since last snapshot pin)."@en ;
+    ] ,
+    [
+        sh:path prov:generatedAtTime ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "PROV-O generation timestamp mandatory."@en ;
+    ] .
+
+#######################################################################
+# 11. evoQ:CompletenessFreshnessResultShape (RQ4 §5.5)
+#######################################################################
+
+evoQ:CompletenessFreshnessResultShape
+    a sh:NodeShape ;
+    rdfs:label "Completeness-freshness result shape (RQ4)"@en ;
+    rdfs:comment "RQ4 §5.5 — hybrid KG+LLM+Agent vs Ali 2022 baseline: how complete and fresh is the answer?"@en ;
+    sh:targetNode evoQ:CompletenessFreshnessResult ;
+    sh:property [
+        sh:path evoQ:completenessRatio ;
+        sh:datatype xsd:decimal ;
+        sh:minInclusive 0.0 ;
+        sh:maxInclusive 1.0 ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "completenessRatio MUST be xsd:decimal in [0.0, 1.0]."@en ;
+    ] ,
+    [
+        sh:path evoQ:freshDays ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 0 ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "freshDays MUST be xsd:integer ≥ 0."@en ;
+    ] .
+
+#######################################################################
+# 12. evoQ:TraceFidelityResultShape (RQ4 §5.5)
+#######################################################################
+
+evoQ:TraceFidelityResultShape
+    a sh:NodeShape ;
+    rdfs:label "Trace-fidelity result shape (RQ4)"@en ;
+    rdfs:comment "RQ4 §5.5 — does the PROV-O trace on an answer match the agent's bounded-context actions (accessed quads, policies evaluated)? Hybrid approach expected to outperform pure-ontology baseline."@en ;
+    sh:targetNode evoQ:TraceFidelityResult ;
+    sh:property [
+        sh:path evoQ:ratio ;
+        sh:datatype xsd:decimal ;
+        sh:minInclusive 0.0 ;
+        sh:maxInclusive 1.0 ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "ratio MUST be xsd:decimal in [0.0, 1.0] (trace-fidelity score)."@en ;
+    ] ,
+    [
+        sh:path evoQ:invocation ;
+        sh:class evo:AmbientAgentInvocation ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "invocation MUST be an evo:AmbientAgentInvocation (arch-delta v0.1.4 §3.2.2)."@en ;
+    ] .
+
+#######################################################################
+# 13. evoQ:VerifiabilityLatencyResultShape (RQ4 §5.5)
+#######################################################################
+
+evoQ:VerifiabilityLatencyResultShape
+    a sh:NodeShape ;
+    rdfs:label "Verifiability-latency result shape (RQ4)"@en ;
+    rdfs:comment "RQ4 §5.5 — time for a third party to verify an answer against the exported pack bundle. Hybrid vs baseline latency comparison."@en ;
+    sh:targetNode evoQ:VerifiabilityLatencyResult ;
+    sh:property [
+        sh:path evoQ:latencyMillis ;
+        sh:datatype xsd:nonNegativeInteger ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "latencyMillis MUST be xsd:nonNegativeInteger."@en ;
+    ] ,
+    [
+        sh:path evoQ:bundleHash ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "bundleHash MUST be xsd:string (SHA-256 hex of the verified bundle)."@en ;
+    ] .
+
+#######################################################################
+# Extra (Nael Concern 1 — distinct from evoQ:PackExportLatencyShape): evoQ:PackBundleShape
+# Structural validator of the exported JSON-LD + PDF pack bundle.
+#######################################################################
+
+evoQ:PackBundleShape
+    a sh:NodeShape ;
+    rdfs:label "Pack-bundle structural shape"@en ;
+    rdfs:comment "Validates the structural integrity of an E8 pack bundle per PRD §4.5 AC-W5.1. Distinct from evoQ:PackExportLatencyShape (latency distribution) — Nael Concern 1 keeps both."@en ;
+    sh:targetNode evoQ:PackBundle ;
+    sh:property [
+        sh:path evoQ:jsonldArtifact ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "jsonldArtifact MUST be the IRI of the JSON-LD W3C artifact in the bundle."@en ;
+    ] ,
+    [
+        sh:path evoQ:pdfArtifact ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "pdfArtifact MUST be the IRI of the ISO 32000 PDF artifact in the bundle."@en ;
+    ] ,
+    [
+        sh:path evoQ:bundleHash ;
+        sh:datatype xsd:string ;
+        sh:pattern "^[0-9a-f]{64}$" ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "bundleHash MUST be a 64-char lowercase hex (SHA-256 content hash — tamper-detect)."@en ;
+    ] ,
+    [
+        sh:path evoQ:framework ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ;
+        sh:message "framework MUST be ≥1 IRI (NIS2/DORA/ISO 27001/HDS/EHDS target framework)."@en ;
+    ] .
+
+#######################################################################
+# Extra (Nael discretion — does not revise 22-count): evoQ:ConnectorIngestResultShape
+# Cross-cutting AC-W1.4 shape; validates per-connector ingest run outcome.
+#######################################################################
+
+evoQ:ConnectorIngestResultShape
+    a sh:NodeShape ;
+    rdfs:label "Connector-ingest-result shape (AC-W1.4)"@en ;
+    rdfs:comment "Validates per-ingest-run result per PRD cross-cutting AC-W1.4. One row per connector invocation."@en ;
+    sh:targetNode evoQ:ConnectorIngestResult ;
+    sh:property [
+        sh:path evoQ:connectorName ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "connectorName MUST be xsd:string (e.g. 'git-adr', 'jira', 'test-automation')."@en ;
+    ] ,
+    [
+        sh:path evoQ:ingestedCount ;
+        sh:datatype xsd:nonNegativeInteger ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "ingestedCount MUST be xsd:nonNegativeInteger."@en ;
+    ] ,
+    [
+        sh:path evoQ:failedCount ;
+        sh:datatype xsd:nonNegativeInteger ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "failedCount MUST be xsd:nonNegativeInteger."@en ;
+    ] ,
+    [
+        sh:path evoQ:policyViolations ;
+        sh:datatype xsd:nonNegativeInteger ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "policyViolations MUST be xsd:nonNegativeInteger."@en ;
+    ] .

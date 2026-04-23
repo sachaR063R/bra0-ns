@@ -1,0 +1,496 @@
+@prefix re:        <https://omyn.ai/schema/retroeng#> .
+@prefix owl:       <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:       <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:      <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:       <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms:   <http://purl.org/dc/terms/> .
+@prefix skos:      <http://www.w3.org/2004/02/skos/core#> .
+@prefix edgy:      <http://www.omyn.ai/schema/edgy#> .
+@prefix archimate: <https://purl.org/archimate#> .
+@prefix prov:      <http://www.w3.org/ns/prov#> .
+
+# =============================================================================
+# RetroEng Ontology — Reverse-Engineering Pipeline for Enterprise Design
+# =============================================================================
+
+re: a owl:Ontology ;
+    rdfs:label "RetroEng Ontology"@en ;
+    rdfs:comment "Classes and properties for the RetroEng software reverse-engineering pipeline. Produces RDF graphs structured by EDGY v0.95 and ArchiMate 3.2."@en ;
+    dcterms:license "https://creativecommons.org/licenses/by-sa/4.0/" ;
+    dcterms:created "2026-03-10"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    owl:imports <http://www.omyn.ai/schema/edgy#> ,
+                <https://purl.org/archimate> .
+
+# -----------------------------------------------------------------------------
+# Pipeline classes
+# -----------------------------------------------------------------------------
+
+re:Project a owl:Class ;
+    rdfs:label "Reverse-Engineering Project"@en ;
+    rdfs:comment "A bounded RE effort targeting one software application."@en .
+
+re:CaptureSession a owl:Class ;
+    rdfs:label "Capture Session"@en ;
+    rdfs:comment "A time-bounded data-collection session (screenshots, DOM, network, exports)."@en .
+
+re:AnalysisReport a owl:Class ;
+    rdfs:label "Analysis Report"@en ;
+    rdfs:comment "Structured output of the analysis phase (product brief, domain model, feature inventory)."@en .
+
+re:ArchitectureMap a owl:Class ;
+    rdfs:label "Architecture Map"@en ;
+    rdfs:comment "A mapping of discovered components to ArchiMate / EDGY elements."@en .
+
+re:RDFOutput a owl:Class ;
+    rdfs:label "RDF Output"@en ;
+    rdfs:comment "A serialised RDF graph (Turtle, JSON-LD) produced by the pipeline."@en .
+
+re:CaptureArtifact a owl:Class ;
+    rdfs:label "Capture Artifact"@en ;
+    rdfs:comment "An individual artifact collected during a capture session."@en .
+
+re:ArtifactType a owl:Class ;
+    rdfs:label "Artifact Type"@en ;
+    rdfs:comment "Classification of capture artifacts (screenshot, dom-snapshot, network-trace, export-file, source-code)."@en .
+
+# Named individuals for ArtifactType
+re:Screenshot      a re:ArtifactType ; rdfs:label "Screenshot"@en .
+re:DOMSnapshot     a re:ArtifactType ; rdfs:label "DOM Snapshot"@en .
+re:NetworkTrace    a re:ArtifactType ; rdfs:label "Network Trace"@en .
+re:ExportFile      a re:ArtifactType ; rdfs:label "Export File"@en .
+re:SourceCode      a re:ArtifactType ; rdfs:label "Source Code"@en .
+re:AccessibilityTree a re:ArtifactType ; rdfs:label "Accessibility Tree"@en .
+
+# -----------------------------------------------------------------------------
+# Object properties
+# -----------------------------------------------------------------------------
+
+re:targetApplication a owl:ObjectProperty ;
+    rdfs:label "target application"@en ;
+    rdfs:comment "Links a project to the EDGY Product it analyses."@en ;
+    rdfs:domain re:Project ;
+    rdfs:range edgy:Product .
+
+re:hasCaptureSession a owl:ObjectProperty ;
+    rdfs:label "has capture session"@en ;
+    rdfs:domain re:Project ;
+    rdfs:range re:CaptureSession .
+
+re:producedDuring a owl:ObjectProperty ;
+    rdfs:label "produced during"@en ;
+    rdfs:comment "Links an artifact or report to the session that created it."@en ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( re:CaptureArtifact re:AnalysisReport re:ArchitectureMap re:RDFOutput ) ] ;
+    rdfs:range re:CaptureSession .
+
+re:analyzedBy a owl:ObjectProperty ;
+    rdfs:label "analyzed by"@en ;
+    rdfs:comment "Links a capture artifact to the analysis report that interprets it."@en ;
+    rdfs:domain re:CaptureArtifact ;
+    rdfs:range re:AnalysisReport .
+
+re:mapsTo a owl:ObjectProperty ;
+    rdfs:label "maps to"@en ;
+    rdfs:comment "Links an analysis finding to its EDGY or ArchiMate counterpart."@en ;
+    rdfs:domain re:AnalysisReport ;
+    rdfs:range owl:Thing .
+
+re:hasArtifact a owl:ObjectProperty ;
+    rdfs:label "has artifact"@en ;
+    rdfs:domain re:CaptureSession ;
+    rdfs:range re:CaptureArtifact .
+
+re:hasArtifactType a owl:ObjectProperty ;
+    rdfs:label "has artifact type"@en ;
+    rdfs:domain re:CaptureArtifact ;
+    rdfs:range re:ArtifactType .
+
+re:produces a owl:ObjectProperty ;
+    rdfs:label "produces"@en ;
+    rdfs:domain re:Project ;
+    rdfs:range re:RDFOutput .
+
+# -----------------------------------------------------------------------------
+# Datatype properties
+# -----------------------------------------------------------------------------
+
+re:capturedAt a owl:DatatypeProperty ;
+    rdfs:label "captured at"@en ;
+    rdfs:domain re:CaptureSession ;
+    rdfs:range xsd:dateTime .
+
+re:sourceURL a owl:DatatypeProperty ;
+    rdfs:label "source URL"@en ;
+    rdfs:domain re:Project ;
+    rdfs:range xsd:anyURI .
+
+re:filePath a owl:DatatypeProperty ;
+    rdfs:label "file path"@en ;
+    rdfs:domain re:CaptureArtifact ;
+    rdfs:range xsd:string .
+
+re:serialization a owl:DatatypeProperty ;
+    rdfs:label "serialization format"@en ;
+    rdfs:comment "The RDF serialization used (turtle, jsonld, rdfxml)."@en ;
+    rdfs:domain re:RDFOutput ;
+    rdfs:range xsd:string .
+
+re:pipelinePhase a owl:DatatypeProperty ;
+    rdfs:label "pipeline phase"@en ;
+    rdfs:comment "Phase that produced this artifact (capture, analysis, planning, architecture, implementation)."@en ;
+    rdfs:domain rdfs:Resource ;
+    rdfs:range xsd:string .
+
+# =============================================================================
+# Bundle Analysis Extension (T01.1 — ADR-018)
+# =============================================================================
+
+# --- New ArtifactType instance ---
+
+re:BundleAnalysis a re:ArtifactType ;
+    rdfs:label "Bundle Analysis"@en ;
+    rdfs:comment "Output of a JavaScript bundler analysis tool (rollup-plugin-visualizer, webpack-bundle-analyzer)."@en .
+
+# --- Classes ---
+
+re:BundleSnapshot a owl:Class ;
+    rdfs:subClassOf re:CaptureArtifact ;
+    rdfs:label "Bundle Snapshot"@en ;
+    rdfs:comment "Point-in-time capture of a build's bundle structure and size metrics."@en .
+
+re:Chunk a owl:Class ;
+    rdfs:label "Chunk"@en ;
+    rdfs:comment "A named output file produced by the bundler (code-split unit)."@en .
+
+re:Module a owl:Class ;
+    rdfs:label "Module"@en ;
+    rdfs:comment "A source file or node_modules entry included in a chunk."@en .
+
+re:DependencyEdge a owl:Class ;
+    rdfs:label "Dependency Edge"@en ;
+    rdfs:comment "Directed edge from an importing module to an imported module."@en .
+
+# --- Object properties ---
+
+re:hasChunk a owl:ObjectProperty ;
+    rdfs:label "has chunk"@en ;
+    rdfs:domain re:BundleSnapshot ;
+    rdfs:range re:Chunk .
+
+re:containsModule a owl:ObjectProperty ;
+    rdfs:label "contains module"@en ;
+    rdfs:domain re:Chunk ;
+    rdfs:range re:Module ;
+    rdfs:subPropertyOf re:hasArtifact .
+
+re:dependsOn a owl:ObjectProperty ;
+    rdfs:label "depends on"@en ;
+    rdfs:comment "Directed dependency from an importing module to an imported module."@en ;
+    rdfs:domain re:Module ;
+    rdfs:range re:Module .
+
+re:classifiedAs a owl:ObjectProperty ;
+    rdfs:label "classified as"@en ;
+    rdfs:comment "Links a chunk or module to its ArchiMate or EDGY classification."@en ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( re:Chunk re:Module ) ] ;
+    rdfs:range owl:Thing .
+
+# --- Datatype properties ---
+
+re:renderedSize a owl:DatatypeProperty ;
+    rdfs:label "rendered size"@en ;
+    rdfs:comment "Uncompressed size in bytes."@en ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( re:Chunk re:Module ) ] ;
+    rdfs:range xsd:integer .
+
+re:gzipSize a owl:DatatypeProperty ;
+    rdfs:label "gzip size"@en ;
+    rdfs:comment "Gzip-compressed size in bytes."@en ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( re:Chunk re:Module ) ] ;
+    rdfs:range xsd:integer .
+
+re:brotliSize a owl:DatatypeProperty ;
+    rdfs:label "brotli size"@en ;
+    rdfs:comment "Brotli-compressed size in bytes."@en ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( re:Chunk re:Module ) ] ;
+    rdfs:range xsd:integer .
+
+re:moduleCount a owl:DatatypeProperty ;
+    rdfs:label "module count"@en ;
+    rdfs:comment "Number of modules contained in this chunk."@en ;
+    rdfs:domain re:Chunk ;
+    rdfs:range xsd:nonNegativeInteger .
+
+re:chunkName a owl:DatatypeProperty ;
+    rdfs:label "chunk name"@en ;
+    rdfs:comment "Output filename of the chunk (e.g., 'assets/elk.bundled-DWAKEsH4.js')."@en ;
+    rdfs:domain re:Chunk ;
+    rdfs:range xsd:string .
+
+re:modulePath a owl:DatatypeProperty ;
+    rdfs:label "module path"@en ;
+    rdfs:comment "Source path of the module (e.g., 'node_modules/n3/src/N3Parser.js')."@en ;
+    rdfs:domain re:Module ;
+    rdfs:range xsd:string .
+
+# =============================================================================
+# Production Regime Extension (Corollary P3×P9×P7 — Computational Grounding)
+#
+# The platform provides deterministic instruments (Regime S).
+# Agents orchestrate them under mandate (Regime C).
+# Grounding = S validates C. Governance is origin-indifferent.
+#
+# References:
+#   Kautz (2022) — Six-type taxonomy of neurosymbolic architectures
+#   Belle (2025) — Weighted model counting bridges logic and probability
+#   Gaur & Sheth (2024) — CREST framework (Consistency, Reliability,
+#                          Explainability, Safety)
+#   McKinsey (2026) — "agents should follow the same standards as other
+#                       systems, applied automatically as autonomy increases"
+# =============================================================================
+
+# --- Production Regime (classification of computational process) ---
+
+re:ProductionRegime a owl:Class ;
+    rdfs:label "Production Regime"@en ;
+    rdfs:comment "Classification of the computational process that produced a triple or named graph. Platform capabilities are always Regime S. Agent reasoning is always Regime C. Grounding is S validating C."@en .
+
+re:SymbolicRegime a re:ProductionRegime ;
+    rdfs:label "Regime S — Deterministic Platform"@en ;
+    rdfs:comment "Referentially transparent, formally verifiable, audit-complete. Same input always produces same output. SPARQL, SHACL, OWL inference, RDF serialization. Kautz Type 1."@en .
+
+re:ConnectionistRegime a re:ProductionRegime ;
+    rdfs:label "Regime C — Probabilistic Agent"@en ;
+    rdfs:comment "Depends on learned parameters, may involve stochastic sampling. LLM inference, NER, embeddings. Kautz Types 3-5. Requires HITL + grounding protocol."@en .
+
+# --- Activity subclasses (PROV-O typed) ---
+
+re:SymbolicDerivation a owl:Class ;
+    rdfs:subClassOf prov:Activity ;
+    rdfs:label "Symbolic Derivation"@en ;
+    rdfs:comment "A deterministic activity. All inputs + specification are sufficient to reproduce the output. Outputs link via prov:wasDerivedFrom."@en .
+
+re:NeuralGeneration a owl:Class ;
+    rdfs:subClassOf prov:Activity ;
+    rdfs:label "Neural Generation"@en ;
+    rdfs:comment "A probabilistic activity. Output NOT guaranteed reproducible. MUST carry re:confidenceScore, re:modelIdentifier, re:hitlStatus. Outputs link via prov:wasGeneratedBy."@en .
+
+# --- Properties for provenance regime metadata ---
+
+re:producedBy a owl:ObjectProperty ;
+    rdfs:label "produced by regime"@en ;
+    rdfs:comment "Links a prov:Activity to the production regime. Platform activities -> SymbolicRegime. Agent activities -> ConnectionistRegime."@en ;
+    rdfs:domain prov:Activity ;
+    rdfs:range re:ProductionRegime .
+
+re:confidenceScore a owl:DatatypeProperty ;
+    rdfs:label "confidence score"@en ;
+    rdfs:comment "For Regime C outputs: protocol grounding coverage [0.0, 1.0]. NOT a model confidence — it measures the ratio of deterministic (S) verification steps to total steps in the protocol. Regime S outputs implicitly have score 1.0."@en ;
+    rdfs:domain prov:Activity ;
+    rdfs:range xsd:decimal .
+
+re:modelIdentifier a owl:DatatypeProperty ;
+    rdfs:label "model identifier"@en ;
+    rdfs:comment "For Regime C: identifier of the neural model used (e.g., 'claude-opus-4-6', 'mistral-small-2025'). Enables reproducibility tracking across model versions."@en ;
+    rdfs:domain prov:Activity ;
+    rdfs:range xsd:string .
+
+# --- HITL Validation Status ---
+
+re:ValidationStatus a owl:Class ;
+    rdfs:label "Validation Status"@en ;
+    rdfs:comment "Status of human-in-the-loop validation for Regime C outputs. Governance is origin-indifferent: the gate checks the triple, not its producer."@en .
+
+re:Unvalidated   a re:ValidationStatus ; rdfs:label "Unvalidated"@en .
+re:HumanApproved a re:ValidationStatus ; rdfs:label "Human Approved"@en .
+re:HumanRejected a re:ValidationStatus ; rdfs:label "Human Rejected"@en .
+re:HumanEdited   a re:ValidationStatus ; rdfs:label "Human Edited"@en .
+
+re:hitlStatus a owl:ObjectProperty ;
+    rdfs:label "HITL validation status"@en ;
+    rdfs:comment "For Regime C outputs: HITL review status. Must transition from Unvalidated to HumanApproved before triple enters canonical graph."@en ;
+    rdfs:domain prov:Activity ;
+    rdfs:range re:ValidationStatus .
+
+# --- Verification Status (for extracted facts) ---
+
+re:VerificationStatus a owl:Class ;
+    rdfs:label "Verification Status"@en ;
+    rdfs:comment "Classification of a factual claim's grounding in observable reality."@en .
+
+re:Verified a re:VerificationStatus ;
+    rdfs:label "Verified"@en ;
+    rdfs:comment "Directly observable or independently confirmed."@en .
+
+re:Claimed a re:VerificationStatus ;
+    rdfs:label "Claimed"@en ;
+    rdfs:comment "Stated by stakeholder, not independently verified."@en .
+
+re:Gap a re:VerificationStatus ;
+    rdfs:label "Gap"@en ;
+    rdfs:comment "Information expected but missing."@en .
+
+re:verificationStatus a owl:ObjectProperty ;
+    rdfs:label "verification status"@en ;
+    rdfs:domain owl:Thing ;
+    rdfs:range re:VerificationStatus .
+
+# =============================================================================
+# GRC Subject-Matter Extension (RiskHunter Audit — topo dogfooding)
+#
+# Classes for what topo observes when auditing a real software company:
+# product, infrastructure, AI pipeline, team, regulatory compliance.
+# =============================================================================
+
+# --- Target Application ---
+
+re:SoftwareProduct a owl:Class ;
+    rdfs:subClassOf edgy:Product ;
+    rdfs:label "Software Product"@en ;
+    rdfs:comment "The target application being audited."@en .
+
+re:ProductModule a owl:Class ;
+    rdfs:label "Product Module"@en ;
+    rdfs:comment "A functional module within the target product (e.g., scanner, GRC cockpit, AI pipeline)."@en .
+
+re:hasModule a owl:ObjectProperty ;
+    rdfs:label "has module"@en ;
+    rdfs:domain re:SoftwareProduct ;
+    rdfs:range re:ProductModule .
+
+# --- Infrastructure ---
+
+re:CloudService a owl:Class ;
+    rdfs:subClassOf archimate:TechnologyService ;
+    rdfs:label "Cloud Service"@en ;
+    rdfs:comment "A cloud provider service (AWS ECS, DocumentDB, S3, etc.)."@en .
+
+re:DeploymentTarget a owl:Class ;
+    rdfs:label "Deployment Target"@en ;
+    rdfs:comment "Where the product runs (cloud region, on-premises, hybrid)."@en .
+
+re:SecurityMeasure a owl:Class ;
+    rdfs:label "Security Measure"@en ;
+    rdfs:comment "A security control in place (WAF, KMS, MFA, OWASP checks, etc.)."@en .
+
+re:deployedOn a owl:ObjectProperty ;
+    rdfs:label "deployed on"@en ;
+    rdfs:domain re:SoftwareProduct ;
+    rdfs:range re:DeploymentTarget .
+
+re:usesService a owl:ObjectProperty ;
+    rdfs:label "uses cloud service"@en ;
+    rdfs:domain re:SoftwareProduct ;
+    rdfs:range re:CloudService .
+
+re:hasSecurityMeasure a owl:ObjectProperty ;
+    rdfs:label "has security measure"@en ;
+    rdfs:domain re:SoftwareProduct ;
+    rdfs:range re:SecurityMeasure .
+
+# --- AI Subsystem ---
+
+re:AIModel a owl:Class ;
+    rdfs:label "AI Model"@en ;
+    rdfs:comment "A machine learning model used by the target product."@en .
+
+re:TrainingPipeline a owl:Class ;
+    rdfs:label "Training Pipeline"@en ;
+    rdfs:comment "The pipeline used to train/fine-tune the AI model."@en .
+
+re:basedOnModel a owl:DatatypeProperty ;
+    rdfs:label "based on model"@en ;
+    rdfs:comment "Base model identifier (e.g., 'Mistral Small')."@en ;
+    rdfs:domain re:AIModel ;
+    rdfs:range xsd:string .
+
+re:trainingExampleCount a owl:DatatypeProperty ;
+    rdfs:label "training example count"@en ;
+    rdfs:domain re:TrainingPipeline ;
+    rdfs:range xsd:integer .
+
+re:claimedMetric a owl:DatatypeProperty ;
+    rdfs:label "claimed metric"@en ;
+    rdfs:comment "A performance metric claimed by stakeholders (e.g., '97% precision'). Always carries re:verificationStatus."@en ;
+    rdfs:domain owl:Thing ;
+    rdfs:range xsd:string .
+
+# --- Organization ---
+
+re:TeamRole a owl:Class ;
+    rdfs:subClassOf edgy:People ;
+    rdfs:label "Team Role"@en ;
+    rdfs:comment "A person's role in the target organization."@en .
+
+re:StakeholderInterview a owl:Class ;
+    rdfs:subClassOf prov:Entity ;
+    rdfs:label "Stakeholder Interview"@en ;
+    rdfs:comment "An interview session used as source for fact extraction."@en .
+
+re:teamSize a owl:DatatypeProperty ;
+    rdfs:label "team size"@en ;
+    rdfs:domain edgy:Organization ;
+    rdfs:range xsd:integer .
+
+re:fundingStage a owl:DatatypeProperty ;
+    rdfs:label "funding stage"@en ;
+    rdfs:comment "Current funding stage (e.g., 'Series A', 'Seed')."@en ;
+    rdfs:domain edgy:Organization ;
+    rdfs:range xsd:string .
+
+re:headquartersAddress a owl:DatatypeProperty ;
+    rdfs:label "headquarters address"@en ;
+    rdfs:domain edgy:Organization ;
+    rdfs:range xsd:string .
+
+# --- Regulatory & IP ---
+
+re:RegulatoryFramework a owl:Class ;
+    rdfs:label "Regulatory Framework"@en ;
+    rdfs:comment "A compliance framework (EBIOS RM, NIS2, DORA, ISO 27001, etc.)."@en .
+
+re:ComplianceClaim a owl:Class ;
+    rdfs:label "Compliance Claim"@en ;
+    rdfs:comment "A claim that the product supports a regulatory framework. Always carries re:verificationStatus."@en .
+
+re:Patent a owl:Class ;
+    rdfs:label "Patent"@en ;
+    rdfs:comment "Intellectual property protection (deposited, granted, pending)."@en .
+
+re:Certification a owl:Class ;
+    rdfs:label "Certification"@en ;
+    rdfs:comment "A formal certification held or in progress (ISO 27001, SOC 2, COFRAC)."@en .
+
+re:supportsFramework a owl:ObjectProperty ;
+    rdfs:label "supports regulatory framework"@en ;
+    rdfs:domain re:SoftwareProduct ;
+    rdfs:range re:RegulatoryFramework .
+
+re:hasClaim a owl:ObjectProperty ;
+    rdfs:label "has compliance claim"@en ;
+    rdfs:domain re:SoftwareProduct ;
+    rdfs:range re:ComplianceClaim .
+
+re:hasPatent a owl:ObjectProperty ;
+    rdfs:label "has patent"@en ;
+    rdfs:domain edgy:Organization ;
+    rdfs:range re:Patent .
+
+re:hasCertification a owl:ObjectProperty ;
+    rdfs:label "has certification"@en ;
+    rdfs:domain edgy:Organization ;
+    rdfs:range re:Certification .
+
+# ─── Extraction Provenance Properties (topo social TP-2) ─────────────
+
+re:extractionConfidence a owl:DatatypeProperty ;
+    rdfs:label "extraction confidence"@en ;
+    rdfs:comment "Confidence score [0.0–1.0] assigned during entity extraction. 1.0 = deterministic (regex P1, exact match). 0.5 = heuristic (regex P2, natural language pattern). 0.0–1.0 = neural (NER similarity score)."@en ;
+    rdfs:domain rdfs:Resource ;
+    rdfs:range xsd:decimal .
+
+re:extractionOrigin a owl:DatatypeProperty ;
+    rdfs:label "extraction origin"@en ;
+    rdfs:comment "Origin tier of the extraction: 'symbolic' (Tier 1, deterministic regex) or 'neural' (Tier 2, NER classification). ADR-027: symbolic always wins in merge."@en ;
+    rdfs:domain rdfs:Resource ;
+    rdfs:range xsd:string .

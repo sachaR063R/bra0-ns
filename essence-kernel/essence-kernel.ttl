@@ -1,0 +1,629 @@
+@prefix ess:  <https://schema.bra0.org/essence-kernel#> .
+@prefix bfo:  <http://purl.obolibrary.org/obo/BFO_> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+# ══════════════════════════════════════════════════════════════
+# Essence Kernel Ontology (ess:)
+# OMG Essence 2.0 (Jacobson et al. 2013) — OWL formalization
+# Version: 1.0.0 — 2026-04-03
+#
+# BFO-grounded, Keet-compliant reconstruction from scratch.
+# Source of truth: OMG Essence 2.0 spec + _bmad/_config/essence.yaml
+#
+# Design choices (Nael, per Keet methodology):
+# - States are individuals, not classes (Keet C2 fix)
+# - Areas are individuals, not a class hierarchy (Keet M1 fix)
+# - No owl:equivalentClass abuse (Keet C3/C4 fix)
+# - Single predecessorOf property (Keet C5 fix)
+# - All properties declared with domain/range (Keet C6 fix)
+# - Disjointness axioms on top-level classes (Keet M11 fix)
+# - External alignments in separate modules (Keet M12 fix)
+#
+# Coverage: 7 alphas × all states = 41 states (100%)
+#           6 competencies, 5 competency levels
+#           15 activity spaces, 3 areas of concern
+#           = 77 named individuals
+# ══════════════════════════════════════════════════════════════
+
+<https://schema.bra0.org/essence-kernel#> a owl:Ontology ;
+  rdfs:label "Essence Kernel Ontology"@en ;
+  rdfs:comment "OWL formalization of the OMG Essence 2.0 Kernel (Jacobson et al. 2013). Defines the universal elements of software engineering: Alphas (things to work with), Activity Spaces (things to do), and Competencies (capabilities required). BFO-grounded."@en ;
+  dct:created "2026-04-03"^^xsd:date ;
+  dct:creator <did:ng:o:sacha> ;
+  owl:versionInfo "1.0.0" ;
+  vann:preferredNamespacePrefix "ess" ;
+  vann:preferredNamespaceUri "https://schema.bra0.org/essence-kernel#" ;
+  dct:source "OMG Essence 2.0 (formal/18-10-02)" ;
+  dct:license <https://www.omg.org/legal/ipr.htm> ;
+  dct:rights "OWL formalization of an OMG specification. Governed by OMG's non-assertion covenant (Royalty-Free implementation rights). NOT licensed under CC-BY-SA-4.0 like the rest of bra0_meta ontologies — see _bmad/docs/licensing-strategy.md §3.4 (exception E1) and THIRD-PARTY-LICENSES.md." .
+
+# ══════════════════════════════════════════════════════════════
+# CLASSES
+# ══════════════════════════════════════════════════════════════
+
+ess:KernelElement a owl:Class ;
+  rdfs:subClassOf bfo:0000001 ;  # BFO:Entity
+  rdfs:label "Kernel Element"@en ;
+  rdfs:comment "Root class for all elements of the Essence Kernel: the universal, essential elements of software engineering."@en .
+
+ess:Alpha a owl:Class ;
+  rdfs:subClassOf ess:KernelElement, bfo:0000031 ;  # BFO:GenericallyDependentContinuant
+  rdfs:label "Alpha"@en ;
+  rdfs:comment "An essential thing to work with. Alphas represent the key concerns that a team must attend to in any software engineering endeavor. Each alpha has a linear sequence of states representing its progress."@en .
+
+ess:AlphaState a owl:Class ;
+  rdfs:subClassOf bfo:0000031 ;  # BFO:GenericallyDependentContinuant
+  rdfs:label "Alpha State"@en ;
+  rdfs:comment "A specific named state in an alpha's progression. An alpha is in exactly one state at a time. States are individuals, not types — 'Identified' is a specific state, not a class of things."@en .
+
+ess:Competency a owl:Class ;
+  rdfs:subClassOf ess:KernelElement, bfo:0000016 ;  # BFO:Disposition
+  rdfs:label "Competency"@en ;
+  rdfs:comment "A key capability required to carry out software engineering work. A competency is a disposition — a realizable capacity of an agent that can be exercised at different levels."@en .
+
+ess:CompetencyLevel a owl:Class ;
+  rdfs:subClassOf bfo:0000031 ;  # BFO:GenericallyDependentContinuant
+  rdfs:label "Competency Level"@en ;
+  rdfs:comment "A level of proficiency at which a competency can be exercised. Essence defines 5 levels: Assists, Applies, Masters, Adapts, Innovates."@en .
+
+ess:ActivitySpace a owl:Class ;
+  rdfs:subClassOf ess:KernelElement, bfo:0000015 ;  # BFO:Process
+  rdfs:label "Activity Space"@en ;
+  rdfs:comment "An essential thing to do. Activity spaces represent the challenges a team faces and the kinds of activities they perform. They are ordered in progression chains within each area of concern."@en .
+
+ess:AreaOfConcern a owl:Class ;
+  rdfs:label "Area of Concern"@en ;
+  rdfs:comment "A discrete area focusing on a specific aspect of software engineering. Essence defines exactly 3: Customer, Solution, Endeavor."@en .
+
+# ── Disjointness ─────────────────────────────────────────────
+
+[] a owl:AllDisjointClasses ;
+  owl:members ( ess:Alpha ess:Competency ess:ActivitySpace ess:AreaOfConcern ess:AlphaState ess:CompetencyLevel ) .
+
+# ══════════════════════════════════════════════════════════════
+# PROPERTIES
+# ══════════════════════════════════════════════════════════════
+
+ess:belongsToArea a owl:ObjectProperty ;
+  rdfs:domain ess:KernelElement ;
+  rdfs:range ess:AreaOfConcern ;
+  rdfs:label "belongs to area"@en ;
+  rdfs:comment "Links a kernel element (alpha, competency, or activity space) to its area of concern."@en .
+
+ess:stateOf a owl:ObjectProperty ;
+  rdfs:domain ess:AlphaState ;
+  rdfs:range ess:Alpha ;
+  rdfs:label "state of"@en ;
+  rdfs:comment "Links a state to the alpha it belongs to."@en .
+
+ess:predecessorOf a owl:ObjectProperty ;
+  rdfs:domain rdfs:Resource ;
+  rdfs:range rdfs:Resource ;
+  rdfs:label "predecessor of"@en ;
+  rdfs:comment "Ordering relation: this element comes before the target in a progression chain. Used for both alpha states and activity spaces. Domain/range intentionally broad — applies to AlphaState, CompetencyLevel, and ActivitySpace progressions."@en .
+
+ess:stateOrder a owl:DatatypeProperty ;
+  rdfs:domain ess:AlphaState ;
+  rdfs:range xsd:integer ;
+  rdfs:label "state order"@en ;
+  rdfs:comment "Numeric position of this state in its alpha's progression (1-based)."@en .
+
+# ── Integration properties (bridge to asc:) ──────────────────
+
+ess:advancesAlpha a owl:ObjectProperty ;
+  rdfs:domain rdfs:Resource ;
+  rdfs:range ess:Alpha ;
+  rdfs:label "advances alpha"@en ;
+  rdfs:comment "Declares that an entity (story, activity, agent action) contributes to advancing this alpha. Domain intentionally open — integration bridge property used by external agent contracts."@en .
+
+ess:advancesState a owl:ObjectProperty ;
+  rdfs:domain rdfs:Resource ;
+  rdfs:range ess:AlphaState ;
+  rdfs:label "advances state"@en ;
+  rdfs:comment "Declares that an entity targets a specific alpha state as its goal. Domain intentionally open — integration bridge property used by external agent contracts."@en .
+
+ess:exercisesCompetency a owl:ObjectProperty ;
+  rdfs:domain rdfs:Resource ;
+  rdfs:range ess:Competency ;
+  rdfs:label "exercises competency"@en ;
+  rdfs:comment "Declares that an agent exercises this competency in its work. Domain intentionally open — integration bridge property used by external agent contracts."@en .
+
+ess:atLevel a owl:ObjectProperty ;
+  rdfs:domain rdfs:Resource ;
+  rdfs:range ess:CompetencyLevel ;
+  rdfs:label "at level"@en ;
+  rdfs:comment "Qualifies a competency exercise with a proficiency level. Domain intentionally open — integration bridge property used by external agent contracts."@en .
+
+ess:hasState a owl:ObjectProperty ;
+  rdfs:domain ess:Alpha ;
+  rdfs:range ess:AlphaState ;
+  rdfs:label "has state"@en ;
+  rdfs:comment "Links an alpha to its possible states."@en ;
+  owl:inverseOf ess:stateOf .
+
+# ══════════════════════════════════════════════════════════════
+# INDIVIDUALS — AREAS OF CONCERN (3)
+# ══════════════════════════════════════════════════════════════
+
+ess:CustomerArea a ess:AreaOfConcern ;
+  rdfs:label "Customer"@en ;
+  rdfs:comment "Everything to do with the actual use and exploitation of the software system to be produced."@en .
+
+ess:SolutionArea a ess:AreaOfConcern ;
+  rdfs:label "Solution"@en ;
+  rdfs:comment "Everything to do with the specification and development of the software system."@en .
+
+ess:EndeavorArea a ess:AreaOfConcern ;
+  rdfs:label "Endeavor"@en ;
+  rdfs:comment "Everything to do with the team, and the way they approach their work."@en .
+
+# ══════════════════════════════════════════════════════════════
+# INDIVIDUALS — ALPHAS (7)
+# ══════════════════════════════════════════════════════════════
+
+# ── Customer Area ────────────────────────────────────────────
+
+ess:Opportunity a ess:Alpha ;
+  rdfs:label "Opportunity"@en ;
+  ess:belongsToArea ess:CustomerArea ;
+  rdfs:comment "The set of circumstances that makes it appropriate to develop or change a software system."@en .
+
+ess:Stakeholders a ess:Alpha ;
+  rdfs:label "Stakeholders"@en ;
+  ess:belongsToArea ess:CustomerArea ;
+  rdfs:comment "The people, groups, or organizations who affect or are affected by the software system."@en .
+
+# ── Solution Area ────────────────────────────────────────────
+
+ess:Requirements a ess:Alpha ;
+  rdfs:label "Requirements"@en ;
+  ess:belongsToArea ess:SolutionArea ;
+  rdfs:comment "What the software system must do to address the opportunity and satisfy stakeholders."@en .
+
+ess:SoftwareSystem a ess:Alpha ;
+  rdfs:label "Software System"@en ;
+  ess:belongsToArea ess:SolutionArea ;
+  rdfs:comment "The software-based components of the system that are to be developed."@en .
+
+# ── Endeavor Area ────────────────────────────────────────────
+
+ess:Work a ess:Alpha ;
+  rdfs:label "Work"@en ;
+  ess:belongsToArea ess:EndeavorArea ;
+  rdfs:comment "Activity involving mental or physical effort done to achieve a result."@en .
+
+ess:Team a ess:Alpha ;
+  rdfs:label "Team"@en ;
+  ess:belongsToArea ess:EndeavorArea ;
+  rdfs:comment "The group of people actively engaged in developing, maintaining, and supporting the system."@en .
+
+ess:WayOfWorking a ess:Alpha ;
+  rdfs:label "Way of Working"@en ;
+  ess:belongsToArea ess:EndeavorArea ;
+  rdfs:comment "The tailored set of practices and tools used by the team to guide and support their work."@en .
+
+# ══════════════════════════════════════════════════════════════
+# INDIVIDUALS — ALPHA STATES (41)
+# ══════════════════════════════════════════════════════════════
+
+# ── Opportunity States (6) ───────────────────────────────────
+
+ess:opportunity-identified a ess:AlphaState ;
+  rdfs:label "Identified"@en ;
+  ess:stateOf ess:Opportunity ; ess:stateOrder 1 ;
+  ess:predecessorOf ess:opportunity-solution-needed ;
+  rdfs:comment "An idea for a way of improving current ways of working, increasing market share, or applying a new or innovative software system has been identified."@en .
+
+ess:opportunity-solution-needed a ess:AlphaState ;
+  rdfs:label "Solution Needed"@en ;
+  ess:stateOf ess:Opportunity ; ess:stateOrder 2 ;
+  ess:predecessorOf ess:opportunity-value-established ;
+  rdfs:comment "The need for a software-based solution has been confirmed."@en .
+
+ess:opportunity-value-established a ess:AlphaState ;
+  rdfs:label "Value Established"@en ;
+  ess:stateOf ess:Opportunity ; ess:stateOrder 3 ;
+  ess:predecessorOf ess:opportunity-viable ;
+  rdfs:comment "The value of a successful solution has been established."@en .
+
+ess:opportunity-viable a ess:AlphaState ;
+  rdfs:label "Viable"@en ;
+  ess:stateOf ess:Opportunity ; ess:stateOrder 4 ;
+  ess:predecessorOf ess:opportunity-addressed ;
+  rdfs:comment "A solution has been outlined that is acceptable to stakeholders and technically viable."@en .
+
+ess:opportunity-addressed a ess:AlphaState ;
+  rdfs:label "Addressed"@en ;
+  ess:stateOf ess:Opportunity ; ess:stateOrder 5 ;
+  ess:predecessorOf ess:opportunity-benefit-accrued ;
+  rdfs:comment "A usable system that demonstrably addresses the opportunity is available."@en .
+
+ess:opportunity-benefit-accrued a ess:AlphaState ;
+  rdfs:label "Benefit Accrued"@en ;
+  ess:stateOf ess:Opportunity ; ess:stateOrder 6 ;
+  rdfs:comment "The positive outcomes arising from use of the software system are evident."@en .
+
+# ── Stakeholders States (6) ──────────────────────────────────
+
+ess:stakeholders-recognized a ess:AlphaState ;
+  rdfs:label "Recognized"@en ;
+  ess:stateOf ess:Stakeholders ; ess:stateOrder 1 ;
+  ess:predecessorOf ess:stakeholders-represented ;
+  rdfs:comment "Stakeholders have been identified."@en .
+
+ess:stakeholders-represented a ess:AlphaState ;
+  rdfs:label "Represented"@en ;
+  ess:stateOf ess:Stakeholders ; ess:stateOrder 2 ;
+  ess:predecessorOf ess:stakeholders-involved ;
+  rdfs:comment "The mechanisms for involving stakeholders are agreed and in place."@en .
+
+ess:stakeholders-involved a ess:AlphaState ;
+  rdfs:label "Involved"@en ;
+  ess:stateOf ess:Stakeholders ; ess:stateOrder 3 ;
+  ess:predecessorOf ess:stakeholders-in-agreement ;
+  rdfs:comment "Stakeholders are actively involved in the work and fulfilling their responsibilities."@en .
+
+ess:stakeholders-in-agreement a ess:AlphaState ;
+  rdfs:label "In Agreement"@en ;
+  ess:stateOf ess:Stakeholders ; ess:stateOrder 4 ;
+  ess:predecessorOf ess:stakeholders-satisfied-for-deployment ;
+  rdfs:comment "Stakeholders agree on the minimal expectations of the next deployment."@en .
+
+ess:stakeholders-satisfied-for-deployment a ess:AlphaState ;
+  rdfs:label "Satisfied for Deployment"@en ;
+  ess:stateOf ess:Stakeholders ; ess:stateOrder 5 ;
+  ess:predecessorOf ess:stakeholders-satisfied-in-use ;
+  rdfs:comment "Stakeholders are happy that the system is ready for deployment."@en .
+
+ess:stakeholders-satisfied-in-use a ess:AlphaState ;
+  rdfs:label "Satisfied in Use"@en ;
+  ess:stateOf ess:Stakeholders ; ess:stateOrder 6 ;
+  rdfs:comment "Stakeholders are satisfied that the system meets their needs in use."@en .
+
+# ── Requirements States (6) ──────────────────────────────────
+
+ess:requirements-conceived a ess:AlphaState ;
+  rdfs:label "Conceived"@en ;
+  ess:stateOf ess:Requirements ; ess:stateOrder 1 ;
+  ess:predecessorOf ess:requirements-bounded ;
+  rdfs:comment "The need for a new system has been agreed."@en .
+
+ess:requirements-bounded a ess:AlphaState ;
+  rdfs:label "Bounded"@en ;
+  ess:stateOf ess:Requirements ; ess:stateOrder 2 ;
+  ess:predecessorOf ess:requirements-coherent ;
+  rdfs:comment "The purpose and extent of the system are clear."@en .
+
+ess:requirements-coherent a ess:AlphaState ;
+  rdfs:label "Coherent"@en ;
+  ess:stateOf ess:Requirements ; ess:stateOrder 3 ;
+  ess:predecessorOf ess:requirements-acceptable ;
+  rdfs:comment "The requirements provide a consistent description of the essential characteristics."@en .
+
+ess:requirements-acceptable a ess:AlphaState ;
+  rdfs:label "Acceptable"@en ;
+  ess:stateOf ess:Requirements ; ess:stateOrder 4 ;
+  ess:predecessorOf ess:requirements-addressed ;
+  rdfs:comment "The requirements describe a system acceptable to stakeholders."@en .
+
+ess:requirements-addressed a ess:AlphaState ;
+  rdfs:label "Addressed"@en ;
+  ess:stateOf ess:Requirements ; ess:stateOrder 5 ;
+  ess:predecessorOf ess:requirements-fulfilled ;
+  rdfs:comment "Enough of the requirements have been addressed to satisfy the stakeholders."@en .
+
+ess:requirements-fulfilled a ess:AlphaState ;
+  rdfs:label "Fulfilled"@en ;
+  ess:stateOf ess:Requirements ; ess:stateOrder 6 ;
+  rdfs:comment "The requirements that have been addressed fully satisfy the stakeholders."@en .
+
+# ── Software System States (6) ───────────────────────────────
+
+ess:software-system-architecture-selected a ess:AlphaState ;
+  rdfs:label "Architecture Selected"@en ;
+  ess:stateOf ess:SoftwareSystem ; ess:stateOrder 1 ;
+  ess:predecessorOf ess:software-system-demonstrable ;
+  rdfs:comment "An architecture has been selected that addresses key technical risks and significant requirements."@en .
+
+ess:software-system-demonstrable a ess:AlphaState ;
+  rdfs:label "Demonstrable"@en ;
+  ess:stateOf ess:SoftwareSystem ; ess:stateOrder 2 ;
+  ess:predecessorOf ess:software-system-usable ;
+  rdfs:comment "An executable version of the system is available to demonstrate architecture and key features."@en .
+
+ess:software-system-usable a ess:AlphaState ;
+  rdfs:label "Usable"@en ;
+  ess:stateOf ess:SoftwareSystem ; ess:stateOrder 3 ;
+  ess:predecessorOf ess:software-system-ready ;
+  rdfs:comment "The system is usable, has acceptable performance, and demonstrates key quality attributes."@en .
+
+ess:software-system-ready a ess:AlphaState ;
+  rdfs:label "Ready"@en ;
+  ess:stateOf ess:SoftwareSystem ; ess:stateOrder 4 ;
+  ess:predecessorOf ess:software-system-operational ;
+  rdfs:comment "The system has been made ready for deployment in a live environment."@en .
+
+ess:software-system-operational a ess:AlphaState ;
+  rdfs:label "Operational"@en ;
+  ess:stateOf ess:SoftwareSystem ; ess:stateOrder 5 ;
+  ess:predecessorOf ess:software-system-retired ;
+  rdfs:comment "The system is operating in a live environment, available to its users."@en .
+
+ess:software-system-retired a ess:AlphaState ;
+  rdfs:label "Retired"@en ;
+  ess:stateOf ess:SoftwareSystem ; ess:stateOrder 6 ;
+  rdfs:comment "The system is no longer supported."@en .
+
+# ── Work States (6) ──────────────────────────────────────────
+
+ess:work-initiated a ess:AlphaState ;
+  rdfs:label "Initiated"@en ;
+  ess:stateOf ess:Work ; ess:stateOrder 1 ;
+  ess:predecessorOf ess:work-prepared ;
+  rdfs:comment "The work has been requested."@en .
+
+ess:work-prepared a ess:AlphaState ;
+  rdfs:label "Prepared"@en ;
+  ess:stateOf ess:Work ; ess:stateOrder 2 ;
+  ess:predecessorOf ess:work-started ;
+  rdfs:comment "All pre-conditions for starting the work have been met."@en .
+
+ess:work-started a ess:AlphaState ;
+  rdfs:label "Started"@en ;
+  ess:stateOf ess:Work ; ess:stateOrder 3 ;
+  ess:predecessorOf ess:work-under-control ;
+  rdfs:comment "The work is proceeding."@en .
+
+ess:work-under-control a ess:AlphaState ;
+  rdfs:label "Under Control"@en ;
+  ess:stateOf ess:Work ; ess:stateOrder 4 ;
+  ess:predecessorOf ess:work-concluded ;
+  rdfs:comment "The work is going well, risks are being managed, and productivity is adequate."@en .
+
+ess:work-concluded a ess:AlphaState ;
+  rdfs:label "Concluded"@en ;
+  ess:stateOf ess:Work ; ess:stateOrder 5 ;
+  ess:predecessorOf ess:work-closed ;
+  rdfs:comment "The work to produce the results has been concluded."@en .
+
+ess:work-closed a ess:AlphaState ;
+  rdfs:label "Closed"@en ;
+  ess:stateOf ess:Work ; ess:stateOrder 6 ;
+  rdfs:comment "All outstanding work items have been completed."@en .
+
+# ── Team States (5) ──────────────────────────────────────────
+
+ess:team-seeded a ess:AlphaState ;
+  rdfs:label "Seeded"@en ;
+  ess:stateOf ess:Team ; ess:stateOrder 1 ;
+  ess:predecessorOf ess:team-formed ;
+  rdfs:comment "The team mission has been defined, and the constraints on the team are known."@en .
+
+ess:team-formed a ess:AlphaState ;
+  rdfs:label "Formed"@en ;
+  ess:stateOf ess:Team ; ess:stateOrder 2 ;
+  ess:predecessorOf ess:team-collaborating ;
+  rdfs:comment "The team has been populated with enough people to begin the work."@en .
+
+ess:team-collaborating a ess:AlphaState ;
+  rdfs:label "Collaborating"@en ;
+  ess:stateOf ess:Team ; ess:stateOrder 3 ;
+  ess:predecessorOf ess:team-performing ;
+  rdfs:comment "The team members are working together as one unit."@en .
+
+ess:team-performing a ess:AlphaState ;
+  rdfs:label "Performing"@en ;
+  ess:stateOf ess:Team ; ess:stateOrder 4 ;
+  ess:predecessorOf ess:team-adjourned ;
+  rdfs:comment "The team is working effectively and efficiently."@en .
+
+ess:team-adjourned a ess:AlphaState ;
+  rdfs:label "Adjourned"@en ;
+  ess:stateOf ess:Team ; ess:stateOrder 5 ;
+  rdfs:comment "The team is no longer needed and has been disbanded."@en .
+
+# ── Way of Working States (6) ────────────────────────────────
+
+ess:way-of-working-principles-established a ess:AlphaState ;
+  rdfs:label "Principles Established"@en ;
+  ess:stateOf ess:WayOfWorking ; ess:stateOrder 1 ;
+  ess:predecessorOf ess:way-of-working-foundation-established ;
+  rdfs:comment "The principles and constraints that shape the way of working are established."@en .
+
+ess:way-of-working-foundation-established a ess:AlphaState ;
+  rdfs:label "Foundation Established"@en ;
+  ess:stateOf ess:WayOfWorking ; ess:stateOrder 2 ;
+  ess:predecessorOf ess:way-of-working-in-use ;
+  rdfs:comment "The key practices and tools that form the foundation of the way of working are selected and ready for use."@en .
+
+ess:way-of-working-in-use a ess:AlphaState ;
+  rdfs:label "In Use"@en ;
+  ess:stateOf ess:WayOfWorking ; ess:stateOrder 3 ;
+  ess:predecessorOf ess:way-of-working-in-place ;
+  rdfs:comment "Some members of the team are using and adapting the way of working."@en .
+
+ess:way-of-working-in-place a ess:AlphaState ;
+  rdfs:label "In Place"@en ;
+  ess:stateOf ess:WayOfWorking ; ess:stateOrder 4 ;
+  ess:predecessorOf ess:way-of-working-working-well ;
+  rdfs:comment "All team members are using the way of working to accomplish their work."@en .
+
+ess:way-of-working-working-well a ess:AlphaState ;
+  rdfs:label "Working Well"@en ;
+  ess:stateOf ess:WayOfWorking ; ess:stateOrder 5 ;
+  ess:predecessorOf ess:way-of-working-retired ;
+  rdfs:comment "The team's way of working is working well for the team."@en .
+
+ess:way-of-working-retired a ess:AlphaState ;
+  rdfs:label "Retired"@en ;
+  ess:stateOf ess:WayOfWorking ; ess:stateOrder 6 ;
+  rdfs:comment "The way of working is no longer in use by the team."@en .
+
+# ══════════════════════════════════════════════════════════════
+# INDIVIDUALS — COMPETENCIES (6)
+# ══════════════════════════════════════════════════════════════
+
+ess:StakeholderRepresentation a ess:Competency ;
+  rdfs:label "Stakeholder Representation"@en ;
+  ess:belongsToArea ess:CustomerArea ;
+  rdfs:comment "Ability to gather, communicate, and balance the needs of other stakeholders."@en .
+
+ess:Analysis a ess:Competency ;
+  rdfs:label "Analysis"@en ;
+  ess:belongsToArea ess:SolutionArea ;
+  rdfs:comment "Ability to understand opportunities and stakeholder needs and transform them into an agreed and consistent set of requirements."@en .
+
+ess:Development a ess:Competency ;
+  rdfs:label "Development"@en ;
+  ess:belongsToArea ess:SolutionArea ;
+  rdfs:comment "Ability to design and program effective software systems."@en .
+
+ess:Testing a ess:Competency ;
+  rdfs:label "Testing"@en ;
+  ess:belongsToArea ess:SolutionArea ;
+  rdfs:comment "Ability to verify the quality of the system."@en .
+
+ess:Leadership a ess:Competency ;
+  rdfs:label "Leadership"@en ;
+  ess:belongsToArea ess:EndeavorArea ;
+  rdfs:comment "Ability to inspire and motivate a group of people to achieve a successful conclusion."@en .
+
+ess:Management a ess:Competency ;
+  rdfs:label "Management"@en ;
+  ess:belongsToArea ess:EndeavorArea ;
+  rdfs:comment "Ability to coordinate, plan, and track the work done by a team."@en .
+
+# ══════════════════════════════════════════════════════════════
+# INDIVIDUALS — COMPETENCY LEVELS (5)
+# ══════════════════════════════════════════════════════════════
+
+ess:Assists a ess:CompetencyLevel ;
+  rdfs:label "Assists"@en ;
+  ess:stateOrder 1 ;
+  ess:predecessorOf ess:Applies ;
+  rdfs:comment "Demonstrates a basic understanding of the concepts and can follow instructions."@en .
+
+ess:Applies a ess:CompetencyLevel ;
+  rdfs:label "Applies"@en ;
+  ess:stateOrder 2 ;
+  ess:predecessorOf ess:Masters ;
+  rdfs:comment "Able to apply the concepts in simple contexts by routinely applying the experience gained so far."@en .
+
+ess:Masters a ess:CompetencyLevel ;
+  rdfs:label "Masters"@en ;
+  ess:stateOrder 3 ;
+  ess:predecessorOf ess:Adapts ;
+  rdfs:comment "Able to apply the concepts in most contexts and has the experience to work without supervision."@en .
+
+ess:Adapts a ess:CompetencyLevel ;
+  rdfs:label "Adapts"@en ;
+  ess:stateOrder 4 ;
+  ess:predecessorOf ess:Innovates ;
+  rdfs:comment "Able to apply judgment on when and how to apply the concepts to more complex contexts. Can enable others to apply the concepts."@en .
+
+ess:Innovates a ess:CompetencyLevel ;
+  rdfs:label "Innovates"@en ;
+  ess:stateOrder 5 ;
+  rdfs:comment "A recognized expert, able to extend the concepts to new contexts and inspire others."@en .
+
+# ══════════════════════════════════════════════════════════════
+# INDIVIDUALS — ACTIVITY SPACES (15)
+# ══════════════════════════════════════════════════════════════
+
+# ── Customer Activity Spaces (4) ─────────────────────────────
+
+ess:ExplorePossibilities a ess:ActivitySpace ;
+  rdfs:label "Explore Possibilities"@en ;
+  ess:belongsToArea ess:CustomerArea ;
+  ess:predecessorOf ess:UnderstandStakeholderNeeds ;
+  rdfs:comment "Explore the possibilities presented by the creation of a new or improved software system."@en .
+
+ess:UnderstandStakeholderNeeds a ess:ActivitySpace ;
+  rdfs:label "Understand Stakeholder Needs"@en ;
+  ess:belongsToArea ess:CustomerArea ;
+  ess:predecessorOf ess:EnsureStakeholderSatisfaction ;
+  rdfs:comment "Engage with the stakeholders to understand their needs and ensure that the right results are produced."@en .
+
+ess:EnsureStakeholderSatisfaction a ess:ActivitySpace ;
+  rdfs:label "Ensure Stakeholder Satisfaction"@en ;
+  ess:belongsToArea ess:CustomerArea ;
+  ess:predecessorOf ess:UseTheSystem ;
+  rdfs:comment "Share the results of the development work with the stakeholders to gain their acceptance."@en .
+
+ess:UseTheSystem a ess:ActivitySpace ;
+  rdfs:label "Use the System"@en ;
+  ess:belongsToArea ess:CustomerArea ;
+  rdfs:comment "Observe the use of the system in a live environment and how it benefits the stakeholders."@en .
+
+# ── Solution Activity Spaces (6) ─────────────────────────────
+
+ess:UnderstandTheRequirements a ess:ActivitySpace ;
+  rdfs:label "Understand the Requirements"@en ;
+  ess:belongsToArea ess:SolutionArea ;
+  ess:predecessorOf ess:ShapeTheSystem ;
+  rdfs:comment "Establish a shared understanding of what the system to be produced must do."@en .
+
+ess:ShapeTheSystem a ess:ActivitySpace ;
+  rdfs:label "Shape the System"@en ;
+  ess:belongsToArea ess:SolutionArea ;
+  ess:predecessorOf ess:ImplementTheSystem ;
+  rdfs:comment "Shape the system so that it is easy to develop, change, and maintain."@en .
+
+ess:ImplementTheSystem a ess:ActivitySpace ;
+  rdfs:label "Implement the System"@en ;
+  ess:belongsToArea ess:SolutionArea ;
+  ess:predecessorOf ess:TestTheSystem ;
+  rdfs:comment "Build a system by implementing, testing, and integrating one or more system elements."@en .
+
+ess:TestTheSystem a ess:ActivitySpace ;
+  rdfs:label "Test the System"@en ;
+  ess:belongsToArea ess:SolutionArea ;
+  ess:predecessorOf ess:DeployTheSystem ;
+  rdfs:comment "Verify that the system produced meets the stakeholders' requirements."@en .
+
+ess:DeployTheSystem a ess:ActivitySpace ;
+  rdfs:label "Deploy the System"@en ;
+  ess:belongsToArea ess:SolutionArea ;
+  ess:predecessorOf ess:OperateTheSystem ;
+  rdfs:comment "Take the tested system and make it available for use outside the development team."@en .
+
+ess:OperateTheSystem a ess:ActivitySpace ;
+  rdfs:label "Operate the System"@en ;
+  ess:belongsToArea ess:SolutionArea ;
+  rdfs:comment "Support the use of the software system in the live environment."@en .
+
+# ── Endeavor Activity Spaces (5) ─────────────────────────────
+
+ess:PrepareToDoTheWork a ess:ActivitySpace ;
+  rdfs:label "Prepare to Do the Work"@en ;
+  ess:belongsToArea ess:EndeavorArea ;
+  ess:predecessorOf ess:CoordinateActivity ;
+  rdfs:comment "Set up the team and its working environment. Understand and commit to completing the work."@en .
+
+ess:CoordinateActivity a ess:ActivitySpace ;
+  rdfs:label "Coordinate Activity"@en ;
+  ess:belongsToArea ess:EndeavorArea ;
+  ess:predecessorOf ess:SupportTheTeam ;
+  rdfs:comment "Coordinate and direct the team's work. Includes all ongoing planning and re-planning."@en .
+
+ess:SupportTheTeam a ess:ActivitySpace ;
+  rdfs:label "Support the Team"@en ;
+  ess:belongsToArea ess:EndeavorArea ;
+  ess:predecessorOf ess:TrackProgress ;
+  rdfs:comment "Help the team members to help themselves, collaborate and improve their way of working."@en .
+
+ess:TrackProgress a ess:ActivitySpace ;
+  rdfs:label "Track Progress"@en ;
+  ess:belongsToArea ess:EndeavorArea ;
+  ess:predecessorOf ess:StopTheWork ;
+  rdfs:comment "Measure and assess the progress made by the team."@en .
+
+ess:StopTheWork a ess:ActivitySpace ;
+  rdfs:label "Stop the Work"@en ;
+  ess:belongsToArea ess:EndeavorArea ;
+  rdfs:comment "Halt the current work and bring the endeavor to a close."@en .

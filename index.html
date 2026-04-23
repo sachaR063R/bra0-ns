@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="bra0 Terminology Server — IRI resolution, ontology catalogue, SHACL validation and Keet quality audits for all bra0 RDF vocabularies.">
+<link rel="canonical" href="https://schema.bra0.org/">
+<meta property="og:title" content="schema.bra0.org — Terminology Server">
+<meta property="og:description" content="Canonical IRI resolution and quality-audited ontology catalogue for the bra0 Knowledge Space platform.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://schema.bra0.org/">
+<meta property="og:site_name" content="bra0">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","name":"schema.bra0.org — bra0 Terminology Server","url":"https://schema.bra0.org/","description":"Canonical IRI resolution and quality-audited ontology catalogue for the bra0 Knowledge Space platform.","publisher":{"@type":"Person","name":"Sacha Roger","url":"https://bra0.org/"}}
+</script>
+<title>bra0 — Terminology Server</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" href="https://bra0.org/favicon-32.png" type="image/png">
+<script>(function(){var d=document.documentElement,t=localStorage.getItem('bra0-theme')||(matchMedia('(prefers-color-scheme:light)').matches?'light':'dark'),l=localStorage.getItem('bra0-lang')||(navigator.language.startsWith('fr')?'fr':'en');d.setAttribute('data-theme',t);d.setAttribute('lang',l)})()</script>
+<link rel="stylesheet" href="https://bra0.org/site-theme.css">
+<link rel="stylesheet" href="https://bra0.org/docs/docs.css">
+<script src="https://bra0.org/site-nav.js" defer></script>
+<style>
+/* ---- Terminology Server specifics ---- */
+.ts-badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 5px; font-size: 11px; font-weight: 600; font-family: var(--font-mono); }
+.ts-badge--ok { background: var(--green-dim, rgba(67,202,155,0.12)); color: var(--ok); }
+.ts-badge--warn { background: var(--yellow-dim, rgba(255,232,8,0.12)); color: var(--warn); }
+.ts-badge--info { background: rgba(96,165,250,0.12); color: var(--plan); }
+.ts-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+
+/* Layer model */
+.ts-layer-grid { display: grid; grid-template-columns: 90px 1fr; gap: 1px; background: var(--border-bright); border-radius: 8px; overflow: hidden; margin-top: 16px; }
+.ts-layer-label, .ts-layer-content { padding: 10px 14px; background: var(--surface); font-size: 13px; }
+.ts-layer-label { font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; font-family: var(--font-mono); }
+.ts-layer-content { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; color: var(--text-dim); }
+.ts-layer-content code { font-size: 12px; color: var(--text); background: var(--surface2); padding: 1px 5px; border-radius: 3px; }
+.ts-l1 .ts-layer-label { color: var(--cp); }
+.ts-l2 .ts-layer-label { color: var(--sl); }
+.ts-l3 .ts-layer-label { color: var(--orange); }
+.ts-l5 .ts-layer-label { color: var(--purple); }
+@media (max-width: 640px) { .ts-layer-grid { grid-template-columns: 1fr; } .ts-layer-label { padding: 8px 14px 0; } }
+
+/* Namespace groups */
+.ts-ns { margin-top: 28px; }
+.ts-ns h3 { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+.ts-ns h3 .prefix { color: var(--teal, var(--green)); font-family: var(--font-mono); }
+.ts-ns .iri { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); margin-bottom: 10px; }
+.ts-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.ts-table th { text-align: left; padding: 6px 10px; border-bottom: 2px solid var(--border-bright); color: var(--text-muted); font-weight: 600; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--font-mono); }
+.ts-table td { padding: 6px 10px; border-bottom: 1px solid var(--border); }
+.ts-table tr:hover td { background: var(--surface); }
+.ts-table .file { font-family: var(--font-mono); font-size: 12px; }
+.ts-table .file a { color: var(--text-dim); text-decoration: none; }
+.ts-table .file a:hover { color: var(--orange); }
+.ts-type { font-size: 10px; padding: 2px 7px; border-radius: 4px; font-weight: 600; font-family: var(--font-mono); white-space: nowrap; }
+.ts-type--tbox { background: var(--purple-dim, rgba(167,139,250,0.12)); color: var(--purple); }
+.ts-type--shapes { background: var(--green-dim, rgba(67,202,155,0.12)); color: var(--ok); }
+.ts-type--ext { background: var(--orange-dim, rgba(251,104,24,0.12)); color: var(--orange); }
+.ts-type--profile { background: rgba(96,165,250,0.12); color: var(--plan); }
+.ts-type--abox { background: var(--yellow-dim, rgba(255,232,8,0.12)); color: var(--warn); }
+.ts-badge-sm { font-size: 10px; padding: 2px 6px; border-radius: 3px; font-weight: 600; font-family: var(--font-mono); }
+.ts-badge-draft { background: var(--yellow-dim, rgba(255,232,8,0.12)); color: var(--warn); }
+.ts-badge-pass { background: var(--green-dim, rgba(67,202,155,0.12)); color: var(--ok); }
+.ts-audit { font-size: 11px; color: var(--text-muted); text-decoration: none; }
+.ts-audit:hover { color: var(--orange); }
+
+/* Quality cards */
+.ts-q-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 16px; }
+.ts-q-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+.ts-q-card h4 { font-size: 13px; margin-bottom: 4px; }
+.ts-q-card p { font-size: 12px; color: var(--text-dim); line-height: 1.5; margin-bottom: 0; }
+.ts-q-status { font-family: var(--font-mono); font-weight: 600; margin-top: 6px; font-size: 12px; }
+.ts-q-status--pass { color: var(--ok); }
+.ts-q-status--cond { color: var(--warn); }
+</style>
+</head>
+<body>
+
+<div class="docs-wrap">
+
+  <!-- ======== SIDEBAR (same as bra0.org/docs) ======== -->
+  <aside class="docs-sidebar">
+
+    <div class="docs-nav-section">
+      <div class="docs-nav-label">
+        <span data-t-fr="Commencer" data-t-en="Get Started">Get Started</span>
+      </div>
+      <a href="https://bra0.org/docs/index.html" class="docs-nav-link">
+        <span data-t-fr="Vue d'ensemble" data-t-en="Overview">Overview</span>
+      </a>
+    </div>
+
+    <div class="docs-nav-section">
+      <div class="docs-nav-label">
+        <span data-t-fr="Comprendre" data-t-en="Understand">Understand</span>
+      </div>
+      <a href="https://bra0.org/docs/concepts/knowledge-space.html" class="docs-nav-link">Knowledge Space</a>
+      <a href="https://bra0.org/docs/concepts/three-layers.html" class="docs-nav-link">
+        <span data-t-fr="Architecture 3 couches" data-t-en="3-Layer Architecture">3-Layer Architecture</span>
+      </a>
+    </div>
+
+    <div class="docs-nav-section">
+      <div class="docs-nav-label"><span data-t-fr="Guides" data-t-en="Guides">Guides</span></div>
+      <a href="https://bra0.org/docs/guides/si-diagnostic.html" class="docs-nav-link">
+        <span data-t-fr="Diagnostic SI" data-t-en="IT Systems Diagnostic">IT Systems Diagnostic</span>
+      </a>
+      <a href="https://bra0.org/docs/guides/grc-cybersecurity.html" class="docs-nav-link">
+        <span data-t-fr="GRC Cybersecurit&eacute;" data-t-en="GRC Cybersecurity">GRC Cybersecurity</span>
+      </a>
+      <a href="https://bra0.org/docs/guides/healthcare-pathways.html" class="docs-nav-link">
+        <span data-t-fr="Parcours de soins" data-t-en="Care Pathways">Care Pathways</span>
+      </a>
+      <a href="https://bra0.org/docs/guides/edcc-construction-circulaire.html" class="docs-nav-link">
+        <span data-t-fr="EDCC Construction circulaire" data-t-en="EDCC Circular Construction">EDCC Circular Construction</span>
+      </a>
+    </div>
+
+    <div class="docs-nav-section">
+      <div class="docs-nav-label">
+        <span data-t-fr="R&eacute;f&eacute;rence" data-t-en="Reference">Reference</span>
+      </div>
+      <a href="https://bra0.org/docs/reference/cli.html" class="docs-nav-link">CLI (topo)</a>
+      <a href="https://bra0.org/docs/reference/capabilities.html" class="docs-nav-link">
+        <span data-t-fr="48 Capacit&eacute;s" data-t-en="48 Capabilities">48 Capabilities</span>
+      </a>
+      <a href="https://bra0.org/docs/reference/shapes.html" class="docs-nav-link">SHACL Shapes</a>
+      <a href="https://bra0.org/docs/reference/ontologies.html" class="docs-nav-link">
+        <span data-t-fr="Ontologies" data-t-en="Ontologies">Ontologies</span>
+      </a>
+      <a href="https://schema.bra0.org/" class="docs-nav-link active">
+        <span data-t-fr="Serveur de terminologies" data-t-en="Terminology Server">Terminology Server</span>
+      </a>
+    </div>
+
+    <div class="docs-nav-section">
+      <div class="docs-nav-label"><span data-t-fr="Architecture" data-t-en="Architecture">Architecture</span></div>
+      <a href="https://bra0.org/docs/architecture/principles.html" class="docs-nav-link">
+        <span data-t-fr="Principes (P1-P13)" data-t-en="Principles (P1-P13)">Principles (P1-P13)</span>
+      </a>
+    </div>
+
+  </aside>
+
+  <!-- ======== CONTENT ======== -->
+  <main class="docs-content">
+
+    <div class="docs-breadcrumb">
+      <a href="https://bra0.org/home.html">bra0</a>
+      <span class="sep">/</span>
+      <a href="https://bra0.org/docs/index.html">Docs</a>
+      <span class="sep">/</span>
+      <span>Terminology Server</span>
+    </div>
+
+    <h1>
+      <span data-en>Terminology Server</span>
+      <span data-fr>Serveur de terminologies</span>
+    </h1>
+    <p class="docs-subtitle">
+      <span data-en>
+        Canonical IRI resolution for all bra0 RDF vocabularies. Every file is Keet 6-dimension audited and SHACL-validated with <strong>rudof</strong>.
+      </span>
+      <span data-fr>
+        R&eacute;solution IRI canonique pour tous les vocabulaires RDF bra0. Chaque fichier est audit&eacute; Keet 6 dimensions et valid&eacute; SHACL avec <strong>rudof</strong>.
+      </span>
+    </p>
+    <div class="ts-badges">
+      <span class="ts-badge ts-badge--ok">SHACL validated (rudof)</span>
+      <span class="ts-badge ts-badge--warn">20 ontologies &middot; DRAFT</span>
+      <span class="ts-badge ts-badge--info">Keet 6-dim audited</span>
+    </div>
+
+    <!-- ════════════ LAYER MODEL ════════════ -->
+    <h2>
+      <span data-en>Vocabulary Layers</span>
+      <span data-fr>Couches de vocabulaire</span>
+    </h2>
+    <div class="ts-layer-grid">
+      <div class="ts-l1 ts-layer-label">L1 Core</div>
+      <div class="ts-l1 ts-layer-content">
+        <code>asc:</code> Agent Service Contracts &nbsp;&middot;&nbsp;
+        <code>ess:</code> Essence Kernel &nbsp;&middot;&nbsp;
+        <code>bra0m:</code> Module Registry
+      </div>
+      <div class="ts-l2 ts-layer-label">L2 KS</div>
+      <div class="ts-l2 ts-layer-content">
+        <code>cap:</code> Capability Operations &nbsp;&middot;&nbsp;
+        <code>edgy:</code> Enterprise Design (OntoEDGY) &nbsp;&middot;&nbsp;
+        <code>re:</code> Reverse Engineering
+      </div>
+      <div class="ts-l3 ts-layer-label">L3 Product</div>
+      <div class="ts-l3 ts-layer-content">
+        <code>evo:</code> Evidence OS &nbsp;&middot;&nbsp;
+        <code>evoQ:</code> Query Shapes &nbsp;&middot;&nbsp;
+        <code>edcc:</code> EDCC Extension
+      </div>
+      <div class="ts-l5 ts-layer-label">L5 Profile</div>
+      <div class="ts-l5 ts-layer-content">
+        <span data-en>bra0 Application Profile &mdash; imports L1&ndash;L3, adds project-level constraints</span>
+        <span data-fr>Profil applicatif bra0 &mdash; importe L1&ndash;L3, ajoute les contraintes projet</span>
+      </div>
+    </div>
+
+    <!-- ════════════ CATALOGUE ════════════ -->
+    <h2>
+      <span data-en>Ontology Catalogue</span>
+      <span data-fr>Catalogue d'ontologies</span>
+    </h2>
+    <p>
+      <span data-en>TTL files are the canonical serialization. HTML views generated by <a href="https://github.com/RDFLib/pyLODE">pyLODE</a>.</span>
+      <span data-fr>Les fichiers TTL sont la s&eacute;rialisation canonique. Vues HTML g&eacute;n&eacute;r&eacute;es par <a href="https://github.com/RDFLib/pyLODE">pyLODE</a>.</span>
+    </p>
+
+    <!-- ── asc: ── -->
+    <div class="ts-ns">
+      <h3><span class="prefix">asc:</span> Agent Service Contracts</h3>
+      <div class="iri">https://schema.bra0.org/agent-service-contract#</div>
+      <table class="ts-table">
+        <thead><tr><th>File</th><th>Type</th><th>Badge</th><th>Audit</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="file"><a href="agent-service-contract/agent-service-contract.ttl">agent-service-contract.ttl</a></td>
+            <td><span class="ts-type ts-type--tbox">TBox</span></td>
+            <td><span class="ts-badge-sm ts-badge-draft">DRAFT</span></td>
+            <td><a class="ts-audit" href="https://github.com/sachaR063R/bra0-ns/blob/main/audit/evidence-os-keet-2026-04-22.md">Keet 2026-04-22</a></td>
+          </tr>
+          <tr>
+            <td class="file"><a href="agent-service-contract/agent-service-contract.shapes.ttl">agent-service-contract.shapes.ttl</a></td>
+            <td><span class="ts-type ts-type--shapes">SHACL</span></td>
+            <td><span class="ts-badge-sm ts-badge-draft">DRAFT</span></td>
+            <td><a class="ts-audit" href="https://github.com/sachaR063R/bra0-ns/blob/main/audit/evidence-os-keet-2026-04-22.md">Keet 2026-04-22</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ── ess: ── -->
+    <div class="ts-ns">
+      <h3><span class="prefix">ess:</span> Essence Kernel</h3>
+      <div class="iri">https://schema.bra0.org/essence-kernel#</div>
+      <table class="ts-table">
+        <thead><tr><th>File</th><th>Type</th><th>Badge</th><th>Audit</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="file"><a href="essence-kernel/essence-kernel.ttl">essence-kernel.ttl</a></td>
+            <td><span class="ts-type ts-type--tbox">TBox</span></td>
+            <td><span class="ts-badge-sm ts-badge-draft">DRAFT</span></td>
+            <td><a class="ts-audit" href="https://github.com/sachaR063R/bra0-ns/blob/main/audit/evidence-os-keet-2026-04-22.md">Keet 2026-04-22</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ── cap: ── -->
+    <div class="ts-ns">
+      <h3><span class="prefix">cap:</span> Capability Operations</h3>
+      <div class="iri">https://schema.bra0.org/capability#</div>
+      <table class="ts-table">
+        <thead><tr><th>File</th><th>Type</th><th>Badge</th><th>Audit</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="file"><a href="capability/capability-operations.ttl">capability-operations.ttl</a></td>
+            <td><span class="ts-type ts-type--tbox">TBox</span></td>
+            <td><span class="ts-badge-sm ts-badge-draft">DRAFT</span></td>
+            <td><a class="ts-audit" href="https://github.com/sachaR063R/bra0-ns/blob/main/audit/evidence-os-keet-2026-04-22.md">Keet 2026-04-22</a></td>
+          </tr>
+          <tr>
+            <td class="file"><a href="capability/edgy.ttl">edgy.ttl</a></td>
+            <td><span class="ts-type ts-type--ext">External</span></td>
+            <td><span class="ts-badge-sm ts-badge-draft">DRAFT</span></td>
+            <td><a class="ts-audit" href="https://github.com/sachaR063R/bra0-ns/blob/main/audit/evidence-os-keet-2026-04-22.md">Keet 2026-04-22</a></td>
+          </tr>
+          <tr>
+            <td class="file"><a href="capability/retroeng.ttl">retroeng.ttl</a></td>
+            <td><span class="ts-type ts-type--ext">External</span></td>
+            <td><span class="ts-badge-sm ts-badge-draft">DRAFT</span></td>
+            <td><a class="ts-audit" href="https://github.com/sachaR063R/bra0-ns/blob/main/audit/evidence-os-keet-2026-04-22.md">Keet 2026-04-22</a></td>
+          </tr>
+          <tr>
+            <td class="file"><a href="capability/neuro-upper.ttl">neuro-upper.ttl</a></td>
+            <td><span class="ts-type ts-type--ext">External</span></td>
+            <td><span class="ts-badge-sm ts-badge-draft">DRAFT</span></td>
+            <td><a class="ts-audit" href="https://github.com/sachaR063R/bra0-ns/blob/main/audit/evidence-os-keet-2026-04-22.md">Keet 2026-04-22</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ── evo: ── -->
+    <div class="ts-ns">
+      <h3><span class="prefix">evo:</span> Evidence OS</h3>
+      <div class="iri">https://schema.bra0.org/evidence-os#</div>
+      <table class="ts-table">
+        <thead><tr><th>File</th><th>Type</th><th>Badge</th><th>Audit</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="file"><a href="evidence-os/evidence-os.ttl">evidence-os.ttl</a></td>
+            <td><span class="ts-type ts-type--tbox">TBox</span></td>
+            <td><span class="ts-badge-sm ts-badge-draft">DRAFT</span></td>
+            <td><a class="ts-audit" href="https://github.com/sachaR063R/bra0-ns/blob/main/audit/evidence-os-keet-2026-04-22.md">Keet 2026-04-22</a></td>
+          </tr>
+          <tr>
+            <td class="file"><a href="evidence-os/evo-story.shapes.ttl">evo-story.shapes.ttl</a></td>
+            <td><span class="ts-type ts-type--shapes">SHACL</span></td>
+            <td><span class="ts-badge-sm ts-badge-draft">DRAFT</span></td>
+            <td><a class="ts-audit" href="https://github.com/sachaR063R/bra0-ns/blob/main/audit/evidence-os-keet-2026-04-22.md">Keet 2026-04-22</a></td>
+          </tr>
+          <tr>
+            <td class="file"><a href="evidence-os/evo-change-pipeline.shapes.ttl">evo-change-pipeline.shapes.ttl</a></td>
+            <td><span class="ts-type ts-type--shapes">SHACL</span></td>
+            <td><span class="ts-badge-sm ts-badge-draft">DRAFT</span></td>
+            <td><a class="ts-audit" href="https://github.com/sachaR063R/bra0-ns/blob/main/audit/evidence-os-keet-2026-04-22.md">Keet 2026-04-22</a></td>
+          </tr>
+          <tr>
+            <td class="file"><a href="evidence-os/evo-test-evidence.shapes.ttl">evo-test-evidence.shapes.ttl</a></td>
+            <td><span class="ts-type ts-type--shapes">SHACL</span></td>
+            <td><span class="ts-badge-sm ts-badge-draft">DRAFT</span></td>
+            <td><a class="ts-audit" href="https://github.com/sachaR063R/bra0-ns/blob/main/audit/evidence-os-keet-2026-04-22.md">Keet 2026-04-22</a></td>
+          </tr>
+          <tr>
+            <td class="file"><a href="evidence-os/evo-ambient-agent-policy.shapes.ttl">evo-ambient-agent-policy.shapes.ttl</a></td>
+            <td><span class="ts-type ts-type--shapes">SHACL</span></td>
+            <td><span class="ts-badge-sm ts-badge-draft">DRAFT</span></td>
+            <td><a class="ts-audit" href="https://github.com/sachaR063R/bra0-ns/blob/main/audit/evidence-os-keet-2026-04-22.md">Keet 2026-04-22</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ── evoQ: ── -->
+    <div class="ts-ns">
+      <h3><span class="prefix">evoQ:</span> Query Result Shapes</h3>
+      <div class="iri">https://schema.bra0.org/evidence-os/query#</div>
+      <table class="ts-table">
+        <thead><tr><th>File</th><th>Type</th><th>Badge</th><th>Audit</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="file"><a href="evidence-os/query/evoQ-kpi-shapes.shapes.ttl">evoQ-kpi-shapes.shapes.ttl</a></td>
+            <td><span class="ts-type ts-type--shapes">SHACL</span></td>
+            <td><span class="ts-badge-sm ts-badge-draft">DRAFT</span></td>
+            <td><a class="ts-audit" href="https://github.com/sachaR063R/bra0-ns/blob/main/audit/evidence-os-keet-2026-04-22.md">Keet 2026-04-22</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ── edcc: ── -->
+    <div class="ts-ns">
+      <h3><span class="prefix">edcc:</span> EDCC &mdash; Evidence-Driven Compliance &amp; Circularity</h3>
+      <div class="iri">https://schema.bra0.org/evidence-os/edcc#</div>
+      <table class="ts-table">
+        <thead><tr><th>File</th><th>Type</th><th>Badge</th><th>Audit</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="file"><a href="evidence-os/edcc/edcc-bridge.ttl">edcc-bridge.ttl</a></td>
+            <td><span class="ts-type ts-type--tbox">TBox</span></td>
+            <td><span class="ts-badge-sm ts-badge-draft">DRAFT</span></td>
+            <td><a class="ts-audit" href="https://github.com/sachaR063R/bra0-ns/blob/main/audit/evidence-os-keet-2026-04-22.md">Keet 2026-04-22</a></td>
+          </tr>
+          <tr>
+            <td class="file"><a href="evidence-os/edcc/edcc-frameworks.ttl">edcc-frameworks.ttl</a></td>
+            <td><span class="ts-type ts-type--tbox">TBox</span></td>
+            <td><span class="ts-badge-sm ts-badge-draft">DRAFT</span></td>
+            <td><a class="ts-audit" href="https://github.com/sachaR063R/bra0-ns/blob/main/audit/evidence-os-keet-2026-04-22.md">Keet 2026-04-22</a></td>
+          </tr>
+          <tr>
+            <td class="file"><a href="evidence-os/edcc/edcc-pemd.shapes.ttl">edcc-pemd.shapes.ttl</a></td>
+            <td><span class="ts-type ts-type--shapes">SHACL</span></td>
+            <td><span class="ts-badge-sm ts-badge-draft">DRAFT</span></td>
+            <td><a class="ts-audit" href="https://github.com/sachaR063R/bra0-ns/blob/main/audit/evidence-os-keet-2026-04-22.md">Keet 2026-04-22</a></td>
+          </tr>
+          <tr>
+            <td class="file"><a href="evidence-os/edcc/edcc-csrd.shapes.ttl">edcc-csrd.shapes.ttl</a></td>
+            <td><span class="ts-type ts-type--shapes">SHACL</span></td>
+            <td><span class="ts-badge-sm ts-badge-draft">DRAFT</span></td>
+            <td><a class="ts-audit" href="https://github.com/sachaR063R/bra0-ns/blob/main/audit/evidence-os-keet-2026-04-22.md">Keet 2026-04-22</a></td>
+          </tr>
+          <tr>
+            <td class="file"><a href="evidence-os/edcc/edcc-domain-holon.ttl">edcc-domain-holon.ttl</a></td>
+            <td><span class="ts-type ts-type--abox">ABox seed</span></td>
+            <td><span class="ts-badge-sm ts-badge-draft">DRAFT</span></td>
+            <td><a class="ts-audit" href="https://github.com/sachaR063R/bra0-ns/blob/main/audit/evidence-os-keet-2026-04-22.md">Keet 2026-04-22</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ── L5 Profile ── -->
+    <div class="ts-ns">
+      <h3><span class="prefix">L5</span> bra0 Application Profile</h3>
+      <div class="iri">
+        <span data-en>Imports L1&ndash;L3 &middot; project-level constraints</span>
+        <span data-fr>Importe L1&ndash;L3 &middot; contraintes projet</span>
+      </div>
+      <table class="ts-table">
+        <thead><tr><th>File</th><th>Type</th><th>Badge</th><th>Audit</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="file"><a href="evidence-os/bra0-application-profile.ttl">bra0-application-profile.ttl</a></td>
+            <td><span class="ts-type ts-type--profile">Profile</span></td>
+            <td><span class="ts-badge-sm ts-badge-draft">DRAFT</span></td>
+            <td><a class="ts-audit" href="https://github.com/sachaR063R/bra0-ns/blob/main/audit/evidence-os-keet-2026-04-22.md">Keet 2026-04-22</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ════════════ QUALITY ════════════ -->
+    <h2>
+      <span data-en>Quality Assurance</span>
+      <span data-fr>Assurance qualit&eacute;</span>
+    </h2>
+    <div class="ts-q-grid">
+      <div class="ts-q-card">
+        <h4>Keet 6-Dimension Audit</h4>
+        <p>Accuracy, Completeness, Conciseness, Adaptability, Clarity, Consistency</p>
+        <div class="ts-q-status ts-q-status--cond">CONDITIONAL PASS</div>
+        <p><a class="ts-audit" href="https://github.com/sachaR063R/bra0-ns/blob/main/audit/evidence-os-keet-2026-04-22.md">Full report &rarr;</a></p>
+      </div>
+      <div class="ts-q-card">
+        <h4>SHACL Validation</h4>
+        <p><span data-en>rudof (Rust) &mdash; zero JS fallback</span><span data-fr>rudof (Rust) &mdash; z&eacute;ro fallback JS</span></p>
+        <div class="ts-q-status ts-q-status--pass">CONFORMS &mdash; 0 violations</div>
+      </div>
+      <div class="ts-q-card">
+        <h4>Coupled Stack Ratchet</h4>
+        <p><span data-en>Cross-ontology validation floor: 50 violations (orthogonal baseline)</span><span data-fr>Seuil de validation inter-ontologies : 50 violations (baseline orthogonale)</span></p>
+        <div class="ts-q-status ts-q-status--pass">FLOOR HELD</div>
+      </div>
+      <div class="ts-q-card">
+        <h4>Publication Discipline</h4>
+        <p><span data-en>Gated by <code>docs-published.txt</code> &mdash; Sacha-only edits</span><span data-fr>Contr&ocirc;l&eacute; par <code>docs-published.txt</code> &mdash; &eacute;ditions Sacha uniquement</span></p>
+        <div class="ts-q-status ts-q-status--pass">ADR-054</div>
+      </div>
+    </div>
+
+    <!-- ════════════ FOOTER NAV ════════════ -->
+    <div class="docs-footer-nav">
+      <a href="https://bra0.org/docs/reference/ontologies.html" class="docs-footer-link">
+        <small>&larr; Previous</small>
+        <span data-en>Ontology Reference</span>
+        <span data-fr>R&eacute;f&eacute;rence Ontologies</span>
+      </a>
+      <a href="https://github.com/sachaR063R/bra0-ns" class="docs-footer-link" style="text-align:right">
+        <small>Source &rarr;</small>
+        GitHub
+      </a>
+    </div>
+
+  </main>
+</div>
+
+</body>
+</html>

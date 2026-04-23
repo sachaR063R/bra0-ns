@@ -1,0 +1,55 @@
+@prefix edcc:    <https://schema.bra0.org/evidence-os/edcc#> .
+@prefix evo:     <https://schema.bra0.org/evidence-os#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+
+# =============================================================================
+# EDCC Compliance Framework Instances (ABox)
+# =============================================================================
+#
+# Extracted from edcc-bridge.ttl per Keet audit F8.1 (TBox/ABox separation).
+# These are reference individuals — named regulatory frameworks that
+# edcc:CircularControl instances link to via evo:requiredBy.
+#
+# Owner:    Nael (Architect)
+# Date:     2026-04-17
+# License:  MIT OR Apache-2.0
+# =============================================================================
+
+edcc:RE2020 a evo:ComplianceFramework ;
+    rdfs:label "RE2020"@en ;
+    dcterms:description "French environmental regulation for new buildings (Decret 2021-1004). Mandates PEMD diagnostics and carbon thresholds."@en ;
+    evo:jurisdictionalScope "FR" ;
+    skos:notation "RE2020" .
+
+edcc:CSRD a evo:ComplianceFramework ;
+    rdfs:label "CSRD"@en ;
+    dcterms:description "Corporate Sustainability Reporting Directive (EU 2022/2464). E1 (climate) and E5 (resource use / circular economy) indicators relevant to construction."@en ;
+    evo:jurisdictionalScope "EU" ;
+    skos:notation "CSRD" .
+
+edcc:REP a evo:ComplianceFramework ;
+    rdfs:label "REP PMCB"@en ;
+    dcterms:description "Responsabilite Elargie du Producteur — Produits et Materiaux de Construction du Batiment. French extended producer responsibility for construction materials."@en ;
+    evo:jurisdictionalScope "FR" ;
+    skos:notation "REP-PMCB" .
+
+edcc:AGEC a evo:ComplianceFramework ;
+    rdfs:label "Loi AGEC"@en ;
+    dcterms:description "Loi Anti-Gaspillage pour une Economie Circulaire (2020-105). Mandates PEMD diagnostic for demolitions above threshold."@en ;
+    evo:jurisdictionalScope "FR" ;
+    skos:notation "AGEC" .
+
+edcc:DPP a evo:ComplianceFramework ;
+    rdfs:label "EU Digital Product Passport"@en ;
+    dcterms:description "EU Regulation 2024/1781 (Ecodesign for Sustainable Products). Requires digital product passports with material composition, recyclability, and environmental footprint data."@en ;
+    evo:jurisdictionalScope "EU" ;
+    skos:notation "DPP" .
+
+edcc:ETSI_ES_204_114 a evo:ComplianceFramework ;
+    rdfs:label "ETSI ES 204 114 (opendthX)"@en ;
+    dcterms:description "ETSI Standard for opendthX entity/relationship meta-model. Data/application interoperability for construction. Defines COPO (semantic) and CIQO (organizational) interoperability methods."@en ;
+    evo:jurisdictionalScope "EU" ;
+    skos:notation "ETSI-ES-204-114" .

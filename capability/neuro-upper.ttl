@@ -1,0 +1,142 @@
+@prefix bfo:   <http://purl.obolibrary.org/obo/BFO_> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+@prefix fhir:  <http://hl7.org/fhir/> .
+@prefix omop:  <http://data.ohdsi.org/> .
+@prefix neuro: <urn:omyn:neuro:> .
+@prefix prov:  <http://www.w3.org/ns/prov#> .
+@prefix dct:   <http://purl.org/dc/terms/> .
+
+# ══════════════════════════════════════════════════════════════
+# Integrative Neurology Care Coordination — Synthetic KG
+# For demo: Magali Seassau + Adrien Ugon + Akram Redjdal
+# April 2026
+#
+# Layers:
+#   1. BFO upper ontology alignment
+#   2. SKOS clinical vocabulary
+#   3. FHIR R4 resource types
+#   4. OMOP CDM mapping
+#   5. Patient instances (synthetic)
+# ══════════════════════════════════════════════════════════════
+
+<urn:omyn:neuro:ontology> a owl:Ontology ;
+  rdfs:label "Integrative Neurology Care Coordination"@en ;
+  rdfs:comment "Synthetic knowledge graph for care coordination in a neurology unit. Combines BFO (upper), SKOS (clinical terms), FHIR (clinical resources), and OMOP (observational) layers."@en ;
+  owl:versionInfo "0.1.0" ;
+  dct:created "2026-03-28"^^xsd:date ;
+  dct:license <https://spdx.org/licenses/MIT.html> .
+
+# ── 1. BFO Upper Ontology Alignment ────────────────────────────
+#
+# BFO distinguishes:
+# - Continuant (entities that persist): Patient, Organization, Substance
+# - Occurrent (entities that unfold in time): Encounter, Procedure, Process
+# - Dependent continuant: Quality, Role, Disposition
+# - Independent continuant: Material entity
+#
+# This grounds clinical concepts in spatio-temporal reality.
+
+neuro:Patient a owl:Class ;
+  rdfs:subClassOf bfo:0000040 ;  # bfo:material entity (independent continuant)
+  rdfs:label "Patient"@en, "Patient"@fr ;
+  rdfs:comment "A person receiving care. BFO: material entity (independent continuant that persists through time)."@en .
+
+neuro:Clinician a owl:Class ;
+  rdfs:subClassOf bfo:0000040 ;
+  rdfs:label "Clinician"@en, "Clinicien"@fr ;
+  rdfs:comment "A healthcare professional providing care."@en .
+
+neuro:CareUnit a owl:Class ;
+  rdfs:subClassOf bfo:0000029 ;  # bfo:site (immaterial entity)
+  rdfs:label "Care Unit"@en, "Unite de soins"@fr ;
+  rdfs:comment "A physical or organizational unit where care is delivered."@en .
+
+neuro:Encounter a owl:Class ;
+  rdfs:subClassOf bfo:0000015 ;  # bfo:process (occurrent)
+  rdfs:label "Encounter"@en, "Rencontre"@fr ;
+  rdfs:comment "A clinical encounter (consultation, hospitalization). BFO: process (occurrent that unfolds in time)."@en .
+
+neuro:Condition a owl:Class ;
+  rdfs:subClassOf bfo:0000016 ;  # bfo:disposition (dependent continuant)
+  rdfs:label "Condition"@en, "Pathologie"@fr ;
+  rdfs:comment "A diagnosed condition or problem. BFO: disposition (tendency to manifest under certain circumstances)."@en .
+
+neuro:Treatment a owl:Class ;
+  rdfs:subClassOf bfo:0000015 ;  # bfo:process
+  rdfs:label "Treatment"@en, "Traitement"@fr ;
+  rdfs:comment "A therapeutic intervention. BFO: process."@en .
+
+neuro:Observation a owl:Class ;
+  rdfs:subClassOf bfo:0000015 ;
+  rdfs:label "Observation"@en ;
+  rdfs:comment "A clinical observation or measurement."@en .
+
+neuro:CarePathway a owl:Class ;
+  rdfs:subClassOf bfo:0000182 ;  # bfo:history (sum of processes)
+  rdfs:label "Care Pathway"@en, "Parcours de soins"@fr ;
+  rdfs:comment "A structured sequence of clinical activities. BFO: history (connected temporal sequence of processes)."@en .
+
+neuro:Role a owl:Class ;
+  rdfs:subClassOf bfo:0000023 ;  # bfo:role (dependent continuant)
+  rdfs:label "Clinical Role"@en ;
+  rdfs:comment "A role played by a clinician in an encounter."@en .
+
+# ── Properties ─────────────────────────────────────────────────
+
+neuro:hasCondition a owl:ObjectProperty ;
+  rdfs:domain neuro:Patient ;
+  rdfs:range neuro:Condition ;
+  rdfs:label "has condition"@en .
+
+neuro:hasTreatment a owl:ObjectProperty ;
+  rdfs:domain neuro:CarePathway ;
+  rdfs:range neuro:Treatment ;
+  rdfs:label "has treatment"@en .
+
+neuro:hasEncounter a owl:ObjectProperty ;
+  rdfs:domain neuro:Patient ;
+  rdfs:range neuro:Encounter ;
+  rdfs:label "has encounter"@en .
+
+neuro:partOfPathway a owl:ObjectProperty ;
+  rdfs:domain neuro:Encounter ;
+  rdfs:range neuro:CarePathway ;
+  rdfs:label "part of pathway"@en .
+
+neuro:performedBy a owl:ObjectProperty ;
+  rdfs:domain neuro:Encounter ;
+  rdfs:range neuro:Clinician ;
+  rdfs:label "performed by"@en .
+
+neuro:locatedAt a owl:ObjectProperty ;
+  rdfs:domain neuro:Encounter ;
+  rdfs:range neuro:CareUnit ;
+  rdfs:label "located at"@en .
+
+neuro:hasRole a owl:ObjectProperty ;
+  rdfs:domain neuro:Clinician ;
+  rdfs:range neuro:Role ;
+  rdfs:label "has role"@en .
+
+neuro:followedBy a owl:ObjectProperty ;
+  rdfs:domain neuro:Encounter ;
+  rdfs:range neuro:Encounter ;
+  rdfs:label "followed by"@en ;
+  rdfs:comment "Temporal ordering of encounters in a care pathway."@en .
+
+neuro:contraindication a owl:ObjectProperty ;
+  rdfs:domain neuro:Treatment ;
+  rdfs:range neuro:Condition ;
+  rdfs:label "contraindicated for"@en .
+
+neuro:date a owl:DatatypeProperty ;
+  rdfs:range xsd:date ;
+  rdfs:label "date"@en .
+
+neuro:severity a owl:DatatypeProperty ;
+  rdfs:range xsd:string ;
+  rdfs:label "severity"@en .

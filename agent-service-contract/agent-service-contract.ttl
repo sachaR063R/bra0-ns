@@ -1,0 +1,839 @@
+@prefix asc:  <https://schema.bra0.org/agent-service-contract#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix odrl: <http://www.w3.org/ns/odrl/2/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix bfo:  <http://purl.obolibrary.org/obo/BFO_> .
+@prefix edgy: <http://www.omyn.ai/schema/edgy#> .
+
+# ══════════════════════════════════════════════════════════════
+# Agent Service Contract Ontology (asc:)
+# ADR-020 — SPARQL-First, Agent Contracts, SHACL 1.2
+# Version: 0.5.0 — 2026-04-23
+#
+# v0.5.0: Deholonize + work-unit on EDGY — per ADR-052 (Defer
+# Holonic OWL Apparatus, 2026-04-23) the holonic OWL layer
+# (Holon, HolonicMembrane, Holarchy, Portal, HolonicAspect +
+# associated properties and disjointness pair) is removed. Per
+# ADR-053 the bra0-internal asc:Story class is also removed and
+# the work-unit concept is delegated to edgy:Task (Sacha's OWL
+# formalization of the EDGY methodology, pillar ontology). The
+# four compute/token tracking predicates (asc:status,
+# asc:computeTier, asc:storyPoints, asc:tokensConsumed) are
+# re-domained on edgy:Task. asc: grounds on PROV-O (agent
+# provenance), DCAT (service description), ODRL (policies /
+# mandates), and EDGY (work unit). P5/P9 doctrine retained at
+# narrative level in bra0-principles.md. Breaking from v0.4.0.
+#
+# v0.4.0: Holonic Architecture — [SUPERSEDED BY v0.5.0 / ADR-052]
+#
+# v0.3.0: Governance Hardening — adds Mandate (ex-ConstitutionalContract),
+# OntologyScope, BreakingChangeType, governance ODRL actions
+# (ModifyOwnContract, EscalateAutonomy, ModifyAgentContract),
+# formal property declarations for governedBy, autonomyLevel,
+# agentType, ontologyScope, trigger. Non-breaking from v0.2.0.
+#
+# v0.2.0: Agent Runtime Extension — adds Skill, Plugin,
+# GatingRequirements, BootstrapIdentity, ToolPolicy,
+# SubagentPolicy, PluginHook, ExecApproval. Mapped 1:1 to
+# OpenClaw runtime model. No breaking changes from v0.1.0.
+# ══════════════════════════════════════════════════════════════
+
+<https://schema.bra0.org/agent-service-contract#> a owl:Ontology ;
+  rdfs:label "Agent Service Contract Ontology"@en ;
+  rdfs:comment "Formal contracts for governed AI agents in a Knowledge Space. Grounded on PROV-O (agent provenance, attribution), DCAT (service description, discovery), ODRL (policies, mandates), and SHACL (I/O validation). v0.5 removes the holonic OWL apparatus (ADR-052); doctrine retained at narrative level in bra0-principles.md."@en ;
+  dct:license "https://creativecommons.org/licenses/by-sa/4.0/" ;
+  dct:created "2026-03-25"^^xsd:date ;
+  dct:creator <did:ng:o:sacha> ;
+  owl:versionInfo "0.5.0" ;
+  owl:versionIRI <https://schema.bra0.org/agent-service-contract/0.5.0> ;
+  vann:preferredNamespacePrefix "asc" ;
+  vann:preferredNamespaceUri "https://schema.bra0.org/agent-service-contract#" ;
+  owl:imports <http://www.omyn.ai/schema/edgy#> .
+
+# ══════════════════════════════════════════════════════════════
+# v0.5.0 GROUNDING — PROV-O + DCAT + ODRL (ADR-052, 2026-04-23)
+#
+# The holonic OWL apparatus (Holon, HolonicMembrane, Holarchy,
+# Portal, HolonicAspect + associated properties and disjointness
+# pair) is removed. Rationale: it carried no SHACL closure shape,
+# no testable axiom beyond one owl:disjointWith pair, and no
+# inference target exercised by any consuming query (Keet audit
+# 2026-04-22, CONDITIONAL PASS). It adds zero protocol overhead
+# because it does zero protocol work.
+#
+# What survives without the holonic layer:
+#   - Agent provenance   → PROV-O (prov:SoftwareAgent, prov:actedOnBehalfOf)
+#   - Service surface    → DCAT   (dcat:DataService, dcat:endpointURL)
+#   - Mandates / policy  → ODRL   (odrl:Policy, odrl:prohibition, odrl:duty)
+#   - Cross-framework    → SKOS   (skos:exactMatch, skos:closeMatch, ...)
+#
+# P5 (Membrane) and P9 (Delegation) are realized in OWL via
+# odrl:Policy and prov:actedOnBehalfOf. The holonic and Markov-
+# blanket framings remain valid scientific anchors and bra0
+# commercial discourse, with no OWL counterpart.
+#
+# Reversibility (ADR-052 §3.3): a future ADR may reintroduce a
+# holonic OWL layer iff (a) at least three SHACL closure shapes
+# that exercise inference, (b) a peer-reviewed external authority
+# it aligns with, and (c) a LIRIS reviewer co-sign.
+# ══════════════════════════════════════════════════════════════
+
+# ── Classes ────────────────────────────────────────────────────
+
+asc:AgentService a owl:Class ;
+  rdfs:subClassOf prov:SoftwareAgent, dcat:DataService ;
+  rdfs:label "Agent Service"@en, "Service d'agent"@fr ;
+  rdfs:comment "A governed agent with a formal service contract. Grounded on PROV-O (software agent provenance) and DCAT (service description) per ADR-052 v0.5.0. Governance (mandate, autonomy level, policies) is expressed via ODRL and attached to each agent instance."@en .
+
+asc:Capability a owl:Class ;
+  rdfs:label "Capability"@en, "Capacité"@fr ;
+  rdfs:comment "A capability exercised by an agent, linked to the Capability Map (C1-C8)."@en .
+
+asc:GraphInterface a owl:Class ;
+  rdfs:subClassOf dcat:DataService ;
+  rdfs:label "Graph Interface"@en, "Interface de graphe"@fr ;
+  rdfs:comment "A service interface between an agent and a named graph. Typed as a dcat:DataService per ADR-052 v0.5.0. Carries the property scope and SPARQL pattern that define read/write access."@en .
+
+asc:ServiceLevelAgreement a owl:Class ;
+  rdfs:label "Service Level Agreement"@en ;
+  rdfs:comment "Performance, cost, and quality bounds for an agent."@en .
+
+asc:ComputeTier a owl:Class ;
+  rdfs:label "Compute Tier"@en ;
+  rdfs:comment "Resource allocation tier (T0=Manual to T5=Ollama MacBook)."@en .
+
+asc:AntiPattern a owl:Class ;
+  rdfs:label "Anti-Pattern"@en, "Anti-patron"@fr ;
+  rdfs:comment "A known inefficiency pattern with a documented alternative. Append-only registry."@en .
+
+asc:EfficiencyObservation a owl:Class ;
+  rdfs:subClassOf prov:Entity ;
+  rdfs:label "Efficiency Observation"@en, "Observation d'efficience"@fr ;
+  rdfs:comment "A measured gain from an anti-pattern correction or process improvement. Proof of value."@en .
+
+# asc:Story removed v0.5.0 (ADR-053). The work-unit concept is carried
+# by edgy:Task (subClassOf edgy:Outcome) — Sacha's OWL formalization of
+# the EDGY methodology, imported via owl:imports at the ontology header.
+# Sprint compute/token tracking predicates (asc:status, asc:computeTier,
+# asc:storyPoints, asc:tokensConsumed) are re-domained on edgy:Task
+# below. The 3-Story collision (asc:Story / evo:UserStory / edgy:Story)
+# is resolved per ADR-053 §D1: edgy:Story = narrative artefact,
+# edgy:Task = work unit, requirement instances = prov:Entity carrying
+# ess:advancesAlpha ess:Requirements.
+
+# ── Agent Type Classes (v0.2) ───────────────────────────────
+
+asc:Skill a owl:Class ;
+  rdfs:subClassOf asc:AgentService ;
+  rdfs:label "Skill"@en, "Compétence"@fr ;
+  rdfs:comment "A prompt-based agent (e.g. OpenClaw SKILL.md). Session-scoped, injected into context at session start. Gated by env/bins/config/OS requirements."@en .
+
+asc:Plugin a owl:Class ;
+  rdfs:subClassOf asc:AgentService ;
+  rdfs:label "Plugin"@en, "Extension"@fr ;
+  rdfs:comment "A code-based agent extension (e.g. OpenClaw plugin with TypeScript handler). Process-scoped, full SDK access, can register tools/hooks/channels."@en .
+
+# ── Governance Structure Classes (v0.2) ─────────────────────
+
+asc:GatingRequirements a owl:Class ;
+  rdfs:label "Gating Requirements"@en, "Exigences de filtrage"@fr ;
+  rdfs:comment "Load-time conditions for agent activation: required binaries, env vars, config keys, supported OS."@en .
+
+asc:BootstrapIdentity a owl:Class ;
+  rdfs:label "Bootstrap Identity"@en, "Identité d'amorçage"@fr ;
+  rdfs:comment "Agent persona and operating instructions injected at session start: name, emoji, soul prompt, tool notes."@en .
+
+asc:ToolPolicy a owl:Class ;
+  rdfs:subClassOf odrl:Policy ;
+  rdfs:label "Tool Policy"@en, "Politique d'outillage"@fr ;
+  rdfs:comment "ODRL-based access control for agent tools. Maps to platform tool policy cascades (profiles, allow/deny lists, sandbox, sub-agent restrictions)."@en .
+
+asc:SubagentPolicy a owl:Class ;
+  rdfs:label "Sub-Agent Policy"@en, "Politique de sous-agents"@fr ;
+  rdfs:comment "Governance constraints on sub-agent spawning: max depth, max children, concurrency, model, timeout."@en .
+
+asc:PluginHook a owl:Class ;
+  rdfs:label "Plugin Hook"@en, "Point d'interception"@fr ;
+  rdfs:comment "A lifecycle interception point registered by a plugin (e.g. before_tool_call, after_tool_call, before_agent_start). Hooks are the mechanism for runtime governance."@en .
+
+asc:ExecApproval a owl:Class ;
+  rdfs:label "Exec Approval Rule"@en, "Règle d'approbation d'exécution"@fr ;
+  rdfs:comment "Per-agent execution approval rule: security mode (deny/allowlist/full), ask mode, glob patterns, safe bins."@en .
+
+asc:Mandate a owl:Class ;
+  rdfs:subClassOf odrl:Policy ;
+  rdfs:label "Mandate"@en, "Mandat"@fr ;
+  rdfs:comment "The formal delegation from the human controller (mandant) to an agent (mandataire). Typed as an odrl:Policy per ADR-052 v0.5.0: it carries the permissions, prohibitions, and duties that bound the agent's reads, writes, and actions, plus temporal validity. Machine-validatable, SHACL-enforced. Only the mandant may create or modify a Mandate."@en .
+
+asc:OntologyScope a owl:Class ;
+  rdfs:label "Ontology Scope"@en, "Périmètre ontologique"@fr ;
+  rdfs:comment "The set of OWL/SHACL classes an agent is authorized to define, instantiate, or modify. Used with sh:targetClass to enumerate writable types."@en .
+
+# ── Disjointness axioms (P0-6; v0.5.0 adjusted per ADR-052) ──
+# Rationale: strengthen LIRIS-grade rigor by asserting mutually exclusive
+# class memberships where intrinsic semantics require it.
+# v0.5.0: the Holon ⊥ HolonicMembrane pair is dropped as a consequence
+# of ADR-052 (holonic OWL apparatus removed). The four remaining pairs
+# stand independently.
+
+asc:Mandate owl:disjointWith asc:AgentService .
+asc:Capability owl:disjointWith asc:AntiPattern .
+asc:ToolPolicy owl:disjointWith asc:SubagentPolicy .
+# v0.5.0: asc:Story owl:disjointWith asc:AgentService retired (asc:Story
+# removed per ADR-053; edgy:Task carries work-unit semantics). An
+# edgy:Task owl:disjointWith asc:AgentService pair is not asserted here
+# to avoid cross-ontology disjointness that EDGY consumers cannot
+# cross-check.
+
+# ── Governance Properties ──────────────────────────────────────
+
+asc:governedBy a owl:ObjectProperty ;
+  rdfs:domain asc:AgentService ;
+  rdfs:range asc:Mandate ;
+  rdfs:label "governed by"@en ;
+  rdfs:comment "Links an agent to its mandate."@en .
+
+asc:autonomyLevel a owl:ObjectProperty ;
+  rdfs:domain asc:AgentService ;
+  rdfs:range rdfs:Resource ;
+  rdfs:label "autonomy level"@en ;
+  rdfs:comment "The BFO-grounded disposition (L0-L2) that determines what the agent may do without human gate. Range intentionally broad — disposition levels not yet formalized as a class."@en .
+
+asc:ontologyScope a owl:ObjectProperty ;
+  rdfs:domain asc:AgentService ;
+  rdfs:range asc:OntologyScope ;
+  rdfs:label "ontology scope"@en ;
+  rdfs:comment "The writable ontology scope for the agent."@en .
+
+asc:agentType a owl:DatatypeProperty ;
+  rdfs:domain asc:AgentService ;
+  rdfs:range xsd:string ;
+  rdfs:label "agent type"@en ;
+  rdfs:comment "Declaration: 'non-human' for AI agents (AI Act Art. 52), 'human' for human operators."@en .
+
+asc:trigger a owl:DatatypeProperty ;
+  rdfs:domain asc:AgentService ;
+  rdfs:range xsd:string ;
+  rdfs:label "trigger commands"@en ;
+  rdfs:comment "Slash commands or patterns that activate this agent."@en .
+
+# ── Temporal Governance Properties ─────────────────────────────
+
+asc:validFrom a owl:DatatypeProperty ;
+  rdfs:domain asc:Mandate ;
+  rdfs:range xsd:date ;
+  rdfs:label "valid from"@en ;
+  rdfs:comment "Date from which the mandate is in effect."@en .
+
+asc:validUntil a owl:DatatypeProperty ;
+  rdfs:domain asc:Mandate ;
+  rdfs:range xsd:date ;
+  rdfs:label "valid until"@en ;
+  rdfs:comment "Date until which the mandate is valid. After this date, the contract must be reviewed and renewed by the human controller. An expired contract reduces the agent to L0 (Observe)."@en .
+
+asc:reviewDate a owl:DatatypeProperty ;
+  rdfs:domain asc:Mandate ;
+  rdfs:range xsd:date ;
+  rdfs:label "next review date"@en ;
+  rdfs:comment "Date by which the contract must be reviewed. Review does not require modification — explicit renewal (updating validUntil) is sufficient."@en .
+
+asc:reviewedBy a owl:ObjectProperty ;
+  rdfs:domain asc:Mandate ;
+  rdfs:range prov:Agent ;
+  rdfs:label "reviewed by"@en ;
+  rdfs:comment "The human controller who last reviewed and approved the contract."@en .
+
+asc:lastReviewDate a owl:DatatypeProperty ;
+  rdfs:domain asc:Mandate ;
+  rdfs:range xsd:date ;
+  rdfs:label "last review date"@en ;
+  rdfs:comment "Date of the most recent contract review."@en .
+
+# ── ODRL Action Vocabulary (v0.2) ───────────────────────────
+
+asc:InvokeTool a skos:Concept, odrl:Action ;
+  rdfs:label "Invoke Tool"@en ;
+  rdfs:comment "Action: invoke an agent tool."@en .
+
+asc:SpawnSubagent a skos:Concept, odrl:Action ;
+  rdfs:label "Spawn Sub-Agent"@en ;
+  rdfs:comment "Action: spawn a sub-agent."@en .
+
+asc:ExecCommand a skos:Concept, odrl:Action ;
+  rdfs:label "Execute Command"@en ;
+  rdfs:comment "Action: execute a shell command."@en .
+
+asc:ModifyOwnContract a skos:Concept, odrl:Action ;
+  rdfs:label "Modify Own Contract"@en ;
+  rdfs:comment "Action: modify the agent's own mandate, ODRL policy, ontology scope, or bootstrap identity. This action MUST be prohibited for all non-human agents — only the human controller may modify agent contracts."@en .
+
+asc:EscalateAutonomy a skos:Concept, odrl:Action ;
+  rdfs:label "Escalate Autonomy"@en ;
+  rdfs:comment "Action: increase own autonomy level, add capabilities, add permissions, or weaken prohibitions. Self-escalation is the primary governance failure mode. This action MUST be prohibited for all non-human agents."@en .
+
+asc:ModifyAgentContract a skos:Concept, odrl:Action ;
+  rdfs:label "Modify Agent Contract"@en ;
+  rdfs:comment "Action: modify any agent's mandate. Distinguished from ModifyOwnContract to allow future delegation patterns where one agent reviews another's contract under human supervision."@en .
+
+# ── Tool Profile Individuals (v0.2) ─────────────────────────
+
+asc:ProfileMinimal a skos:Concept ; rdfs:label "minimal"@en ; skos:notation "minimal" .
+asc:ProfileCoding a skos:Concept ; rdfs:label "coding"@en ; skos:notation "coding" .
+asc:ProfileMessaging a skos:Concept ; rdfs:label "messaging"@en ; skos:notation "messaging" .
+asc:ProfileFull a skos:Concept ; rdfs:label "full"@en ; skos:notation "full" .
+
+# ── Common Plugin Hook Individuals (v0.2) ───────────────────
+
+asc:HookBeforeToolCall a asc:PluginHook ;
+  asc:hookName "before_tool_call" ;
+  rdfs:label "Before Tool Call"@en ;
+  rdfs:comment "Fires before each tool invocation. Can block with reason."@en .
+
+asc:HookAfterToolCall a asc:PluginHook ;
+  asc:hookName "after_tool_call" ;
+  rdfs:label "After Tool Call"@en ;
+  rdfs:comment "Fires after each tool invocation. Used for provenance recording."@en .
+
+asc:HookBeforeAgentStart a asc:PluginHook ;
+  asc:hookName "before_agent_start" ;
+  rdfs:label "Before Agent Start"@en ;
+  rdfs:comment "Fires before agent run begins. Can validate session config."@en .
+
+asc:HookAgentEnd a asc:PluginHook ;
+  asc:hookName "agent_end" ;
+  rdfs:label "Agent End"@en ;
+  rdfs:comment "Fires when agent run completes. Used for cleanup and final provenance."@en .
+
+# ══════════════════════════════════════════════════════════════
+# v0.3 Classes — SI Urbanization & Governance Hardening
+# ══════════════════════════════════════════════════════════════
+
+# ── SI Urbanization ───────────────────────────────────────────
+# Transposed from French SI urbanization practice (Longépé 2006,
+# Sassoon 1998) into the agent governance model.
+#
+# Zone → Quartier → Bloc → Capability → Agent(s)
+#
+# The urbanization authority (architect agent) maintains the
+# canonical map. All agents must map their capabilities to
+# this structure. New capabilities require urbanization review.
+
+# ── Cartographic Projections (Z/Q/B) ──────────────────────────
+# Zone / Quartier / Bloc is the SI urbanization projection
+# (Longépé 2006, Sassoon 1998): a depth-3, single-parent tree
+# used for communication, reporting, and redundancy detection.
+# It is a canonical view of the bra0 platform capability map,
+# usable on its own — v0.5.0 drops the holarchic source-of-truth
+# framing per ADR-052 (no holonic OWL layer above).
+#
+# Linkage to capabilities: asc:mapsToBloc (below, §Urbanization
+# Properties) attaches each asc:Capability to its canonical bloc.
+
+asc:FunctionalZone a owl:Class ;
+  rdfs:label "Functional Zone"@en, "Zone fonctionnelle"@fr ;
+  rdfs:comment "Top-level SI urbanization zone (depth 1 of 3). bra0's canonical zones: Control Plane, Semantic Layer, Data Plane, Bus Neural. Zones group quartiers that share cross-cutting concerns."@en .
+
+asc:FunctionalQuartier a owl:Class ;
+  rdfs:label "Functional Quartier"@en, "Quartier fonctionnel"@fr ;
+  rdfs:comment "SI urbanization quartier (depth 2 of 3). Groups related capabilities within a zone under single-parent containment."@en .
+
+asc:FunctionalBloc a owl:Class ;
+  rdfs:label "Functional Bloc"@en, "Bloc fonctionnel"@fr ;
+  rdfs:comment "SI urbanization bloc (depth 3 of 3) — atomic element. Maps 1:1 to a capability. Urbanization invariant: one canonical pattern per bloc; redundant blocs are violations."@en .
+
+asc:UrbanizationReview a owl:Class ;
+  rdfs:subClassOf prov:Activity ;
+  rdfs:label "Urbanization Review"@en, "Revue d'urbanisation"@fr ;
+  rdfs:comment "A formal review by the urbanization authority (architect) that validates: (1) no functional redundancy with existing blocs, (2) correct zone/quartier placement, (3) canonical implementation pattern compliance, (4) cross-cutting concern alignment. Every new capability MUST pass an urbanization review before creation."@en .
+
+asc:RedundancyFinding a owl:Class ;
+  rdfs:subClassOf prov:Entity ;
+  rdfs:label "Redundancy Finding"@en, "Constat de redondance"@fr ;
+  rdfs:comment "A finding from an urbanization review identifying functional overlap between two or more capabilities, agents, or implementations. Redundancy findings must be resolved: merge, deprecate, or justify the exception."@en .
+
+# ── Urbanization Properties ───────────────────────────────────
+
+asc:zone a owl:ObjectProperty ;
+  rdfs:domain asc:FunctionalQuartier ;
+  rdfs:range asc:FunctionalZone ;
+  rdfs:label "zone"@en ;
+  rdfs:comment "The zone this quartier belongs to."@en .
+
+asc:quartier a owl:ObjectProperty ;
+  rdfs:domain asc:FunctionalBloc ;
+  rdfs:range asc:FunctionalQuartier ;
+  rdfs:label "quartier"@en ;
+  rdfs:comment "The quartier this bloc belongs to."@en .
+
+asc:mapsToBloc a owl:ObjectProperty ;
+  rdfs:domain asc:Capability ;
+  rdfs:range asc:FunctionalBloc ;
+  rdfs:label "maps to bloc"@en ;
+  rdfs:comment "Links a capability to its canonical functional bloc in the urbanization map. Every capability MUST map to exactly one bloc."@en .
+
+asc:canonicalPattern a owl:DatatypeProperty ;
+  rdfs:domain asc:FunctionalBloc ;
+  rdfs:range xsd:string ;
+  rdfs:label "canonical pattern"@en ;
+  rdfs:comment "The single canonical implementation pattern for this bloc. All agents operating within this bloc MUST follow this pattern. Deviations require urbanization review."@en .
+
+asc:urbanizationAuthority a owl:ObjectProperty ;
+  rdfs:domain asc:FunctionalZone ;
+  rdfs:range asc:AgentService ;
+  rdfs:label "urbanization authority"@en ;
+  rdfs:comment "The agent responsible for urbanization governance of this zone. Typically the architect agent. The authority reviews new capabilities, detects redundancy, and enforces canonical patterns."@en .
+
+asc:reviewedCapability a owl:ObjectProperty ;
+  rdfs:domain asc:UrbanizationReview ;
+  rdfs:range asc:Capability ;
+  rdfs:label "reviewed capability"@en ;
+  rdfs:comment "The capability being reviewed for urbanization compliance."@en .
+
+asc:reviewOutcome a owl:DatatypeProperty ;
+  rdfs:domain asc:UrbanizationReview ;
+  rdfs:range xsd:string ;
+  rdfs:label "review outcome"@en ;
+  rdfs:comment "Outcome: 'approved', 'merged' (into existing bloc), 'rejected' (redundant), 'deferred' (needs more analysis)."@en .
+
+asc:redundantWith a owl:ObjectProperty ;
+  rdfs:domain asc:RedundancyFinding ;
+  rdfs:range asc:Capability ;
+  rdfs:label "redundant with"@en ;
+  rdfs:comment "The existing capability that overlaps functionally."@en .
+
+asc:resolution a owl:DatatypeProperty ;
+  rdfs:domain asc:RedundancyFinding ;
+  rdfs:range xsd:string ;
+  rdfs:label "resolution"@en ;
+  rdfs:comment "How the redundancy was resolved: 'merged', 'deprecated', 'justified-exception'."@en .
+
+# ── Breaking Change Classification ────────────────────────────
+# Used by L2 agents to determine whether a schema modification
+# requires human gate (breaking) or can proceed directly (non-breaking).
+# This classification is the formal definition referenced by
+# ODRL constraints with odrl:rightOperand "non-breaking".
+
+asc:BreakingChangeType a owl:Class ;
+  rdfs:label "Breaking Change Type"@en ;
+  rdfs:comment "A classification of schema modifications by their impact on existing consumers. Breaking changes require human gate; non-breaking changes may proceed at L2."@en .
+
+asc:Breaking a asc:BreakingChangeType ;
+  rdfs:label "Breaking"@en ;
+  rdfs:comment "Modification that breaks existing consumers. Requires human gate at ALL autonomy levels."@en ;
+  skos:example "Remove owl:Class or sh:NodeShape used by other agents"@en ;
+  skos:example "Change rdfs:domain or rdfs:range of existing property"@en ;
+  skos:example "Remove or rename required sh:property from a SHACL shape"@en ;
+  skos:example "Change sh:datatype of existing property"@en ;
+  skos:example "Narrow sh:in enumeration (remove allowed values)"@en ;
+  skos:example "Increase sh:minCount on existing property"@en ;
+  skos:example "Remove named graph from another agent's asc:reads/asc:writes"@en .
+
+asc:NonBreaking a asc:BreakingChangeType ;
+  rdfs:label "Non-Breaking"@en ;
+  rdfs:comment "Modification that does not break existing consumers. L2 agents may proceed without human gate."@en ;
+  skos:example "Add new owl:Class not referenced by existing shapes"@en ;
+  skos:example "Add new owl:ObjectProperty or owl:DatatypeProperty"@en ;
+  skos:example "Add optional sh:property (sh:minCount 0) to existing shape"@en ;
+  skos:example "Widen sh:in enumeration (add allowed values)"@en ;
+  skos:example "Add rdfs:comment or rdfs:label to existing resource"@en ;
+  skos:example "Add new sh:NodeShape for a new class"@en ;
+  skos:example "Decrease sh:minCount on existing property"@en .
+
+asc:changeSeverity a owl:ObjectProperty ;
+  rdfs:domain asc:AgentService ;
+  rdfs:range asc:BreakingChangeType ;
+  rdfs:label "change severity"@en ;
+  rdfs:comment "Links an agent action to its breaking change classification. Used in ODRL constraints to gate L2 writes."@en .
+
+# ── Compute Tier Individuals ──────────────────────────────────
+
+asc:T0 a asc:ComputeTier ; rdfs:label "T0 — Manual"@en .
+asc:T1 a asc:ComputeTier ; rdfs:label "T1 — Claude Opus"@en .
+asc:T2 a asc:ComputeTier ; rdfs:label "T2 — Claude Sonnet"@en .
+asc:T3 a asc:ComputeTier ; rdfs:label "T3 — Claude Haiku"@en .
+asc:T4 a asc:ComputeTier ; rdfs:label "T4 — Ollama Legion"@en .
+asc:T5 a asc:ComputeTier ; rdfs:label "T5 — Ollama MacBook"@en .
+
+# ── Agent Properties ──────────────────────────────────────────
+
+asc:agentId a owl:DatatypeProperty ;
+  rdfs:domain asc:AgentService ;
+  rdfs:range xsd:anyURI ;
+  rdfs:label "agent ID"@en ;
+  rdfs:comment "DID identifier (did:ng:o:...)"@en .
+
+asc:role a owl:DatatypeProperty ;
+  rdfs:domain asc:AgentService ;
+  rdfs:range rdf:langString ;
+  rdfs:label "role"@en ;
+  rdfs:comment "The functional role fulfilled by this agent within the team (e.g. architect, dev, qa, pm). Range is rdf:langString to support language-tagged descriptions (P0-3 Keet audit fix 2026-04-18)."@en .
+
+asc:capability a owl:ObjectProperty ;
+  rdfs:domain asc:AgentService ;
+  rdfs:range asc:Capability ;
+  rdfs:label "capability"@en ;
+  rdfs:comment "A capability exercised by this agent, linked to the Capability Map."@en .
+
+asc:reads a owl:ObjectProperty ;
+  rdfs:domain asc:AgentService ;
+  rdfs:range asc:GraphInterface ;
+  rdfs:label "reads"@en ;
+  rdfs:comment "A graph interface that this agent is authorized to read from."@en .
+
+asc:writes a owl:ObjectProperty ;
+  rdfs:domain asc:AgentService ;
+  rdfs:range asc:GraphInterface ;
+  rdfs:label "writes"@en ;
+  rdfs:comment "A graph interface that this agent is authorized to write to."@en .
+
+asc:policy a owl:ObjectProperty ;
+  rdfs:domain asc:AgentService ;
+  rdfs:range odrl:Policy ;
+  rdfs:label "policy"@en ;
+  rdfs:comment "An ODRL policy governing this agent's permissions and prohibitions."@en .
+
+asc:inputShape a owl:ObjectProperty ;
+  rdfs:domain asc:AgentService ;
+  rdfs:range sh:NodeShape ;
+  rdfs:label "input shape"@en ;
+  rdfs:comment "A SHACL shape that validates the input data expected by this agent."@en .
+
+asc:outputShape a owl:ObjectProperty ;
+  rdfs:domain asc:AgentService ;
+  rdfs:range sh:NodeShape ;
+  rdfs:label "output shape"@en ;
+  rdfs:comment "A SHACL shape that validates the output data produced by this agent."@en .
+
+asc:sla a owl:ObjectProperty ;
+  rdfs:domain asc:AgentService ;
+  rdfs:range asc:ServiceLevelAgreement ;
+  rdfs:label "SLA"@en ;
+  rdfs:comment "The service level agreement defining performance, cost, and quality bounds for this agent."@en .
+
+# ── Graph Interface Properties ────────────────────────────────
+
+asc:graph a owl:ObjectProperty ;
+  rdfs:domain asc:GraphInterface ;
+  rdfs:range rdfs:Resource ;
+  rdfs:label "graph"@en ;
+  rdfs:comment "Named graph URI"@en .
+
+asc:sparql a owl:DatatypeProperty ;
+  rdfs:domain asc:GraphInterface ;
+  rdfs:range xsd:string ;
+  rdfs:label "SPARQL"@en ;
+  rdfs:comment "SPARQL pattern (SELECT for reads, INSERT for writes)"@en .
+
+# ── SLA Properties ────────────────────────────────────────────
+
+asc:maxTokenBudget a owl:DatatypeProperty ;
+  rdfs:domain asc:ServiceLevelAgreement ;
+  rdfs:range xsd:integer ;
+  rdfs:label "max token budget"@en ;
+  rdfs:comment "The maximum number of tokens this agent may consume per invocation or session."@en .
+
+asc:tierRange a owl:ObjectProperty ;
+  rdfs:domain asc:ServiceLevelAgreement ;
+  rdfs:range asc:ComputeTier ;
+  rdfs:label "tier range"@en ;
+  rdfs:comment "The compute tiers (T0-T5) that this SLA authorizes the agent to use."@en .
+
+asc:antiPattern a owl:ObjectProperty ;
+  rdfs:domain asc:ServiceLevelAgreement ;
+  rdfs:range asc:AntiPattern ;
+  rdfs:label "anti-pattern"@en ;
+  rdfs:comment "A known anti-pattern that this SLA monitors and guards against."@en .
+
+# ── Anti-Pattern Properties ───────────────────────────────────
+
+asc:alternative a owl:DatatypeProperty ;
+  rdfs:domain asc:AntiPattern ;
+  rdfs:range xsd:string ;
+  rdfs:label "alternative"@en ;
+  rdfs:comment "Recommended alternative to the anti-pattern."@en .
+
+# ── Task Properties (v0.5.0: re-domained on edgy:Task per ADR-053) ────
+# asc:Story removed; work-unit concept delegated to edgy:Task. The four
+# compute/token-tracking predicates below retain their asc: IRI (stable
+# identity for existing consumers and for ABox data referencing them)
+# and move their rdfs:domain to edgy:Task.
+
+asc:status a owl:DatatypeProperty ;
+  rdfs:domain edgy:Task ;
+  rdfs:range xsd:string ;
+  rdfs:label "status"@en ;
+  rdfs:comment "The current status of this task (e.g. todo, in-progress, done, blocked). Post-ADR-053: domain re-pointed from asc:Story (retired) to edgy:Task."@en .
+
+asc:computeTier a owl:ObjectProperty ;
+  rdfs:domain edgy:Task ;
+  rdfs:range asc:ComputeTier ;
+  rdfs:label "compute tier"@en ;
+  rdfs:comment "The compute tier (T0-T5) assigned to this task for resource allocation. Post-ADR-053: domain re-pointed from asc:Story (retired) to edgy:Task."@en .
+
+asc:storyPoints a owl:DatatypeProperty ;
+  rdfs:domain edgy:Task ;
+  rdfs:range xsd:integer ;
+  rdfs:label "story points"@en ;
+  rdfs:comment "Fibonacci estimate (1,2,3,5,8,13) for task sizing. Label retained for continuity with sprint-accounting conventions; domain is now edgy:Task."@en .
+
+asc:tokensConsumed a owl:DatatypeProperty ;
+  rdfs:domain edgy:Task ;
+  rdfs:range xsd:integer ;
+  rdfs:label "tokens consumed"@en ;
+  rdfs:comment "Actual tokens consumed by the task execution (all tiers combined). Post-ADR-053: domain re-pointed from asc:Story (retired) to edgy:Task."@en .
+
+# ── Efficiency Observation Properties ─────────────────────────
+
+asc:observedAntiPattern a owl:ObjectProperty ;
+  rdfs:domain asc:EfficiencyObservation ;
+  rdfs:range asc:AntiPattern ;
+  rdfs:label "observed anti-pattern"@en ;
+  rdfs:comment "The anti-pattern that was observed and corrected in this efficiency observation."@en .
+
+asc:tokensBefore a owl:DatatypeProperty ;
+  rdfs:domain asc:EfficiencyObservation ;
+  rdfs:range xsd:integer ;
+  rdfs:label "tokens before"@en ;
+  rdfs:comment "Number of tokens consumed before the anti-pattern correction was applied."@en .
+
+asc:tokensAfter a owl:DatatypeProperty ;
+  rdfs:domain asc:EfficiencyObservation ;
+  rdfs:range xsd:integer ;
+  rdfs:label "tokens after"@en ;
+  rdfs:comment "Number of tokens consumed after the anti-pattern correction was applied."@en .
+
+asc:gainFactor a owl:DatatypeProperty ;
+  rdfs:domain asc:EfficiencyObservation ;
+  rdfs:range xsd:decimal ;
+  rdfs:label "gain factor"@en ;
+  rdfs:comment "The efficiency multiplier achieved (tokensBefore / tokensAfter). Values > 1 indicate improvement."@en .
+
+asc:tokensPerStoryPoint a owl:DatatypeProperty ;
+  rdfs:domain asc:EfficiencyObservation ;
+  rdfs:range xsd:decimal ;
+  rdfs:label "tokens per story point"@en ;
+  rdfs:comment "Key efficiency metric: tokens consumed / story points"@en .
+
+asc:scriptProduced a owl:ObjectProperty ;
+  rdfs:domain asc:EfficiencyObservation ;
+  rdfs:range rdfs:Resource ;
+  rdfs:label "script produced"@en ;
+  rdfs:comment "Script artifact that materialized the gain."@en .
+
+# ══════════════════════════════════════════════════════════════
+# v0.2 Properties — Agent Runtime Extension
+# ══════════════════════════════════════════════════════════════
+
+# ── Skill Properties ────────────────────────────────────────
+
+asc:skillContent a owl:DatatypeProperty ;
+  rdfs:domain asc:Skill ; rdfs:range xsd:string ;
+  rdfs:label "skill content"@en ;
+  rdfs:comment "Markdown body of the skill definition."@en .
+
+asc:userInvocable a owl:DatatypeProperty ;
+  rdfs:domain asc:Skill ; rdfs:range xsd:boolean ;
+  rdfs:label "user invocable"@en ;
+  rdfs:comment "If true, skill can be triggered by explicit user command."@en .
+
+asc:alwaysActive a owl:DatatypeProperty ;
+  rdfs:domain asc:Skill ; rdfs:range xsd:boolean ;
+  rdfs:label "always active"@en ;
+  rdfs:comment "If true, skill is always loaded regardless of gating."@en .
+
+asc:tokenOverhead a owl:DatatypeProperty ;
+  rdfs:domain asc:Skill ; rdfs:range xsd:integer ;
+  rdfs:label "token overhead"@en ;
+  rdfs:comment "Estimated token overhead when skill is loaded into context."@en .
+
+# ── Gating Properties ───────────────────────────────────────
+
+asc:gating a owl:ObjectProperty ;
+  rdfs:domain asc:Skill ; rdfs:range asc:GatingRequirements ;
+  rdfs:label "gating"@en ;
+  rdfs:comment "Load-time activation requirements."@en .
+
+asc:requiresBin a owl:DatatypeProperty ;
+  rdfs:domain asc:GatingRequirements ; rdfs:range xsd:string ;
+  rdfs:label "requires bin"@en ;
+  rdfs:comment "Binary that must be present on PATH (all required)."@en .
+
+asc:requiresAnyBin a owl:DatatypeProperty ;
+  rdfs:domain asc:GatingRequirements ; rdfs:range xsd:string ;
+  rdfs:label "requires any bin"@en ;
+  rdfs:comment "Binary where at least one must be present."@en .
+
+asc:requiresEnv a owl:DatatypeProperty ;
+  rdfs:domain asc:GatingRequirements ; rdfs:range xsd:string ;
+  rdfs:label "requires env"@en ;
+  rdfs:comment "Environment variable that must be set."@en .
+
+asc:requiresConfig a owl:DatatypeProperty ;
+  rdfs:domain asc:GatingRequirements ; rdfs:range xsd:string ;
+  rdfs:label "requires config"@en ;
+  rdfs:comment "Config key that must be truthy."@en .
+
+asc:supportedOS a owl:DatatypeProperty ;
+  rdfs:domain asc:GatingRequirements ; rdfs:range xsd:string ;
+  rdfs:label "supported OS"@en ;
+  rdfs:comment "Supported platform (darwin, linux, win32)."@en .
+
+asc:primaryEnv a owl:DatatypeProperty ;
+  rdfs:domain asc:GatingRequirements ; rdfs:range xsd:string ;
+  rdfs:label "primary env"@en ;
+  rdfs:comment "Primary environment variable (used for install prompts)."@en .
+
+# ── Bootstrap Identity Properties ───────────────────────────
+
+asc:bootstrapIdentity a owl:ObjectProperty ;
+  rdfs:domain asc:AgentService ; rdfs:range asc:BootstrapIdentity ;
+  rdfs:label "bootstrap identity"@en ;
+  rdfs:comment "Persona and operating instructions for the agent."@en .
+
+asc:agentName a owl:DatatypeProperty ;
+  rdfs:domain asc:BootstrapIdentity ; rdfs:range xsd:string ;
+  rdfs:label "agent name"@en ;
+  rdfs:comment "Display name of the agent."@en .
+
+asc:emoji a owl:DatatypeProperty ;
+  rdfs:domain asc:BootstrapIdentity ; rdfs:range xsd:string ;
+  rdfs:label "emoji"@en ;
+  rdfs:comment "Unicode emoji identifier."@en .
+
+asc:soulPrompt a owl:DatatypeProperty ;
+  rdfs:domain asc:BootstrapIdentity ; rdfs:range xsd:string ;
+  rdfs:label "soul prompt"@en ;
+  rdfs:comment "Persona, boundaries, and tone instructions."@en .
+
+asc:operatingInstructions a owl:DatatypeProperty ;
+  rdfs:domain asc:BootstrapIdentity ; rdfs:range xsd:string ;
+  rdfs:label "operating instructions"@en ;
+  rdfs:comment "Agent behavior instructions and memory."@en .
+
+asc:toolNotes a owl:DatatypeProperty ;
+  rdfs:domain asc:BootstrapIdentity ; rdfs:range xsd:string ;
+  rdfs:label "tool notes"@en ;
+  rdfs:comment "User-maintained notes about tool usage."@en .
+
+# ── Tool Policy Properties ──────────────────────────────────
+
+asc:toolPolicy a owl:ObjectProperty ;
+  rdfs:domain asc:AgentService ; rdfs:range asc:ToolPolicy ;
+  rdfs:label "tool policy"@en ;
+  rdfs:comment "ODRL-based tool access policy."@en .
+
+asc:toolProfile a owl:DatatypeProperty ;
+  rdfs:domain asc:AgentService ; rdfs:range xsd:string ;
+  rdfs:label "tool profile"@en ;
+  rdfs:comment "Base tool allowlist profile: minimal, coding, messaging, full."@en .
+
+asc:toolAllow a owl:DatatypeProperty ;
+  rdfs:domain asc:AgentService ; rdfs:range xsd:string ;
+  rdfs:label "tool allow"@en ;
+  rdfs:comment "Explicitly allowed tool name."@en .
+
+asc:toolDeny a owl:DatatypeProperty ;
+  rdfs:domain asc:AgentService ; rdfs:range xsd:string ;
+  rdfs:label "tool deny"@en ;
+  rdfs:comment "Explicitly denied tool name."@en .
+
+# ── Sub-Agent Policy Properties ─────────────────────────────
+
+asc:subagentPolicy a owl:ObjectProperty ;
+  rdfs:domain asc:AgentService ; rdfs:range asc:SubagentPolicy ;
+  rdfs:label "sub-agent policy"@en ;
+  rdfs:comment "Governance constraints on sub-agent spawning."@en .
+
+asc:maxSpawnDepth a owl:DatatypeProperty ;
+  rdfs:domain asc:SubagentPolicy ; rdfs:range xsd:integer ;
+  rdfs:label "max spawn depth"@en ;
+  rdfs:comment "Maximum sub-agent depth (1-5)."@en .
+
+asc:maxChildren a owl:DatatypeProperty ;
+  rdfs:domain asc:SubagentPolicy ; rdfs:range xsd:integer ;
+  rdfs:label "max children"@en ;
+  rdfs:comment "Maximum children per agent."@en .
+
+asc:maxConcurrent a owl:DatatypeProperty ;
+  rdfs:domain asc:SubagentPolicy ; rdfs:range xsd:integer ;
+  rdfs:label "max concurrent"@en ;
+  rdfs:comment "Maximum concurrent sub-agents."@en .
+
+asc:subagentModel a owl:DatatypeProperty ;
+  rdfs:domain asc:SubagentPolicy ; rdfs:range xsd:string ;
+  rdfs:label "sub-agent model"@en ;
+  rdfs:comment "LLM model for sub-agents (provider/model)."@en .
+
+asc:subagentTimeout a owl:DatatypeProperty ;
+  rdfs:domain asc:SubagentPolicy ; rdfs:range xsd:integer ;
+  rdfs:label "sub-agent timeout"@en ;
+  rdfs:comment "Run timeout in seconds for sub-agents."@en .
+
+# ── Plugin Properties ───────────────────────────────────────
+
+asc:pluginKind a owl:DatatypeProperty ;
+  rdfs:domain asc:Plugin ; rdfs:range xsd:string ;
+  rdfs:label "plugin kind"@en ;
+  rdfs:comment "Plugin category: channel, provider, tool, memory, context-engine."@en .
+
+asc:pluginHook a owl:ObjectProperty ;
+  rdfs:domain asc:Plugin ; rdfs:range asc:PluginHook ;
+  rdfs:label "plugin hook"@en ;
+  rdfs:comment "A lifecycle hook registered by this plugin."@en .
+
+asc:pluginSlot a owl:DatatypeProperty ;
+  rdfs:domain asc:Plugin ; rdfs:range xsd:string ;
+  rdfs:label "plugin slot"@en ;
+  rdfs:comment "Exclusive slot: memory or contextEngine."@en .
+
+asc:registeredTool a owl:DatatypeProperty ;
+  rdfs:domain asc:Plugin ; rdfs:range xsd:string ;
+  rdfs:label "registered tool"@en ;
+  rdfs:comment "Name of a tool registered by this plugin."@en .
+
+# ── Plugin Hook Properties ──────────────────────────────────
+
+asc:hookName a owl:DatatypeProperty ;
+  rdfs:domain asc:PluginHook ; rdfs:range xsd:string ;
+  rdfs:label "hook name"@en ;
+  rdfs:comment "Lifecycle hook name (before_tool_call, after_tool_call, etc.)."@en .
+
+asc:hookCanBlock a owl:DatatypeProperty ;
+  rdfs:domain asc:PluginHook ; rdfs:range xsd:boolean ;
+  rdfs:label "hook can block"@en ;
+  rdfs:comment "If true, hook can block the action."@en .
+
+# ── Exec Approval Properties ───────────────────────────────
+
+asc:execApproval a owl:ObjectProperty ;
+  rdfs:domain asc:AgentService ; rdfs:range asc:ExecApproval ;
+  rdfs:label "exec approval"@en ;
+  rdfs:comment "Execution approval rule for this agent."@en .
+
+asc:securityMode a owl:DatatypeProperty ;
+  rdfs:domain asc:ExecApproval ; rdfs:range xsd:string ;
+  rdfs:label "security mode"@en ;
+  rdfs:comment "Exec security mode: deny, allowlist, full."@en .
+
+asc:askMode a owl:DatatypeProperty ;
+  rdfs:domain asc:ExecApproval ; rdfs:range xsd:string ;
+  rdfs:label "ask mode"@en ;
+  rdfs:comment "When to prompt user: off, on-miss, always."@en .
+
+asc:execPattern a owl:DatatypeProperty ;
+  rdfs:domain asc:ExecApproval ; rdfs:range xsd:string ;
+  rdfs:label "exec pattern"@en ;
+  rdfs:comment "Glob pattern for allowed executables."@en .
+
+asc:safeBin a owl:DatatypeProperty ;
+  rdfs:domain asc:ExecApproval ; rdfs:range xsd:string ;
+  rdfs:label "safe bin"@en ;
+  rdfs:comment "Auto-allowed stdin-only binary (jq, cut, head, etc.)."@en .

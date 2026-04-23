@@ -1,0 +1,137 @@
+@prefix sh:      <http://www.w3.org/ns/shacl#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix prov:    <http://www.w3.org/ns/prov#> .
+@prefix evo:     <https://schema.bra0.org/evidence-os#> .
+@prefix edcc:    <https://schema.bra0.org/evidence-os/edcc#> .
+@prefix edccQ:   <https://schema.bra0.org/evidence-os/edcc/query#> .
+
+#
+# SHACL shapes — EDCC Construction Domain: CSRD Reporting (CU5)
+# Scope: Multi-level reporting validation for EDCC demo
+# Validate: rudof shacl-validate -s edcc-csrd.shapes.ttl fixtures/edcc-csrd/<happy-path|failure>.ttl
+#
+
+<> dcterms:license <https://creativecommons.org/licenses/by-sa/4.0/> .
+
+#######################################################################
+# edcc:ImpactReportShape (S4)
+# Target: edcc:ImpactReport
+# Validates CSRD E1/E2 + REP + ACV reporting data completeness
+#######################################################################
+
+edcc:ImpactReportShape
+    a sh:NodeShape ;
+    sh:targetClass edcc:ImpactReport ;
+    rdfs:label "Impact report shape"@en ;
+    rdfs:comment "Validates a circular impact report (CU5). Every report MUST declare scope (project/territory/national), reporting period, NACE code, and link to regulatory controls it evidences (CSRD E1, CSRD E2, REP). Counterfactual metrics (CO2 avoided) are validated structurally."@en ;
+    sh:property [
+        sh:path rdfs:label ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "edcc:ImpactReport MUST declare rdfs:label."@en ;
+    ] ,
+    [
+        sh:path dcterms:identifier ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "edcc:ImpactReport MUST carry dcterms:identifier (report reference)."@en ;
+    ] ,
+    [
+        sh:path dcterms:created ;
+        sh:datatype xsd:date ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "edcc:ImpactReport MUST carry dcterms:created."@en ;
+    ] ,
+    [
+        sh:path edccQ:reportingScope ;
+        sh:datatype xsd:string ;
+        sh:in ( "project" "organisation" "territory" "national" ) ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "edcc:ImpactReport MUST declare edccQ:reportingScope from controlled vocabulary."@en ;
+    ] ,
+    [
+        sh:path edccQ:reportingPeriodStart ;
+        sh:datatype xsd:date ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "edcc:ImpactReport MUST declare reporting period start date."@en ;
+    ] ,
+    [
+        sh:path edccQ:reportingPeriodEnd ;
+        sh:datatype xsd:date ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "edcc:ImpactReport MUST declare reporting period end date."@en ;
+    ] ,
+    [
+        sh:path edcc:naceCode ;
+        sh:datatype xsd:string ;
+        sh:pattern "^[A-U][0-9]{2}(\\.[0-9]{1,2})?$" ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "edcc:ImpactReport MUST carry edcc:naceCode (NACE Rev. 2 format, e.g. 'F41.2')."@en ;
+    ] ,
+    [
+        sh:path prov:wasAttributedTo ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ;
+        sh:message "edcc:ImpactReport MUST carry prov:wasAttributedTo (reporting entity)."@en ;
+    ] ,
+    [
+        sh:path evo:evidences ;
+        sh:class evo:Control ;
+        sh:minCount 1 ;
+        sh:message "edcc:ImpactReport MUST evidence at least one evo:Control (CSRD/REP/ACV requirement)."@en ;
+    ] .
+
+#######################################################################
+# edccQ:CircularImpactResultShape
+# Target: edccQ:CircularImpactResult
+# Validates counterfactual impact metric structure (Wang-Bates-Aronow-Jordan)
+#######################################################################
+
+edccQ:CircularImpactResultShape
+    a sh:NodeShape ;
+    rdfs:label "Circular impact result shape"@en ;
+    rdfs:comment "Validates the structure of a circular impact metric result. Per Wang, Bates, Aronow & Jordan counterfactual framework: impact_real = benefit(reuse) - benefit(no_reuse). SHACL validates structure and provenance, NOT causal identification."@en ;
+    sh:targetNode edccQ:CircularImpactResult ;
+    sh:property [
+        sh:path edccQ:tonnesReused ;
+        sh:datatype xsd:decimal ;
+        sh:minInclusive 0.0 ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "tonnesReused MUST be a non-negative decimal."@en ;
+    ] ,
+    [
+        sh:path edccQ:co2AvoidedTonnes ;
+        sh:datatype xsd:decimal ;
+        sh:minInclusive 0.0 ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "co2AvoidedTonnes MUST be a non-negative decimal (counterfactual CO2 avoided)."@en ;
+    ] ,
+    [
+        sh:path edccQ:circularityRate ;
+        sh:datatype xsd:decimal ;
+        sh:minInclusive 0.0 ;
+        sh:maxInclusive 1.0 ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "circularityRate MUST be xsd:decimal in [0.0, 1.0] (weighted circularity ratio)."@en ;
+    ] ,
+    [
+        sh:path edccQ:economicSavingsEur ;
+        sh:datatype xsd:decimal ;
+        sh:minCount 0 ; sh:maxCount 1 ;
+        sh:message "economicSavingsEur if present MUST be xsd:decimal (net savings vs virgin materials, EUR)."@en ;
+    ] ,
+    [
+        sh:path edccQ:counterfactualMethod ;
+        sh:datatype xsd:string ;
+        sh:in ( "lca_baseline" "synthetic_control" "difference_in_differences" "expert_estimate" ) ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "counterfactualMethod MUST declare the estimation method used."@en ;
+    ] ,
+    [
+        sh:path prov:wasDerivedFrom ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ;
+        sh:message "CircularImpactResult MUST link to source data via prov:wasDerivedFrom (provenance chain)."@en ;
+    ] .

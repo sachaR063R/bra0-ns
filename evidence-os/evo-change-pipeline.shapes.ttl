@@ -1,0 +1,132 @@
+@prefix sh:      <http://www.w3.org/ns/shacl#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix prov:    <http://www.w3.org/ns/prov#> .
+@prefix dcat:    <http://www.w3.org/ns/dcat#> .
+@prefix evo:     <https://schema.bra0.org/evidence-os#> .
+
+#
+# SHACL shapes — OntoEDGY product-cycle sub-classes: Commit + MergeRequest + Deployment
+# Scope: arch-delta v0.1.4 §3.2.1 (operational events in the delivery pipeline)
+# Validate: rudof shacl-validate -s evo-change-pipeline.shapes.ttl fixtures/evo-change-pipeline/<happy-path|failure>.ttl
+# Quinn gates in CI; feeds the D08 v0.7 auto-link dogfood story (evoQ:ChangeLinkRatioShape ≥80%).
+#
+# Count: 3 of the 22-canon shape catalogue (Nael Q-β 2026-04-17).
+#
+
+<> dcterms:license <https://creativecommons.org/licenses/by-sa/4.0/> .
+
+#######################################################################
+# evo:CommitShape
+# Target: evo:Commit (arch-delta §3.2.1 row 3 — prov:Activity subclass)
+# A single commit event; anchor for auto-link + rogue-commit detection + dogfood rate.
+#######################################################################
+
+evo:CommitShape
+    a sh:NodeShape ;
+    sh:targetClass evo:Commit ;
+    rdfs:label "Commit shape"@en ;
+    rdfs:comment "Validates evo:Commit instances. Anchors auto-link (E2 v0.7 MUST), rogue-commit detection (E4 Wave 2 per Nael-6 relocation), and dogfood rate (D08 v0.7 / evoQ:ChangeLinkRatioShape ≥ 0.80)."@en ;
+    sh:property [
+        sh:path dcterms:identifier ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "evo:Commit MUST carry dcterms:identifier (commit SHA-1 or SHA-256 hex)."@en ;
+    ] ,
+    [
+        sh:path rdfs:label ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "evo:Commit MUST carry rdfs:label (commit message subject line)."@en ;
+    ] ,
+    [
+        sh:path prov:wasAttributedTo ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ;
+        sh:message "evo:Commit MUST carry prov:wasAttributedTo (author agent IRI) — PROV-O inheritance."@en ;
+    ] ,
+    [
+        sh:path prov:generatedAtTime ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "evo:Commit MUST carry prov:generatedAtTime (authored-at timestamp, xsd:dateTime)."@en ;
+    ] ,
+    [
+        sh:path prov:wasInformedBy ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 0 ;
+        sh:message "evo:Commit SHOULD carry prov:wasInformedBy pointing at a decision-activity (prov:Activity, typically the ADR authoring activity) or a requirement instance — absence triggers rogue-commit detection (E4 §3.3). Post-ADR-053: evo:Decision retired; consumers type decision-activities as prov:Activity directly."@en ;
+    ] .
+
+#######################################################################
+# evo:MergeRequestShape
+# Target: evo:MergeRequest (arch-delta §3.2.1 row 4 — prov:Activity subclass)
+# Merge proposal event; aggregates commits + review trail.
+#######################################################################
+
+evo:MergeRequestShape
+    a sh:NodeShape ;
+    sh:targetClass evo:MergeRequest ;
+    rdfs:label "Merge-request shape"@en ;
+    rdfs:comment "Validates evo:MergeRequest instances. Aggregates commits under review; carries review provenance + decision binding."@en ;
+    sh:property [
+        sh:path dcterms:identifier ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "evo:MergeRequest MUST carry dcterms:identifier (MR number / PR number)."@en ;
+    ] ,
+    [
+        sh:path rdfs:label ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "evo:MergeRequest MUST carry rdfs:label (MR title)."@en ;
+    ] ,
+    [
+        sh:path prov:wasAttributedTo ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ;
+        sh:message "evo:MergeRequest MUST carry prov:wasAttributedTo (author + reviewer agents)."@en ;
+    ] ,
+    [
+        sh:path prov:used ;
+        sh:class evo:Commit ;
+        sh:minCount 1 ;
+        sh:message "evo:MergeRequest MUST prov:used at least one evo:Commit (commits under review)."@en ;
+    ] .
+
+#######################################################################
+# evo:DeploymentShape
+# Target: evo:Deployment (arch-delta §3.2.1 row 5 — prov:Activity subclass)
+# Runtime-level deploy event; binds to a target environment (DCAT DataService).
+#######################################################################
+
+evo:DeploymentShape
+    a sh:NodeShape ;
+    sh:targetClass evo:Deployment ;
+    rdfs:label "Deployment shape"@en ;
+    rdfs:comment "Validates evo:Deployment instances. Binds a deploy event to its target environment per arch-delta §3.2.1 evo:targetEnvironment predicate (DCAT DataService reuse)."@en ;
+    sh:property [
+        sh:path dcterms:identifier ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "evo:Deployment MUST carry dcterms:identifier (deploy run ID)."@en ;
+    ] ,
+    [
+        sh:path prov:generatedAtTime ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "evo:Deployment MUST carry prov:generatedAtTime (deploy-wallclock timestamp)."@en ;
+    ] ,
+    [
+        sh:path evo:targetEnvironment ;
+        sh:class dcat:DataService ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "evo:Deployment MUST bind evo:targetEnvironment to a dcat:DataService (target environment per arch-delta §3.2.1 cross-cutting predicate)."@en ;
+    ] ,
+    [
+        sh:path prov:used ;
+        sh:class evo:Commit ;
+        sh:minCount 1 ;
+        sh:message "evo:Deployment MUST prov:used at least one evo:Commit (the commit actually deployed)."@en ;
+    ] .

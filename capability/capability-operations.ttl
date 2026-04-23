@@ -1,0 +1,404 @@
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix prov:  <http://www.w3.org/ns/prov#> .
+@prefix cap:   <https://schema.bra0.org/capability#> .
+@prefix obo:   <http://purl.obolibrary.org/obo/> .
+@prefix edgy:  <http://www.omyn.ai/schema/edgy#> .
+
+#
+# Capability Operations Registry — operational triples per capability
+# --------------------------------------------------------------------
+# Owner: Nael (Architect & Engineer) — absolute architectural authority (D16)
+# Authoring source for the (interface · SPARQL · CLI) triple rendered on
+# bra0/public/blueprint.html and bra0/public/docs/reference/capabilities.html.
+# D18 (Progressive site-docs publication) anchor set — W01 first-pass.
+#
+# Coverage: 10/48 capabilities populated here (Evidence OS V1 anchor set).
+# Remaining 38 grow progressively at W04/W06/W08/W10/W13 per D18.
+# Status ground truth: bra0/public/blueprint.html .cap blocks.
+#
+
+<> dcterms:license <https://creativecommons.org/licenses/by-sa/4.0/> .
+
+# ─── Vocabulary declarations ─────────────────────────────────────────
+
+cap:Capability a owl:Class ;
+    rdfs:label "bra0 Capability"@en , "Capacité bra0"@fr ;
+    skos:definition "A leaf capability in the 48-capability blueprint (GOV, SL, DP, TP, NS families)."@en ;
+    rdfs:comment "BFO grounding: disposition (BFO:0000016) — a realizable entity whose realization occurs when the bearer is in a certain type of situation. A capability exists whether exercised or not (continuant)."@en .
+
+cap:Realization a owl:Class ;
+    rdfs:subClassOf prov:Activity ;
+    rdfs:label "Realization"@en , "Réalisation"@fr ;
+    rdfs:comment """The PROCESS of actualizing a capability (disposition → process).
+BFO grounding: process (BFO:0000015) via prov:Activity — an occurrent that
+unfolds in time. Per BFO 2020, a Realization is the process by which a
+disposition (capability) is exercised.
+
+Carries metadata about HOW an implementation serves a capability: role,
+migration phase, scope, and replacement references. Inspired by fno:Mapping
+(N-ary Relations pattern, Noy & Rector 2006) but corrected to be a process
+(occurrent), not a static bridge entity.
+
+The capability (continuant/disposition) persists whether realized or not.
+The Realization (occurrent/process) exists only when the capability is
+actually being exercised by an implementation."""@en ;
+    skos:relatedMatch <https://fno.io/spec/#mapping> ;
+    rdfs:seeAlso <https://www.w3.org/TR/swbp-n-aryRelations/> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/capability> .
+
+cap:realizesCapability a owl:ObjectProperty ;
+    rdfs:domain cap:Realization ;
+    rdfs:range cap:Capability ;
+    rdfs:label "realizes capability"@en , "réalise la capacité"@fr ;
+    rdfs:comment """Links a Realization (process/occurrent) to the Capability (disposition/continuant)
+it actualizes. This is the BFO 'realizes' relation: a process realizes a
+disposition when it is the kind of process the disposition is the disposition for.
+Named cap:realizesCapability (not cap:realizes) to avoid collision with
+edgy:realizes and to make the BFO semantics explicit."""@en ;
+    rdfs:isDefinedBy <https://schema.bra0.org/capability> .
+
+cap:hasInterface a owl:DatatypeProperty ;
+    rdfs:domain cap:Capability ;
+    rdfs:range xsd:string ;
+    rdfs:label "has interface"@en , "a pour interface"@fr ;
+    skos:definition "Type / function signature that names how the capability is invoked in code (Rust / TypeScript / service call)."@en .
+
+cap:hasSparqlOperation a owl:DatatypeProperty ;
+    rdfs:domain cap:Capability ;
+    rdfs:range xsd:string ;
+    rdfs:label "has SPARQL operation"@en , "a pour opération SPARQL"@fr ;
+    skos:definition "Reference SPARQL query/update expressing the capability at its primary semantic layer, honoring I1 SPARQL-first. May be empty for capabilities whose primary surface is not query-shaped."@en .
+
+cap:hasCliOperation a owl:DatatypeProperty ;
+    rdfs:domain cap:Capability ;
+    rdfs:range xsd:string ;
+    rdfs:label "has CLI operation"@en , "a pour opération CLI"@fr ;
+    skos:definition "CLI invocation (topo / rudof / standard tool) that exercises the capability from the command line, honoring I1 CLI-first."@en .
+
+cap:implementationStatus a owl:DatatypeProperty ;
+    rdfs:domain cap:Capability ;
+    rdfs:range xsd:string ;
+    skos:definition "One of: shipped | partial | planned | gap. Mirrors blueprint.html badge."@en .
+
+cap:family a owl:DatatypeProperty ;
+    rdfs:domain cap:Capability ;
+    rdfs:range xsd:string ;
+    skos:definition "One of: GOV | SL | DP | TP | NS."@en .
+
+# ─── Anchor set — 10 capabilities (Evidence OS V1) ───────────────────
+
+# GOV-2 Consent & Usage Policies
+cap:GOV-2 a cap:Capability ;
+    skos:prefLabel "Consent & Usage Policies"@en , "Politiques de consentement et d'usage"@fr ;
+    cap:family "GOV" ;
+    cap:implementationStatus "partial" ;
+    cap:hasInterface "consentStore.evaluate(request: AccessRequest) → PolicyDecision" ;
+    cap:hasSparqlOperation """ASK {
+  ?policy a odrl:Policy ;
+          odrl:permission ?perm .
+  ?perm   odrl:action    ?action ;
+          odrl:target    ?target .
+  FILTER (?action = <urn:action:read> && ?target = <urn:entity:X>)
+}""" ;
+    cap:hasCliOperation "topo policy check --request request.json --policy policy.ttl" ;
+    rdfs:comment "Dual enforcement: crypto-bound smart contracts (DP) for simple rules; SPARQL/Datalog evaluation (SL) for complex. Owner-set conditions."@en .
+
+# GOV-3 Provenance & Audit
+cap:GOV-3 a cap:Capability ;
+    skos:prefLabel "Provenance & Audit"@en , "Provenance et audit"@fr ;
+    cap:family "GOV" ;
+    cap:implementationStatus "shipped" ;
+    cap:hasInterface "provenanceEngine.logActivity(kind: ProvActivityKind, used: IRI[], generated: IRI[], agent: IRI) → IRI" ;
+    cap:hasSparqlOperation """INSERT DATA {
+  GRAPH <urn:audit> {
+    <urn:act:_uuid_> a prov:Activity ;
+      prov:startedAtTime "2026-04-16T10:00:00Z"^^xsd:dateTime ;
+      prov:wasAssociatedWith <did:ng:o:agentX> ;
+      prov:used              <urn:entity:input> ;
+      prov:generated         <urn:entity:output> .
+  }
+}""" ;
+    cap:hasCliOperation "topo audit log --entity <iri> --agent <did> --activity consolidate" ;
+    rdfs:comment "13 PROV-O activity types. Append-only via NextGraph DAG. Quarterly retention rules, audit-compliant trail."@en .
+
+# GOV-4 Validation Gates
+cap:GOV-4 a cap:Capability ;
+    skos:prefLabel "Validation Gates"@en , "Portiques de validation"@fr ;
+    cap:family "GOV" ;
+    cap:implementationStatus "shipped" ;
+    cap:hasInterface "fn validate_shacl(shapes: &Path, data: &Path) → ShaclReport  // cascade.rs" ;
+    cap:hasSparqlOperation """# SHACL validation result retrieval (rudof output reified into the graph)
+SELECT ?focusNode ?resultPath ?severity ?message WHERE {
+  ?report a sh:ValidationReport ;
+          sh:conforms false ;
+          sh:result ?r .
+  ?r sh:focusNode    ?focusNode ;
+     sh:resultPath   ?resultPath ;
+     sh:resultSeverity ?severity ;
+     sh:resultMessage ?message .
+}""" ;
+    cap:hasCliOperation "rudof shacl-validate -s shapes.ttl data.ttl" ;
+    rdfs:comment "rudof (Rust) is the ONLY ShEx/SHACL validator. No JS fallback. Post-merge quality gate in the cascade."@en .
+
+# GOV-7 KnowledgeSpace Lifecycle
+cap:GOV-7 a cap:Capability ;
+    skos:prefLabel "KnowledgeSpace Lifecycle"@en , "Cycle de vie du KnowledgeSpace"@fr ;
+    cap:family "GOV" ;
+    cap:implementationStatus "planned" ;
+    cap:hasInterface "lifecycleService.promote(kspace: IRI, from: Stage, to: Stage) → Result<PromotionActivity, GateError>" ;
+    cap:hasSparqlOperation """DELETE { ?ks bra0:stage ?oldStage }
+INSERT {
+  ?ks bra0:stage ?newStage .
+  <urn:act:_uuid_> a prov:Activity ;
+    prov:used     ?ks ;
+    prov:generated ?newStage ;
+    prov:startedAtTime ?now .
+} WHERE {
+  BIND (<urn:ks:target> AS ?ks)
+  BIND ("review" AS ?newStage)
+  BIND (NOW() AS ?now)
+  ?ks bra0:stage ?oldStage .
+  FILTER NOT EXISTS { ?r a sh:ValidationReport ; sh:conforms false ; sh:scope ?ks }
+}""" ;
+    cap:hasCliOperation "topo kspace promote <iri> --from draft --to review" ;
+    rdfs:comment "Stages: draft → review → published. SHACL gate at each promotion. PROV-O trace per promotion. ADR-032."@en .
+
+# SL-1 Ontology Authoring
+cap:SL-1 a cap:Capability ;
+    skos:prefLabel "Ontology Authoring"@en , "Création d'ontologies"@fr ;
+    cap:family "SL" ;
+    cap:implementationStatus "shipped" ;
+    cap:hasInterface "rdfMutationGenerator.createClass({iri, label, superClass?, comment?}) → TurtlePatch" ;
+    cap:hasSparqlOperation """INSERT DATA {
+  <urn:ont:MyClass> a owl:Class ;
+    rdfs:label "My Class"@en ;
+    rdfs:subClassOf <urn:ont:ParentClass> ;
+    rdfs:comment "..."@en .
+}""" ;
+    cap:hasCliOperation "topo ontology new-class <iri> --label 'My Class' --super <parent-iri> --lang en" ;
+    rdfs:comment "OWL 2 + SKOS. 11 entity types in multimodal NamedGraphs. Visual canvas + detail panels."@en .
+
+# SL-3 OWL Reasoning
+cap:SL-3 a cap:Capability ;
+    skos:prefLabel "OWL Reasoning"@en , "Raisonnement OWL"@fr ;
+    cap:family "SL" ;
+    cap:implementationStatus "shipped" ;
+    cap:hasInterface "fn materialize_owl2rl(store: &mut Store) → InferredTripleCount  // owl.rs (sophia + oxigraph)" ;
+    cap:hasSparqlOperation """# Reference rule: inverseOf materialization (one of 9 OWL 2 RL rules)
+INSERT { GRAPH <urn:bra0:inferred> { ?b ?p2 ?a } }
+WHERE {
+  ?p1 owl:inverseOf ?p2 .
+  ?a  ?p1           ?b .
+  FILTER NOT EXISTS { ?b ?p2 ?a }
+}""" ;
+    cap:hasCliOperation "topo owl materialize <ontology-dir>" ;
+    rdfs:comment "9 OWL 2 RL rules (subClassOf, inverseOf, symmetric, transitive, domain, range, equivalentClass, subPropertyOf, equivalentProperty). Fixpoint engine. 14 ms on 522-triple OntoEDGY."@en .
+
+# SL-5 Data Mapping
+cap:SL-5 a cap:Capability ;
+    skos:prefLabel "Data Mapping"@en , "Mapping de données"@fr ;
+    cap:family "SL" ;
+    cap:implementationStatus "shipped" ;
+    cap:hasInterface "rmlEngine.apply(mapping: RmlTriplesMap, source: SourceHandle) → Stream<RdfQuad>" ;
+    cap:hasSparqlOperation """# CSV→RDF instantiation via RML; SPARQL retrieval of the produced instances:
+SELECT ?s ?p ?o WHERE {
+  GRAPH <urn:source:csv-import-2026-04-16> { ?s ?p ?o }
+}""" ;
+    cap:hasCliOperation "topo map apply mapping.rml.ttl --source data.csv --out instances.ttl" ;
+    rdfs:comment "W3C RML TriplesMap: CSV/JSON → RDF instances. Schema inference, IRI templates, type coercion, provenance tracked."@en .
+
+# SL-7 Reactive Projection
+cap:SL-7 a cap:Capability ;
+    skos:prefLabel "Reactive Projection"@en , "Projection réactive"@fr ;
+    cap:family "SL" ;
+    cap:implementationStatus "planned" ;
+    cap:hasInterface "useReactiveQuery(sparql: string, dependencies: IRI[]) → { data, loading, error, refetch }" ;
+    cap:hasSparqlOperation """# Any SELECT; runtime re-evaluates on mutations touching listed dependency IRIs.
+SELECT ?decision ?rationale WHERE {
+  ?decision a evo:Decision ;
+            evo:rationale ?rationale .
+} ORDER BY DESC(?decision)""" ;
+    cap:hasCliOperation "topo watch --query live.rq --deps urn:entity:X,urn:entity:Y" ;
+    rdfs:comment "Zustand mutations → debounced 100 ms re-eval → subscribers update. Powers charts, grids, inspector. ADR-031."@en .
+
+# SL-9 KnowledgeSpace Templates
+cap:SL-9 a cap:Capability ;
+    skos:prefLabel "KnowledgeSpace Templates"@en , "Templates de KnowledgeSpace"@fr ;
+    cap:family "SL" ;
+    cap:implementationStatus "planned" ;
+    cap:hasInterface "templateBridge.apply(templateId: string, target: KSpaceIRI) → Result<AppliedTriples, ValidationError>" ;
+    cap:hasSparqlOperation """# CONSTRUCT from template bundle, expanded against target KSpace:
+CONSTRUCT {
+  ?tbox ?p ?o .
+  ?shape a sh:NodeShape ; ?sp ?so .
+} WHERE {
+  GRAPH <urn:template:skos-taxonomy> {
+    { ?tbox  ?p ?o . FILTER(?p IN (rdf:type, rdfs:subClassOf, rdfs:label)) }
+    UNION
+    { ?shape a sh:NodeShape ; ?sp ?so }
+  }
+}""" ;
+    cap:hasCliOperation "topo template list | topo template apply <template-id> --to <kspace-iri> | topo template validate <template-id>" ;
+    rdfs:comment "Template bundles: TBox + shapes + queries + sample ABox. 3 built-ins: SKOS Taxonomy, EDGY Enterprise Design, Research Bibliography. ADR-035."@en .
+
+# DP-2 SPARQL Operations
+cap:DP-2 a cap:Capability ;
+    skos:prefLabel "SPARQL Operations"@en , "Opérations SPARQL"@fr ;
+    cap:family "DP" ;
+    cap:implementationStatus "shipped" ;
+    cap:hasInterface "fn raw_query(q: &str) → QuerySolutions  // Rust, cmd_query.rs\\n// TypeScript: oxigraphStore.query(sparql: string) → Promise<Results>" ;
+    cap:hasSparqlOperation """# The meta-capability: SPARQL itself. Any SELECT/CONSTRUCT/ASK/UPDATE.
+SELECT ?s ?p ?o WHERE { ?s ?p ?o } LIMIT 10""" ;
+    cap:hasCliOperation "topo query <dir> -q <file.rq|dir/> [--csv|--json|--summary]" ;
+    rdfs:comment "SELECT / CONSTRUCT / ASK / UPDATE on Oxigraph WASM. QueryBridge abstracts backend. Named-graph scoping. Dual runtime: TS (browser/Node) + Rust native."@en .
+
+# ─── T1 shipped additions — W02 batch (DP + TP) ──────────────────────
+
+# DP-1 KG Ingestion
+cap:DP-1 a cap:Capability ;
+    skos:prefLabel "KG Ingestion"@en , "Ingestion KG"@fr ;
+    cap:family "DP" ;
+    cap:implementationStatus "shipped" ;
+    cap:hasInterface "fn import(path: &Path, format: RdfFormat) → Result<TripleCount, ParseError>  // rdfParser" ;
+    cap:hasSparqlOperation """# Post-import retrieval of the ingested graph:
+SELECT ?s ?p ?o WHERE {
+  GRAPH <urn:import:2026-04-16> { ?s ?p ?o }
+} LIMIT 100""" ;
+    cap:hasCliOperation "topo import <file.ttl|file.jsonld|file.nt> [--graph <iri>]" ;
+    rdfs:comment "Parse Turtle / JSON-LD / N-Triples. Syntax validation, Oxigraph hydration."@en .
+
+# DP-4 Export & Interoperability
+cap:DP-4 a cap:Capability ;
+    skos:prefLabel "Export & Interoperability"@en , "Export et interopérabilité"@fr ;
+    cap:family "DP" ;
+    cap:implementationStatus "shipped" ;
+    cap:hasInterface "rdfSerializer.serialize(store: Store, format: RdfFormat) → String\\nprovenanceExporter.dcat(store: Store) → DcatCatalog" ;
+    cap:hasSparqlOperation """# DCAT catalogue CONSTRUCT for export:
+CONSTRUCT {
+  ?dataset a dcat:Dataset ;
+           dcterms:title ?title ;
+           dcat:distribution [ a dcat:Distribution ; dcat:mediaType ?mt ] .
+} WHERE {
+  ?dataset a dcat:Dataset ;
+           dcterms:title ?title ;
+           dcterms:format ?mt .
+}""" ;
+    cap:hasCliOperation "topo export <dir> --format ttl|jsonld|nt|dcat [--out <file>]" ;
+    rdfs:comment "Round-trip fidelity for all W3C formats. DCAT 3.0 metadata export (entity counts, distribution format, publisher)."@en .
+
+# TP-1 Digital Perception
+cap:TP-1 a cap:Capability ;
+    skos:prefLabel "Digital Perception"@en , "Perception digitale"@fr ;
+    cap:family "TP" ;
+    cap:implementationStatus "shipped" ;
+    cap:hasInterface "fn capture(dir: &Path) → ArchimateArtifactGraph  // generic adapter, 6 format categories" ;
+    cap:hasSparqlOperation """# Query captured artifacts with ArchiMate typing:
+SELECT ?artifact ?format ?size ?date ?partOf WHERE {
+  ?artifact a archi:Artifact ;
+            rdfs:label ?label ;
+            archi:format ?format ;
+            dcterms:extent ?size ;
+            dcterms:created ?date ;
+            dcterms:isPartOf ?partOf .
+}""" ;
+    cap:hasCliOperation "topo capture <dir>" ;
+    rdfs:comment "Scan any project directory, classify files by format, produce ArchiMate Artifact RDF. Tested on 31-file corpus (189 triples)."@en .
+
+# TP-4 Continuous Reflection
+cap:TP-4 a cap:Capability ;
+    skos:prefLabel "Continuous Reflection"@en , "Réflexion continue"@fr ;
+    cap:family "TP" ;
+    cap:implementationStatus "shipped" ;
+    cap:hasInterface "fn reflect(iot_traces: Graph, encounters: Graph) → CorrelationReport" ;
+    cap:hasSparqlOperation """# Corroboration phase — cross-reference IoT traces with domain encounters:
+SELECT ?iotObs ?encounter WHERE {
+  ?iotObs  a sosa:Observation ; sosa:resultTime ?t1 .
+  ?encounter a evo:Encounter ; time:hasTime ?t2 .
+  FILTER (ABS(?t1 - ?t2) < "PT5M"^^xsd:duration)
+}""" ;
+    cap:hasCliOperation "topo reflect" ;
+    rdfs:comment "Multi-phase SPARQL analysis: corroboration, anomalies, temporal coherence."@en .
+
+# ─── T1 shipped additions — W03-W04 batch (NS family) ────────────────
+
+# NS-1 Gap Detection
+cap:NS-1 a cap:Capability ;
+    skos:prefLabel "Gap Detection"@en , "Détection de lacunes"@fr ;
+    cap:family "NS" ;
+    cap:implementationStatus "shipped" ;
+    cap:hasInterface "fn detect_gaps(ontology: Graph, queries: &[SparqlQuery]) → GapReport  // 10 built-in Gaur-taxonomy queries, oxigraph WASM" ;
+    cap:hasSparqlOperation """# One of 10 Gaur-taxonomy queries — representation gap (unused class):
+SELECT ?class WHERE {
+  ?class a owl:Class .
+  FILTER NOT EXISTS { ?x a ?class }
+}""" ;
+    cap:hasCliOperation "topo gaps <ontology-file> [--queries <custom-queries-dir>]" ;
+    rdfs:comment "10 SPARQL queries (Gaur taxonomy: representation, access failures). Currently ASC-scoped. Custom domain queries via --queries flag."@en .
+
+# NS-4 Auditable Explanations
+cap:NS-4 a cap:Capability ;
+    skos:prefLabel "Auditable Explanations"@en , "Explications auditables"@fr ;
+    cap:family "NS" ;
+    cap:implementationStatus "shipped" ;
+    cap:hasInterface "provenance.recordActivity(type: ProvActivityType, inputs: IRI[], outputs: IRI[], agent: IRI) → ProvActivity  // provenance.ts, 250 LOC, 8 tests" ;
+    cap:hasSparqlOperation """# Full PROV-O chain for an output — why does X exist?
+SELECT ?act ?input ?agent ?start WHERE {
+  <urn:output:X> prov:wasGeneratedBy ?act .
+  ?act prov:used             ?input ;
+       prov:wasAssociatedWith ?agent ;
+       prov:startedAtTime    ?start .
+} ORDER BY ?start""" ;
+    cap:hasCliOperation "topo audit explain <entity-iri>" ;
+    rdfs:comment "PROV-O activity recording at every pipeline step (capture, triplify, classify, annotate, consolidate, validate). Decision-level provenance planned v0.8."@en .
+
+# NS-5 Symbolic Cascade
+cap:NS-5 a cap:Capability ;
+    skos:prefLabel "Symbolic Cascade"@en , "Cascade symbolique"@fr ;
+    cap:family "NS" ;
+    cap:implementationStatus "shipped" ;
+    cap:hasInterface "fn cascade(input: Graph) → CascadeResult  // cascade.rs — 5 stages: OWL 2 RL → NER tier 2 → merge dedup → SHACL validate → result" ;
+    cap:hasSparqlOperation """# TripleOrigin provenance on cascade output — which stage produced each triple:
+SELECT ?s ?p ?o ?origin WHERE {
+  ?s ?p ?o ;
+     bra0:tripleOrigin ?origin .
+  FILTER (?origin IN ("owl-materialization","ner-extraction","merge","shacl-validation"))
+}""" ;
+    cap:hasCliOperation "topo cascade <input-dir> [--skip-ner]" ;
+    rdfs:comment "Symbolic always wins. ShaclReport quality gate (rudof post-merge). Validated on enterprise design corpus (532 triples, 0 violations). Feature-gated: standalone."@en .
+
+# NS-7 OWL Materialization
+cap:NS-7 a cap:Capability ;
+    skos:prefLabel "OWL Materialization"@en , "Matérialisation OWL"@fr ;
+    cap:family "NS" ;
+    cap:implementationStatus "shipped" ;
+    cap:hasInterface "fn materialize_owl2rl(store: &mut Store) → InferredTripleCount  // owl.rs, 9 OWL 2 RL rules, fixpoint, 14ms on 522-triple OntoEDGY" ;
+    cap:hasSparqlOperation """# One of 9 rules — transitive property materialization:
+INSERT { GRAPH <urn:bra0:inferred> { ?a ?p ?c } }
+WHERE {
+  ?p a owl:TransitiveProperty .
+  ?a ?p ?b . ?b ?p ?c .
+  FILTER NOT EXISTS { ?a ?p ?c }
+}""" ;
+    cap:hasCliOperation "topo owl materialize <ontology-dir>" ;
+    rdfs:comment "9 rules (subClassOf, inverseOf, symmetric, transitive, domain, range, equivalentClass, subPropertyOf, equivalentProperty). Engine: sophia 0.9 + oxigraph. 13 tests. Same compute as SL-3 (OWL Reasoning); NS-7 is the cascade-stage framing, SL-3 is the semantic-layer capability."@en .
+
+# NS-8 Entity Recognition
+cap:NS-8 a cap:Capability ;
+    skos:prefLabel "Entity Recognition"@en , "Reconnaissance d'entités"@fr ;
+    cap:family "NS" ;
+    cap:implementationStatus "shipped" ;
+    cap:hasInterface "NerEngine::zero_shot_ner(text: &str, vocabulary: &SkosGraph) → Vec<EntityMatch>  // ner.rs, candle BERT MiniLM-L6-v2 (22MB, 384 dims), WASM 4.1MB, 1546ms inference" ;
+    cap:hasSparqlOperation """# Retrieve NER-extracted entities with confidence + origin:
+SELECT ?entity ?label ?class ?confidence WHERE {
+  ?entity a ?class ;
+          rdfs:label ?label ;
+          re:extractionConfidence ?confidence ;
+          re:extractionOrigin "ner-tier-2" .
+} ORDER BY DESC(?confidence)""" ;
+    cap:hasCliOperation "topo ner <dir> --vocab <vocab.ttl>" ;
+    rdfs:comment "Zero-shot NER via candle BERT + SKOS vocabulary. Cosine similarity ranks domain concepts, no retraining. Feature-gated: ner."@en .

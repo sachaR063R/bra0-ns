@@ -1,0 +1,62 @@
+@prefix sh:      <http://www.w3.org/ns/shacl#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix prov:    <http://www.w3.org/ns/prov#> .
+@prefix ess:     <https://schema.bra0.org/essence-kernel#> .
+@prefix evo:     <https://schema.bra0.org/evidence-os#> .
+
+#
+# SHACL shapes — Requirement instance validator (post-ADR-053 v0.2.0)
+# Scope: ADR-053 §D6 — evo:UserStoryShape and evo:AcceptanceCriterionShape
+# retired in favour of a single RequirementInstanceShape targeting
+# prov:Entity instances that declare ess:advancesAlpha ess:Requirements.
+# Target selector: SPARQL (W3C SHACL §5.3) — SHACL Core does not combine
+# sh:targetClass with additional triple constraints natively.
+# Validate: rudof shacl-validate -s evo-story.shapes.ttl fixtures/evo-story/<happy-path|failure>.ttl
+# Quinn gates in CI (W04 PRD lock blocker-1); Nael owns Keet audit publication gate.
+#
+# Dropped v0.2.0 (ADR-053):
+#   evo:UserStoryShape            (sh:targetClass evo:UserStory — class retired)
+#   evo:AcceptanceCriterionShape  (sh:targetClass evo:AcceptanceCriterion — class retired; AC semantics carried by Essence alpha-state transitions)
+#
+
+<> dcterms:license <https://creativecommons.org/licenses/by-sa/4.0/> .
+
+#######################################################################
+# evo:RequirementInstanceShape
+# Target: prov:Entity instances carrying ess:advancesAlpha ess:Requirements
+# Replaces the v0.1.0 evo:UserStoryShape. Acceptance criteria are modelled
+# as Essence alpha-state transitions on the requirement entity (Acceptable
+# -> Addressed -> Fulfilled); no dedicated AC shape is required.
+#######################################################################
+
+evo:RequirementInstanceShape
+    a sh:NodeShape ;
+    rdfs:label "Requirement-instance shape (post-ADR-053)"@en ;
+    rdfs:comment "Validates structural integrity of requirement instances per ADR-053 §D6. A requirement is any node carrying ess:advancesAlpha ess:Requirements (OMG Essence 2.0 alpha; the parent type prov:Entity is entailed by the ess:advancesAlpha range once the kernel is loaded, so the shape targets the predicate use directly). Every requirement MUST carry a human-readable label, a stable identifier for cross-connector traceability, advance the Requirements alpha, and carry a provenance attribution. Acceptance semantics are expressed as alpha-state transitions on this entity, not as a separate shape."@en ;
+    sh:targetSubjectsOf ess:advancesAlpha ;
+    sh:property [
+        sh:path rdfs:label ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "A requirement instance MUST declare exactly one rdfs:label (human-readable narrative — INVEST story text, plain-language requirement, etc.)."@en ;
+    ] ,
+    [
+        sh:path dcterms:identifier ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "A requirement instance MUST carry dcterms:identifier (connector-sourced stable ID, e.g. Jira key, ticket number)."@en ;
+    ] ,
+    [
+        sh:path ess:advancesAlpha ;
+        sh:hasValue ess:Requirements ;
+        sh:minCount 1 ;
+        sh:message "A requirement instance MUST advance the ess:Requirements alpha (OMG Essence 2.0 bridge). Current alpha state is carried on the corresponding advancement activity via ess:currentAlphaState."@en ;
+    ] ,
+    [
+        sh:path prov:wasAttributedTo ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ;
+        sh:message "A requirement instance MUST carry prov:wasAttributedTo (author / product-owner agent IRI) — PROV-O provenance."@en ;
+    ] .

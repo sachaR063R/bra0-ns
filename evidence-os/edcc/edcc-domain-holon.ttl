@@ -1,0 +1,70 @@
+@prefix dcat:   <http://www.w3.org/ns/dcat#> .
+@prefix asc:     <https://schema.bra0.org/agent-service-contract#> .
+@prefix bra0m:   <https://schema.bra0.org/module#> .
+@prefix evo:     <https://schema.bra0.org/evidence-os#> .
+@prefix edcc:    <https://schema.bra0.org/evidence-os/edcc#> .
+@prefix edgy:    <http://www.omyn.ai/schema/edgy#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+
+# =============================================================================
+# EDCC Domain Holon — Dashboard Configuration (ABox)
+# =============================================================================
+#
+# Per ADR-043 D2/D3: Domain holon as asc:Holon with dashboard predicates.
+# Dashboard-layout predicates live in the bra0m: (Core module registry)
+# namespace — K2 leak remediation 2026-04-20 moved them out of evo: which
+# is reserved for product-layer Evidence OS artefacts (decisions, evidence,
+# controls). Node rendering queries (nodeLabel, nodeBadge) kept on evo: as
+# demo content pending broader rendering primitive refactor.
+# This file travels with the user's wallet. It IS the dashboard config.
+#
+# BFO grounding: asc:Holon → BFO:object (independent continuant)
+# OntoEDGY: scenarios = edgy:Experience specializations (Task, Journey, Channel)
+#
+# Owner:    Nael (Architect)
+# Date:     2026-04-17
+# Story:    DHD-07
+# License:  MIT OR Apache-2.0
+# =============================================================================
+
+edcc:EDCCDomain a dcat:Catalog ;
+    rdfs:label "Construction Circulaire EDCC"@fr ;
+    rdfs:comment "Espace de Donnees pour la Construction Circulaire. Dashboard configuration for diagnostiqueurs PEMD, maitres d'ouvrage, materiauthequeurs, and SCIC auditors."@fr ;
+
+    # --- D3: dashboard predicates (bra0m: Core) ---
+
+    bra0m:dashboardLayout "grid-2x3" ;
+
+    bra0m:visibleFacet "sources" , "shapes" , "text" ;
+
+    bra0m:hiddenPanel
+        "SparqlPanel" ,
+        "ConstraintPanel" ,
+        "InspectorPanel" ,
+        "SpikePanelOpen" ,
+        "RdfPanel" ,
+        "ConsentPanel" ,
+        "GraphMetrics" ,
+        "TemplateLibraryPanel" ;
+
+    evo:nodeLabel """SELECT ?node ?label ?subtitle WHERE {
+  ?node rdfs:label ?label .
+  OPTIONAL {
+    ?node a ?type .
+    BIND(REPLACE(STR(?type), '^.*[#/]', '') AS ?subtitle)
+  }
+}""" ;
+
+    evo:nodeBadge """SELECT ?node ?badge ?color WHERE {
+  ?node evo:evidences ?ctrl .
+  BIND('conforme' AS ?badge)
+  BIND('green' AS ?color)
+}""" ;
+
+    bra0m:defaultView "dashboard" ;
+
+    bra0m:domainColorToken "green" ;
+
+    bra0m:domainIcon "building-2" .

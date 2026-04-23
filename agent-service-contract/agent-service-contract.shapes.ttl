@@ -1,0 +1,587 @@
+@prefix asc:  <https://schema.bra0.org/agent-service-contract#> .
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix odrl: <http://www.w3.org/ns/odrl/2/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+
+<> dct:license "https://creativecommons.org/licenses/by-sa/4.0/" .
+
+# ══════════════════════════════════════════════════════════════
+# SHACL Shapes for Agent Service Contracts
+# Validates agent instances against asc: ontology v0.5.0
+# ADR-020 — Step 5 (Diana validation)
+#
+# v0.5 (ADR-052, 2026-04-23): Deholonize. No holonic closure
+# shapes ever existed in this bundle (verified: grep for
+# HolonShape / HolonicMembraneShape / PortalShape / HolarchyShape
+# / HolonicAspectShape returns zero hits). This commit is an
+# explicit no-op entry for the ADR-052 §5 sequence and bumps
+# the bundle's target version pointer to v0.5.0. All surviving
+# shapes (AgentService, Capability, Mandate, BootstrapIdentity,
+# ToolPolicy, SubagentPolicy, PluginHook, ExecApproval, Story)
+# continue to validate their targets against the PROV-O + DCAT
+# + ODRL-grounded ontology without edit.
+#
+# v0.3: Governance Hardening — GovernedAgentShape,
+# MandateShape, BootstrapIdentityCompleteShape,
+# PolicyCompletenessShape. Non-breaking additions.
+#
+# v0.2: Added shapes for Skill, Plugin, GatingRequirements,
+# BootstrapIdentity, ToolPolicy, SubagentPolicy, PluginHook,
+# ExecApproval
+# ══════════════════════════════════════════════════════════════
+
+# ── AgentService Shape ────────────────────────────────────────
+
+asc:AgentServiceShape a sh:NodeShape ;
+  sh:targetClass asc:AgentService ;
+  rdfs:label "Agent Service Contract Shape"@en ;
+  rdfs:comment "Every agent must have a label, role, at least one capability. Policy is carried via Mandate (v0.3+), not directly on the agent."@en ;
+
+  sh:property [
+    sh:path rdfs:label ;
+    sh:minCount 1 ;
+    sh:datatype rdf:langString ;
+    sh:message "Agent must have a label (rdfs:label)"
+  ] ;
+
+  sh:property [
+    sh:path asc:role ;
+    sh:minCount 1 ;
+    sh:datatype rdf:langString ;
+    sh:message "Agent must have a role description (asc:role)"
+  ] ;
+
+  sh:property [
+    sh:path asc:capability ;
+    sh:minCount 1 ;
+    sh:class asc:Capability ;
+    sh:message "Agent must have at least one capability"
+  ] .
+  # NOTE: asc:policy removed from AgentServiceShape in v0.3.
+  # Policy is now accessed via asc:governedBy → Mandate → asc:policy.
+  # See GovernedAgentShape and MandateShape for the v0.3 validation path.
+
+# ── Capability Shape ──────────────────────────────────────────
+
+asc:CapabilityShape a sh:NodeShape ;
+  sh:targetClass asc:Capability ;
+  rdfs:label "Capability Shape"@en ;
+
+  sh:property [
+    sh:path rdfs:label ;
+    sh:minCount 1 ;
+    sh:message "Capability must have a label"
+  ] .
+
+# ── ODRL Policy Shape (v0.1 — relaxed, targets all odrl:Set) ──
+# NOTE: Superseded by PolicyCompletenessShape (v0.3) for
+# contract-linked policies. Kept for backwards compatibility
+# with v0.1 agent contracts that use asc:policy directly.
+# Will be removed when all agents migrate to v0.4+.
+
+asc:PolicyShape a sh:NodeShape ;
+  sh:target [
+    a sh:SPARQLTarget ;
+    sh:select """
+      PREFIX asc: <https://schema.bra0.org/agent-service-contract#>
+      PREFIX odrl: <http://www.w3.org/ns/odrl/2/>
+      SELECT ?this WHERE {
+        ?agent asc:policy ?this .
+        ?this a odrl:Set .
+      }
+    """
+  ] ;
+  rdfs:label "ODRL Policy Shape (v0.1 compat)"@en ;
+
+  sh:property [
+    sh:path rdfs:label ;
+    sh:minCount 1 ;
+    sh:message "Policy must have a label"
+  ] ;
+
+  sh:or (
+    [ sh:property [ sh:path odrl:prohibition ; sh:minCount 1 ] ]
+    [ sh:property [ sh:path odrl:duty ; sh:minCount 1 ] ]
+    [ sh:property [ sh:path odrl:permission ; sh:minCount 1 ] ]
+  ) ;
+  sh:message "Policy must have at least one prohibition, duty, or permission" .
+
+# ── Anti-Pattern Shape ────────────────────────────────────────
+
+asc:AntiPatternShape a sh:NodeShape ;
+  sh:targetClass asc:AntiPattern ;
+  rdfs:label "Anti-Pattern Shape"@en ;
+
+  sh:property [
+    sh:path rdfs:label ;
+    sh:minCount 1 ;
+    sh:message "Anti-pattern must have a label"
+  ] ;
+
+  sh:property [
+    sh:path asc:alternative ;
+    sh:minCount 1 ;
+    sh:message "Anti-pattern must document an alternative"
+  ] .
+
+# ── Efficiency Observation Shape ──────────────────────────────
+
+asc:EfficiencyObservationShape a sh:NodeShape ;
+  sh:targetClass asc:EfficiencyObservation ;
+  rdfs:label "Efficiency Observation Shape"@en ;
+
+  sh:property [
+    sh:path asc:tokensBefore ;
+    sh:minCount 1 ;
+    sh:datatype xsd:integer ;
+    sh:message "Observation must record tokens before"
+  ] ;
+
+  sh:property [
+    sh:path asc:tokensAfter ;
+    sh:minCount 1 ;
+    sh:datatype xsd:integer ;
+    sh:message "Observation must record tokens after"
+  ] ;
+
+  sh:property [
+    sh:path asc:gainFactor ;
+    sh:minCount 1 ;
+    sh:datatype xsd:decimal ;
+    sh:message "Observation must record gain factor"
+  ] ;
+
+  sh:property [
+    sh:path prov:wasGeneratedBy ;
+    sh:minCount 1 ;
+    sh:message "Observation must have provenance (prov:wasGeneratedBy)"
+  ] ;
+
+  sh:property [
+    sh:path prov:wasAttributedTo ;
+    sh:minCount 1 ;
+    sh:message "Observation must be attributed to an agent"
+  ] .
+
+# ── Story Shape ───────────────────────────────────────────────
+
+asc:StoryShape a sh:NodeShape ;
+  sh:targetClass asc:Story ;
+  rdfs:label "Story Shape"@en ;
+
+  sh:property [
+    sh:path asc:status ;
+    sh:minCount 1 ;
+    sh:in ( "draft" "in_progress" "done" "blocked" ) ;
+    sh:message "Story must have a valid status (draft|in_progress|done|blocked)"
+  ] ;
+
+  sh:property [
+    sh:path asc:computeTier ;
+    sh:minCount 1 ;
+    sh:class asc:ComputeTier ;
+    sh:message "Story must have a compute tier (T0-T5)"
+  ] ;
+
+  sh:property [
+    sh:path asc:storyPoints ;
+    sh:minCount 1 ;
+    sh:datatype xsd:integer ;
+    sh:minInclusive 1 ;
+    sh:maxInclusive 13 ;
+    sh:message "Story must have story points (1-13)"
+  ] .
+
+# ══════════════════════════════════════════════════════════════
+# v0.3 Shapes — Governance Hardening
+# ══════════════════════════════════════════════════════════════
+
+# ── AP-GOV-3: Non-human agents must have governance prohibitions ──
+# Every non-human agent must be governed by a mandate
+# that prohibits self-modification and self-escalation.
+
+asc:GovernedAgentShape a sh:NodeShape ;
+  sh:targetClass asc:AgentService ;
+  rdfs:label "Governed Agent Shape — governance invariants"@en ;
+  rdfs:comment "Every AgentService must have a mandate, an autonomy level, and a bootstrap identity. Non-human agents are additionally subject to self-modification and self-escalation guards validated by agent-specific shapes."@en ;
+
+  sh:property [
+    sh:path asc:governedBy ;
+    sh:minCount 1 ;
+    sh:severity sh:Violation ;
+    sh:message "Every agent MUST be governed by a Mandate (asc:governedBy)."@en
+  ] ;
+
+  sh:property [
+    sh:path asc:autonomyLevel ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    sh:severity sh:Violation ;
+    sh:message "Every agent MUST declare exactly one autonomy level."@en
+  ] ;
+
+  sh:property [
+    sh:path asc:bootstrapIdentity ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    sh:class asc:BootstrapIdentity ;
+    sh:severity sh:Violation ;
+    sh:message "Every agent MUST have exactly one bootstrap identity."@en
+  ] .
+
+# ── Mandate must have ODRL policy ──
+
+asc:MandateShape a sh:NodeShape ;
+  sh:targetClass asc:Mandate ;
+  rdfs:label "Mandate Shape"@en ;
+
+  sh:property [
+    sh:path asc:policy ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    sh:class odrl:Set ;
+    sh:severity sh:Violation ;
+    sh:message "Mandate MUST have exactly one ODRL policy."@en
+  ] ;
+
+  sh:property [
+    sh:path asc:autonomyLevel ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    sh:severity sh:Violation ;
+    sh:message "Mandate MUST declare the autonomy level it enforces."@en
+  ] ;
+
+  sh:property [
+    sh:path dct:created ;
+    sh:minCount 1 ;
+    sh:datatype xsd:date ;
+    sh:severity sh:Violation ;
+    sh:message "Mandate MUST have a creation date."@en
+  ] .
+
+# ── Bootstrap Identity must have soul prompt and instructions ──
+
+asc:BootstrapIdentityCompleteShape a sh:NodeShape ;
+  sh:targetClass asc:BootstrapIdentity ;
+  rdfs:label "Bootstrap Identity Completeness Shape"@en ;
+  rdfs:comment "A bootstrap identity must fully specify the agent's persona and operating instructions. Incomplete identities lead to non-deterministic agent behavior."@en ;
+
+  sh:property [
+    sh:path asc:agentName ;
+    sh:minCount 1 ;
+    sh:datatype xsd:string ;
+    sh:message "Bootstrap identity MUST have an agent name."@en
+  ] ;
+
+  sh:property [
+    sh:path asc:soulPrompt ;
+    sh:minCount 1 ;
+    sh:severity sh:Violation ;
+    sh:message "Bootstrap identity MUST have a soul prompt defining persona and boundaries."@en
+  ] ;
+
+  sh:property [
+    sh:path asc:operatingInstructions ;
+    sh:minCount 1 ;
+    sh:severity sh:Violation ;
+    sh:message "Bootstrap identity MUST have operating instructions."@en
+  ] .
+
+# ── ODRL Policy must have minimum governance structure ──
+
+asc:PolicyCompletenessShape a sh:NodeShape ;
+  # Target only policies linked to a Mandate.
+  sh:target [
+    a sh:SPARQLTarget ;
+    sh:select """
+      PREFIX asc: <https://schema.bra0.org/agent-service-contract#>
+      SELECT ?this WHERE {
+        ?contract a asc:Mandate ;
+          asc:policy ?this .
+      }
+    """
+  ] ;
+  rdfs:label "Policy Completeness Shape"@en ;
+  rdfs:comment "Every ODRL policy for a governed agent must have permissions, prohibitions, AND duties. A policy without prohibitions is ungoverned. A policy without duties has no positive obligations."@en ;
+
+  sh:property [
+    sh:path rdfs:label ;
+    sh:minCount 1 ;
+    sh:message "Policy must have a label."@en
+  ] ;
+
+  sh:property [
+    sh:path odrl:permission ;
+    sh:minCount 1 ;
+    sh:severity sh:Violation ;
+    sh:message "Policy MUST have at least one permission."@en
+  ] ;
+
+  sh:property [
+    sh:path odrl:prohibition ;
+    sh:minCount 1 ;
+    sh:severity sh:Violation ;
+    sh:message "Policy MUST have at least one prohibition. An agent without prohibitions is ungoverned."@en
+  ] ;
+
+  sh:property [
+    sh:path odrl:duty ;
+    sh:minCount 1 ;
+    sh:severity sh:Violation ;
+    sh:message "Policy MUST have at least one duty. An agent without duties has no positive obligations."@en
+  ] .
+
+# ── Policy Inheritance — must inherit base-policy ──
+
+asc:PolicyInheritanceShape a sh:NodeShape ;
+  # Target only policies linked to a Mandate,
+  # not abstract meta-policies (base-policy, l2-policy).
+  sh:target [
+    a sh:SPARQLTarget ;
+    sh:select """
+      PREFIX asc: <https://schema.bra0.org/agent-service-contract#>
+      SELECT ?this WHERE {
+        ?contract a asc:Mandate ;
+          asc:policy ?this .
+      }
+    """
+  ] ;
+  rdfs:label "Policy Inheritance Shape"@en ;
+  rdfs:comment "Every agent ODRL policy linked to a Mandate must inherit from the governance base policy. This ensures universal prohibitions (self-modification, self-escalation, delegation framing) and duties (provenance, AI Act, English, single controller) are structurally present."@en ;
+
+  sh:property [
+    sh:path odrl:inheritFrom ;
+    sh:minCount 1 ;
+    sh:severity sh:Violation ;
+    sh:message "Policy MUST inherit from at least the governance base-policy (odrl:inheritFrom). Without inheritance, universal governance invariants are not enforced."@en
+  ] .
+
+# ── Non-Human Agent — AI Act Art. 52 ──
+
+asc:NonHumanAgentShape a sh:NodeShape ;
+  sh:targetClass asc:AgentService ;
+  rdfs:label "Non-Human Agent Shape — AI Act Art. 52"@en ;
+
+  sh:property [
+    sh:path asc:agentType ;
+    sh:minCount 1 ;
+    sh:hasValue "non-human" ;
+    sh:severity sh:Violation ;
+    sh:message "Every AgentService MUST declare asc:agentType 'non-human' (AI Act Art. 52 transparency obligation)."@en
+  ] .
+
+# ── Collaboration — agents must declare associations ──
+
+asc:CollaborationShape a sh:NodeShape ;
+  sh:targetClass asc:AgentService ;
+  rdfs:label "Collaboration Shape — agents must declare qualified associations"@en ;
+
+  sh:property [
+    sh:path prov:qualifiedAssociation ;
+    sh:minCount 1 ;
+    sh:severity sh:Warning ;
+    sh:message "Agent SHOULD declare at least one collaboration (prov:qualifiedAssociation). Isolated agents are a governance smell."@en
+  ] .
+
+# ── Temporal Validity — contracts must have bounded validity ──
+
+asc:TemporalValidityShape a sh:NodeShape ;
+  sh:targetClass asc:Mandate ;
+  rdfs:label "Temporal Validity Shape"@en ;
+  rdfs:comment "Mandates must have bounded validity. An unbounded contract cannot be reviewed or revoked. The human controller must explicitly renew after expiry."@en ;
+
+  sh:property [
+    sh:path asc:validFrom ;
+    sh:minCount 1 ;
+    sh:datatype xsd:date ;
+    sh:severity sh:Violation ;
+    sh:message "Mandate MUST have a validFrom date."@en
+  ] ;
+
+  sh:property [
+    sh:path asc:validUntil ;
+    sh:minCount 1 ;
+    sh:datatype xsd:date ;
+    sh:severity sh:Violation ;
+    sh:message "Mandate MUST have a validUntil date. Unbounded contracts are prohibited."@en
+  ] ;
+
+  sh:property [
+    sh:path asc:reviewDate ;
+    sh:minCount 1 ;
+    sh:datatype xsd:date ;
+    sh:severity sh:Warning ;
+    sh:message "Mandate SHOULD have a reviewDate before validUntil."@en
+  ] ;
+
+  sh:property [
+    sh:path asc:reviewedBy ;
+    sh:minCount 1 ;
+    sh:severity sh:Violation ;
+    sh:message "Mandate MUST identify the human reviewer (asc:reviewedBy)."@en
+  ] .
+
+# ══════════════════════════════════════════════════════════════
+# v0.2 Shapes — Agent Runtime Extension
+# ══════════════════════════════════════════════════════════════
+
+# ── Skill Shape ─────────────────────────────────────────────
+
+asc:SkillShape a sh:NodeShape ;
+  sh:targetClass asc:Skill ;
+  rdfs:label "Skill Shape"@en ;
+  rdfs:comment "A Skill must have a label, role, at least one capability, and gating requirements."@en ;
+
+  sh:property [
+    sh:path rdfs:label ;
+    sh:minCount 1 ;
+    sh:message "Skill must have a label"
+  ] ;
+
+  sh:property [
+    sh:path asc:role ;
+    sh:minCount 1 ;
+    sh:message "Skill must have a role description"
+  ] ;
+
+  sh:property [
+    sh:path asc:capability ;
+    sh:minCount 1 ;
+    sh:class asc:Capability ;
+    sh:message "Skill must have at least one capability"
+  ] ;
+
+  sh:property [
+    sh:path asc:gating ;
+    sh:maxCount 1 ;
+    sh:class asc:GatingRequirements ;
+    sh:message "Skill may have at most one gating requirements block"
+  ] .
+
+# ── Plugin Shape ────────────────────────────────────────────
+
+asc:PluginShape a sh:NodeShape ;
+  sh:targetClass asc:Plugin ;
+  rdfs:label "Plugin Shape"@en ;
+  rdfs:comment "A Plugin must have a label, kind, and at least one hook or registered tool."@en ;
+
+  sh:property [
+    sh:path rdfs:label ;
+    sh:minCount 1 ;
+    sh:message "Plugin must have a label"
+  ] ;
+
+  sh:property [
+    sh:path asc:pluginKind ;
+    sh:minCount 1 ;
+    sh:in ( "channel" "provider" "tool" "memory" "context-engine" ) ;
+    sh:message "Plugin must have a kind (channel|provider|tool|memory|context-engine)"
+  ] .
+
+# ── Gating Requirements Shape ──────────────────────────────
+
+asc:GatingRequirementsShape a sh:NodeShape ;
+  sh:targetClass asc:GatingRequirements ;
+  rdfs:label "Gating Requirements Shape"@en ;
+  rdfs:comment "Gating must specify at least one requirement."@en ;
+
+  sh:or (
+    [ sh:property [ sh:path asc:requiresBin ; sh:minCount 1 ] ]
+    [ sh:property [ sh:path asc:requiresAnyBin ; sh:minCount 1 ] ]
+    [ sh:property [ sh:path asc:requiresEnv ; sh:minCount 1 ] ]
+    [ sh:property [ sh:path asc:requiresConfig ; sh:minCount 1 ] ]
+    [ sh:property [ sh:path asc:supportedOS ; sh:minCount 1 ] ]
+  ) ;
+  sh:message "Gating must have at least one requirement (bin, env, config, or OS)" .
+
+# ── Bootstrap Identity Shape ───────────────────────────────
+
+asc:BootstrapIdentityShape a sh:NodeShape ;
+  sh:targetClass asc:BootstrapIdentity ;
+  rdfs:label "Bootstrap Identity Shape"@en ;
+
+  sh:property [
+    sh:path asc:agentName ;
+    sh:minCount 1 ;
+    sh:datatype xsd:string ;
+    sh:message "Bootstrap identity must have an agent name"
+  ] .
+
+# ── Tool Policy Shape ──────────────────────────────────────
+
+asc:ToolPolicyShape a sh:NodeShape ;
+  sh:targetClass asc:ToolPolicy ;
+  rdfs:label "Tool Policy Shape"@en ;
+  rdfs:comment "A ToolPolicy is an ODRL Set with at least one permission or prohibition."@en ;
+
+  sh:property [
+    sh:path rdfs:label ;
+    sh:minCount 1 ;
+    sh:message "Tool policy must have a label"
+  ] ;
+
+  sh:or (
+    [ sh:property [ sh:path odrl:permission ; sh:minCount 1 ] ]
+    [ sh:property [ sh:path odrl:prohibition ; sh:minCount 1 ] ]
+  ) ;
+  sh:message "Tool policy must have at least one permission or prohibition" .
+
+# ── Sub-Agent Policy Shape ─────────────────────────────────
+
+asc:SubagentPolicyShape a sh:NodeShape ;
+  sh:targetClass asc:SubagentPolicy ;
+  rdfs:label "Sub-Agent Policy Shape"@en ;
+
+  sh:property [
+    sh:path asc:maxSpawnDepth ;
+    sh:minCount 1 ;
+    sh:datatype xsd:integer ;
+    sh:minInclusive 0 ;
+    sh:maxInclusive 5 ;
+    sh:message "Sub-agent policy must have maxSpawnDepth (0-5)"
+  ] ;
+
+  sh:property [
+    sh:path asc:maxChildren ;
+    sh:minCount 1 ;
+    sh:datatype xsd:integer ;
+    sh:minInclusive 0 ;
+    sh:message "Sub-agent policy must have maxChildren"
+  ] .
+
+# ── Plugin Hook Shape ──────────────────────────────────────
+
+asc:PluginHookShape a sh:NodeShape ;
+  sh:targetClass asc:PluginHook ;
+  rdfs:label "Plugin Hook Shape"@en ;
+
+  sh:property [
+    sh:path asc:hookName ;
+    sh:minCount 1 ;
+    sh:datatype xsd:string ;
+    sh:message "Hook must have a name"
+  ] ;
+
+  sh:property [
+    sh:path rdfs:label ;
+    sh:minCount 1 ;
+    sh:message "Hook must have a label"
+  ] .
+
+# ── Exec Approval Shape ───────────────────────────────────
+
+asc:ExecApprovalShape a sh:NodeShape ;
+  sh:targetClass asc:ExecApproval ;
+  rdfs:label "Exec Approval Shape"@en ;
+
+  sh:property [
+    sh:path asc:securityMode ;
+    sh:minCount 1 ;
+    sh:in ( "deny" "allowlist" "full" ) ;
+    sh:message "Exec approval must have a security mode (deny|allowlist|full)"
+  ] .

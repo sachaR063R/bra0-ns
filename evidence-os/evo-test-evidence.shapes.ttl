@@ -1,0 +1,121 @@
+@prefix sh:      <http://www.w3.org/ns/shacl#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix prov:    <http://www.w3.org/ns/prov#> .
+@prefix evo:     <https://schema.bra0.org/evidence-os#> .
+
+#
+# SHACL shapes — OntoEDGY product-cycle sub-classes: TestRun + CoverageReport + DatasetFixture
+# Scope: arch-delta v0.1.4 §3.2.1 (test-evidence layer feeding D19 JUnit XML connector)
+# Validate: rudof shacl-validate -s evo-test-evidence.shapes.ttl fixtures/evo-test-evidence/<happy-path|failure>.ttl
+# Quinn gates in CI; consumes E1.test-automation connector output (v0.7 Wave 2 W08 third MUST per D19).
+#
+# Count: 3 of the 22-canon shape catalogue (Nael Q-β 2026-04-17).
+#
+
+<> dcterms:license <https://creativecommons.org/licenses/by-sa/4.0/> .
+
+#######################################################################
+# evo:TestRunShape
+# Target: evo:TestRun (arch-delta §3.2.1 row 6 — prov:Entity subclass, post-ADR-053)
+# Test execution artifact; binds to the commit tested + the dataset fixture used.
+#######################################################################
+
+evo:TestRunShape
+    a sh:NodeShape ;
+    sh:targetClass evo:TestRun ;
+    rdfs:label "Test-run shape"@en ;
+    rdfs:comment "Validates evo:TestRun instances ingested from JUnit XML per D19 third MUST connector. Binds the run to its commit (evo:onCommit) and fixture (evo:onDataset) per arch-delta §3.2.1 cross-cutting predicates."@en ;
+    sh:property [
+        sh:path dcterms:identifier ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "evo:TestRun MUST carry dcterms:identifier (CI run ID)."@en ;
+    ] ,
+    [
+        sh:path rdfs:label ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "evo:TestRun MUST carry rdfs:label (test-suite name)."@en ;
+    ] ,
+    [
+        sh:path prov:generatedAtTime ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "evo:TestRun MUST carry prov:generatedAtTime (run timestamp)."@en ;
+    ] ,
+    [
+        sh:path evo:onCommit ;
+        sh:class evo:Commit ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "evo:TestRun MUST bind evo:onCommit to the evo:Commit tested (provenance edge, arch-delta §3.2.1)."@en ;
+    ] ,
+    [
+        sh:path evo:onDataset ;
+        sh:class evo:DatasetFixture ;
+        sh:minCount 1 ;
+        sh:message "evo:TestRun MUST bind evo:onDataset to ≥1 evo:DatasetFixture (fixture used, arch-delta §3.2.1)."@en ;
+    ] .
+
+#######################################################################
+# evo:CoverageReportShape
+# Target: evo:CoverageReport (arch-delta §3.2.1 row 7 — prov:Entity)
+# Aggregated coverage artifact emitted per test-run; feeds Trust Coverage KPI.
+#######################################################################
+
+evo:CoverageReportShape
+    a sh:NodeShape ;
+    sh:targetClass evo:CoverageReport ;
+    rdfs:label "Coverage-report shape"@en ;
+    rdfs:comment "Validates evo:CoverageReport instances. Aggregated line/branch coverage per test-run; feeds evoQ:TraceabilityCompletenessResultShape."@en ;
+    sh:property [
+        sh:path dcterms:identifier ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "evo:CoverageReport MUST carry dcterms:identifier (report ID)."@en ;
+    ] ,
+    [
+        sh:path prov:wasGeneratedBy ;
+        sh:class evo:TestRun ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "evo:CoverageReport MUST carry prov:wasGeneratedBy pointing at an evo:TestRun (PROV-O generation edge)."@en ;
+    ] ,
+    [
+        sh:path prov:value ;
+        sh:datatype xsd:decimal ;
+        sh:minInclusive 0.0 ;
+        sh:maxInclusive 1.0 ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "evo:CoverageReport MUST carry prov:value in [0.0, 1.0] (coverage ratio)."@en ;
+    ] .
+
+#######################################################################
+# evo:DatasetFixtureShape
+# Target: evo:DatasetFixture (arch-delta §3.2.1 row 8 — prov:Entity)
+# Test-data snapshot; anchors deterministic replay (dogfood discipline).
+#######################################################################
+
+evo:DatasetFixtureShape
+    a sh:NodeShape ;
+    sh:targetClass evo:DatasetFixture ;
+    rdfs:label "Dataset-fixture shape"@en ;
+    rdfs:comment "Validates evo:DatasetFixture instances. Pins deterministic test data for replay-ability; referenced by evo:TestRun via evo:onDataset."@en ;
+    sh:property [
+        sh:path dcterms:identifier ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "evo:DatasetFixture MUST carry dcterms:identifier (fixture ID)."@en ;
+    ] ,
+    [
+        sh:path rdfs:label ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "evo:DatasetFixture MUST carry rdfs:label (human-readable fixture name)."@en ;
+    ] ,
+    [
+        sh:path dcterms:hasVersion ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:message "evo:DatasetFixture MUST carry dcterms:hasVersion (content-addressable SHA or semver) — replay determinism gate."@en ;
+    ] .
