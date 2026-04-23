@@ -1,0 +1,110 @@
+name: Deploy schema.bra0.org
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install pyLODE
+        run: |
+          python -m pip install --upgrade pip
+          pip install "pyLODE>=3.2,<4"
+          pylode --version
+
+      - name: Stage site output
+        run: |
+          set -euo pipefail
+          rm -rf _site
+          mkdir -p _site
+
+          # Carry CNAME and static docs
+          cp CNAME _site/
+          cp README.md _site/README.md
+
+          # Landing page — minimal during bootstrap
+          cat > _site/index.html <<'HTML'
+          <!doctype html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <title>schema.bra0.org</title>
+            <meta name="description" content="bra0 namespace registry — canonical IRI resolution host for bra0 RDF vocabularies.">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <style>
+              body { font-family: ui-sans-serif, system-ui, sans-serif; max-width: 42rem; margin: 3rem auto; padding: 0 1rem; line-height: 1.6; color: #1a1a1a; background: #fafafa; }
+              code { background: #eee; padding: 0.1em 0.3em; border-radius: 3px; font-size: 0.9em; }
+              a { color: #0b5cff; }
+              h1 { margin-bottom: 0.2em; }
+              .sub { color: #555; margin-top: 0; }
+              .status { padding: 0.6em 1em; background: #fff6d6; border-left: 3px solid #caa100; margin: 1.5em 0; }
+            </style>
+          </head>
+          <body>
+            <h1>schema.bra0.org</h1>
+            <p class="sub">Namespace registry for bra0 RDF vocabularies.</p>
+            <div class="status"><strong>Bootstrap phase.</strong> No ontologies are published here yet. The registry is operational; publications will appear after Keet audit and Sacha approval (ADR-054 discipline).</div>
+            <p>Intended scope:</p>
+            <ul>
+              <li><code>cap:</code> — <code>https://schema.bra0.org/capability#</code></li>
+              <li><code>bra0m:</code> — <code>https://schema.bra0.org/module#</code></li>
+              <li><code>evo:</code> — <code>https://schema.bra0.org/evidence-os#</code></li>
+              <li><code>evoQ:</code> — <code>https://schema.bra0.org/evidence-os/query#</code></li>
+            </ul>
+            <p>Project documentation: <a href="https://bra0.org/">bra0.org</a>.</p>
+          </body>
+          </html>
+          HTML
+
+          # Publication loop — only whitelisted TTLs are rendered
+          if grep -v '^#' docs-published.txt | grep -vq '^$'; then
+            while IFS=';' read -r ttl_path badge audit_path publish_date; do
+              [ -z "$ttl_path" ] && continue
+              [[ "$ttl_path" =~ ^# ]] && continue
+              echo "==> Publishing $ttl_path [$badge]"
+              if [ ! -f "$ttl_path" ]; then
+                echo "::error::Whitelisted TTL missing: $ttl_path"
+                exit 1
+              fi
+              dir="$(dirname "$ttl_path")"      # e.g. ns/evidence-os
+              mkdir -p "_site/${dir}"
+              cp "$ttl_path" "_site/${dir}/"
+              pylode -i "$ttl_path" -o "_site/${dir}/index.html"
+            done < <(grep -v '^#' docs-published.txt | grep -v '^$')
+          else
+            echo "Bootstrap phase: no ontologies whitelisted."
+          fi
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

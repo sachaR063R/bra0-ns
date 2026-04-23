@@ -1,0 +1,29 @@
+# docs-published.txt — Keet gate whitelist (ADR-054)
+#
+# Purpose
+# -------
+# One line per ontology file authorized for publication under
+# https://schema.bra0.org/*. An entry in this file means:
+#   1. The ontology has a Keet 6-dim audit artefact in ./audit/.
+#   2. The ontology has been copied (mechanically) from its canonical
+#      source in the bra0_meta governance repo into ./ns/<path>/.
+#   3. A publication badge has been assigned per ADR-054
+#      (DRAFT / PROPOSED / ADOPTED / DEPRECATED).
+#
+# Format
+# ------
+# <relative-ttl-path>;<badge>;<keet-audit-file>;<publish-date>
+#
+# Example (when first publication lands):
+#   ns/evidence-os/evidence-os.ttl;DRAFT;audit/evidence-os-keet-2026-04-22.md;2026-04-23
+#
+# Governance
+# ----------
+# - Edits to this file are Sacha-only (single controller).
+# - CI validates every listed TTL with rudof; ratchet floor = 50 violations
+#   (coupled stack orthogonal baseline).
+# - Absent whitelist entry = NOT PUBLISHED. CI refuses to render HTML for
+#   any TTL under ns/ that is not referenced here.
+#
+# Bootstrap phase (2026-04-23): empty whitelist. The site serves a minimal
+# landing page until the first Keet-audited ontology is published.

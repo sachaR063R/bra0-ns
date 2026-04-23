@@ -1,0 +1,70 @@
+name: Validate ontologies (rudof SHACL)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: validate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: cargo-rudof-v0.2.8
+
+      - name: Install rudof
+        run: |
+          if ! command -v rudof >/dev/null; then
+            cargo install --locked rudof_cli --version 0.2.8
+          fi
+          rudof --version
+
+      - name: Read Keet gate whitelist
+        id: whitelist
+        run: |
+          whitelist=$(grep -v '^#' docs-published.txt | grep -v '^$' || true)
+          if [ -z "$whitelist" ]; then
+            echo "Bootstrap phase: no ontologies whitelisted. Skipping validation."
+            echo "count=0" >> "$GITHUB_OUTPUT"
+          else
+            echo "$whitelist" | tee /tmp/whitelist.txt
+            count=$(echo "$whitelist" | wc -l)
+            echo "count=$count" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Validate whitelisted TTLs
+        if: steps.whitelist.outputs.count != '0'
+        run: |
+          set -euo pipefail
+          ratchet_floor=50
+          while IFS=';' read -r ttl_path badge audit_path publish_date; do
+            [ -z "$ttl_path" ] && continue
+            echo "==> Validating $ttl_path (badge=$badge, audit=$audit_path, date=$publish_date)"
+            if [ ! -f "$ttl_path" ]; then
+              echo "::error::Whitelisted TTL not found: $ttl_path"
+              exit 1
+            fi
+            # TODO: wire shape catalogue once first ontology lands.
+            # Structural parse check at minimum; SHACL shapes added when
+            # the first publication references them.
+            rudof data -r turtle "$ttl_path" > /dev/null
+          done < /tmp/whitelist.txt
+
+      - name: Summary
+        run: |
+          echo "Whitelisted ontologies: ${{ steps.whitelist.outputs.count }}"
+          echo "Ratchet floor: 50 (coupled-stack baseline, LIRIS-orthogonal)"

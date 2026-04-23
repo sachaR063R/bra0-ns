@@ -1,0 +1,26 @@
+# macOS
+.DS_Store
+
+# Python / pylode
+__pycache__/
+*.pyc
+.venv/
+venv/
+.python-version
+
+# Build output
+_site/
+dist/
+build/
+
+# Editor / IDE
+.idea/
+.vscode/
+*.swp
+*~
+
+# Rust / rudof
+target/
+
+# Node (in case tooling drifts)
+node_modules/
