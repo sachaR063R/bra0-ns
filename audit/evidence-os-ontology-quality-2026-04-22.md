@@ -1,14 +1,14 @@
-# Keet 6-Dimension Audit — Coupled bra0 Stack
+# 6-Dimension Ontology Quality Audit — Coupled bra0 Stack
 
 > **Auditor:** Nael (Architect)
 > **Date:** 2026-04-22
-> **Protocol:** Maria Keet 6-dimension (Accuracy · Completeness · Conciseness · Adaptability · Clarity · Consistency)
+> **Protocol:** six-dimension ontology quality framework (Accuracy · Completeness · Conciseness · Adaptability · Clarity · Consistency)
 > **Scope:** the **coupled TBox** of the 5 bra0 ontology layers — not each file in isolation.
 >    `bra0-stack.ttl` imports: Essence Kernel + ASC + Evidence Ontology + EDGY (+ BFO transitively).
-> **Branch:** `onto-articulation-liris` @ 2dbe924 + b37da4e + 5b5ce32 (post P0-6, P0-10, stack, decision memo).
+> **Evidence commits:** 2dbe924 + b37da4e + 5b5ce32 (post P0-6, P0-10, stack, decision memo).
 > **Session driver:** `worksheet-onto-llm-evo-asc-2026-04-22.md` — Slot F.
-> **Complements:** file-level audit `keet-audit-site-docs-rattrapage-2026-04-20.md` (17/17 PASS on isolated files).
-> **Tool:** `rudof shacl-validate -s _bmad/work/onto-liris-2026-04-22/shapes-coupled.ttl <coupled files>`.
+> **Complements:** file-level audit of site-docs isolated files (17/17 PASS).
+> **Tool:** `rudof shacl-validate -s shapes-coupled.ttl <coupled files>`.
 
 ---
 
@@ -23,7 +23,7 @@
 | 5. Clarity | **CONDITIONAL** | Low | License block missing on evo: and edgy: headers (P0-9); bilingual parity PASS |
 | 6. Consistency | **PASS** | — | Coupled rudof floor 50 held across all 6 P0 commits; no new violations introduced by P0-1/3/4/5/6/10 |
 
-**Overall:** **CONDITIONAL PASS** — the coupled stack is stable and LIRIS-readable, but four Sacha arbitrations are needed to lift the four CONDITIONAL dimensions to PASS. None of the CONDITIONAL items is parse-breaking or ABox-breaking. Ratchet floor held at 50 violations on coupled rudof run — all on evoQ / edcc-csrd prototype shapes, orthogonal to the LIRIS-facing surface.
+**Overall:** **CONDITIONAL PASS** — the coupled stack is stable and reviewer-readable, but four arbitrations are needed to lift the four CONDITIONAL dimensions to PASS. None of the CONDITIONAL items is parse-breaking or ABox-breaking. Ratchet floor held at 50 violations on coupled rudof run — all on evoQ / edcc-csrd prototype shapes, orthogonal to the reviewer-facing surface.
 
 ---
 
@@ -36,10 +36,10 @@
 - **PASS** at asc: level — BFO grounding is coherent (`Holon ⊏ MaterialEntity`, `HolonicMembrane ⊏ GDC`, `Mandate ⊏ HolonicMembrane`); disjointness axioms added today (P0-6) prevent the worst cross-category mistypings.
 - **PASS** at evo: level — every class grounded via `asc:Holon` or `prov:Entity`/`prov:Activity`; `evo:declaredContext rdfs:range sd:NamedGraph` (P0-4) gives the reasoner something to check.
 - **CONDITIONAL** at edgy: level — `edgy:People ⊏ BFO:0000040` (material entity) is ontologically imprecise when `edgy:People` denotes an aggregate. BFO has `BFO:0000027` (object aggregate) and `BFO:0000030` (object) as more precise anchors. Audited in `challenge-ontoledgy-v1-rigor-audit-2026-04-22.md` under R-? Accuracy.
-- **PASS** at essence kernel level — states-as-individuals, areas-as-individuals, all properties with domain/range (Keet C1-C6 fixes already applied at creation time per `essence-kernel.ttl` header).
+- **PASS** at essence kernel level — states-as-individuals, areas-as-individuals, all properties with domain/range (C1-C6 ontology-engineering fixes already applied at creation time per `essence-kernel.ttl` header).
 
 ### Gap
-The conflict on `edgy:People` BFO typing propagates to the coupled stack because `edgy:` is imported. A LIRIS reader working through `ontoledgy-bfo-alignment.ttl` will land on this. Remediation item **R-? (BFO-People)** in the EDGY audit.
+The conflict on `edgy:People` BFO typing propagates to the coupled stack because `edgy:` is imported. An external reviewer working through `ontoledgy-bfo-alignment.ttl` will land on this. Remediation item **R-? (BFO-People)** in the EDGY audit.
 
 ### Verdict
 **CONDITIONAL** — stack Accuracy is held back by the one EDGY typing call. Does not block today; must be resolved before external publication.
@@ -52,7 +52,7 @@ The conflict on `edgy:People` BFO typing propagates to the coupled stack because
 
 ### Evidence
 
-- 17/17 CQs answerable on fixtures (Slot B deliverable). Matrix at `_bmad/work/onto-liris-2026-04-22/cq-matrix.md`.
+- 17/17 CQs answerable on fixtures (Slot B deliverable). Matrix at `_bmad/work/onto-articulation-2026-04-22/cq-matrix.md`.
 - P0-1 closes the evo:→asc: import gap (earlier evo: could not reference asc:Mandate without dangling prefix).
 - P0-3 declares `evo:byAgentService` and `evo:underMandate` in the TBox; previously only in fixtures. CQ-X-1 now TBox-grounded, not just ABox-answerable.
 - P0-4 gives `evo:declaredContext` a range; CQ-evo-4 is shape-enforceable.
@@ -73,7 +73,7 @@ The conflict on `edgy:People` BFO typing propagates to the coupled stack because
 
 ### Evidence
 
-- bra0-stack.ttl itself declares zero classes/properties/individuals — pure meta-file (Keet exemplary).
+- bra0-stack.ttl itself declares zero classes/properties/individuals — an exemplary meta-file.
 - evo: header now declares `vann:preferredNamespacePrefix` / `Uri` (P0-1) — MIROs-compliant.
 - asc: imports from PROV-O, ODRL, DCAT, DID (per catalogue line 429); doesn't re-invent.
 - evo: imports PROV-O, SKOS, DCAT, ODRL, SOSA, SPARQL-SD (post P0-4); imports ASC for agent attribution (post P0-1).
@@ -134,7 +134,7 @@ None at stack level.
 
 - rudof coupled floor: **50 violations held constant** across 6 P0 commits (e919333 → 2dbe924) and the stack commit (b37da4e).
 - No new ABox. No new class. No new domain/range conflicts introduced.
-- The 50 baseline violations are all on `evoQ:GroundingResult` / `edcc-csrd` prototype shapes — orthogonal to the LIRIS-facing surface (ess:/asc:/evo:/edgy:/stack). These exist because the shape bundle is authored ahead of the reference ABox.
+- The 50 baseline violations are all on `evoQ:GroundingResult` / `edcc-csrd` prototype shapes — orthogonal to the reviewer-facing surface (ess:/asc:/evo:/edgy:/stack). These exist because the shape bundle is authored ahead of the reference ABox.
 - OWL-level consistency (disjointness axioms P0-6) checked manually against existing `rdfs:subClassOf` chains; none violated.
 - Cross-layer consistency: evo: imports asc:, asc: does NOT import evo: (correct directionality; no cycle).
 
@@ -166,7 +166,7 @@ Nine items tightened since 2026-04-20. Each one a committed ratchet.
 
 ## Recommendation to Sacha
 
-The coupled stack would be **LIRIS-presentable** once the four CONDITIONAL dimensions lift to PASS, which requires exactly the four arbitration answers from the decision memo:
+The coupled stack would be **reviewer-presentable** once the four CONDITIONAL dimensions lift to PASS, which requires exactly the four arbitration answers from the decision memo:
 
 | Memo item | Lifts dimension | Commit cost (post-decision) |
 |---|---|---|
@@ -184,7 +184,7 @@ No new rudof shape, no new fixture, no new ontology file required. Estimated del
 ```bash
 # Coupled TBox-only ratchet check (ran after every P0 commit today)
 rudof shacl-validate \
-  -s _bmad/work/onto-liris-2026-04-22/shapes-coupled.ttl \
+  -s shapes-coupled.ttl \
   ontologies/bra0-stack.ttl \
   ontologies/governance/agent-service-contract.ttl \
   ontologies/governance/evidence-os/evidence-os.ttl \
@@ -193,7 +193,7 @@ rudof shacl-validate \
 
 # TBox parse sanity (stack file alone, imports resolved locally)
 rudof shacl-validate \
-  -s _bmad/work/onto-liris-2026-04-22/shapes-coupled.ttl \
+  -s shapes-coupled.ttl \
   ontologies/bra0-stack.ttl
 # => parses clean; violations all on evoQ prototype (orthogonal)
 ```

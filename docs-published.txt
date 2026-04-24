@@ -1,39 +1,39 @@
-# docs-published.txt — Keet gate whitelist (ADR-054)
+# docs-published.txt — ontology quality gate whitelist (ADR-054)
 #
-# Format: <relative-ttl-path>;<badge>;<keet-audit-file>;<publish-date>
+# Format: <relative-ttl-path>;<badge>;<audit-file>;<publish-date>
 #
 # Governance: Sacha-only edits. CI renders HTML only for listed entries.
 # Canonical source of truth for TTLs remains bra0_meta/ontologies/.
 
 # L1 Core — Agent governance
-agent-service-contract/agent-service-contract.ttl;DRAFT;audit/evidence-os-keet-2026-04-22.md;2026-04-23
-agent-service-contract/agent-service-contract.shapes.ttl;DRAFT;audit/evidence-os-keet-2026-04-22.md;2026-04-23
+agent-service-contract/agent-service-contract.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
+agent-service-contract/agent-service-contract.shapes.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
 
 # L1 Core — Essence Kernel
-essence-kernel/essence-kernel.ttl;DRAFT;audit/evidence-os-keet-2026-04-22.md;2026-04-23
+essence-kernel/essence-kernel.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
 
 # L2 KS — Capability operations
-capability/capability-operations.ttl;DRAFT;audit/evidence-os-keet-2026-04-22.md;2026-04-23
-capability/edgy.ttl;DRAFT;audit/evidence-os-keet-2026-04-22.md;2026-04-23
-capability/retroeng.ttl;DRAFT;audit/evidence-os-keet-2026-04-22.md;2026-04-23
-capability/neuro-upper.ttl;DRAFT;audit/evidence-os-keet-2026-04-22.md;2026-04-23
+capability/capability-operations.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
+capability/edgy.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
+capability/retroeng.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
+capability/neuro-upper.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
 
 # L3 Product — Evidence OS TBox + shapes
-evidence-os/evidence-os.ttl;DRAFT;audit/evidence-os-keet-2026-04-22.md;2026-04-23
-evidence-os/evo-story.shapes.ttl;DRAFT;audit/evidence-os-keet-2026-04-22.md;2026-04-23
-evidence-os/evo-change-pipeline.shapes.ttl;DRAFT;audit/evidence-os-keet-2026-04-22.md;2026-04-23
-evidence-os/evo-test-evidence.shapes.ttl;DRAFT;audit/evidence-os-keet-2026-04-22.md;2026-04-23
-evidence-os/evo-ambient-agent-policy.shapes.ttl;DRAFT;audit/evidence-os-keet-2026-04-22.md;2026-04-23
+evidence-os/evidence-os.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
+evidence-os/evo-story.shapes.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
+evidence-os/evo-change-pipeline.shapes.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
+evidence-os/evo-test-evidence.shapes.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
+evidence-os/evo-ambient-agent-policy.shapes.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
 
 # L3 Product — evoQ query shapes
-evidence-os/query/evoQ-kpi-shapes.shapes.ttl;DRAFT;audit/evidence-os-keet-2026-04-22.md;2026-04-23
+evidence-os/query/evoQ-kpi-shapes.shapes.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
 
 # L3 Product — EDCC extension
-evidence-os/edcc/edcc-bridge.ttl;DRAFT;audit/evidence-os-keet-2026-04-22.md;2026-04-23
-evidence-os/edcc/edcc-frameworks.ttl;DRAFT;audit/evidence-os-keet-2026-04-22.md;2026-04-23
-evidence-os/edcc/edcc-pemd.shapes.ttl;DRAFT;audit/evidence-os-keet-2026-04-22.md;2026-04-23
-evidence-os/edcc/edcc-csrd.shapes.ttl;DRAFT;audit/evidence-os-keet-2026-04-22.md;2026-04-23
-evidence-os/edcc/edcc-domain-holon.ttl;DRAFT;audit/evidence-os-keet-2026-04-22.md;2026-04-23
+evidence-os/edcc/edcc-bridge.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
+evidence-os/edcc/edcc-frameworks.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
+evidence-os/edcc/edcc-pemd.shapes.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
+evidence-os/edcc/edcc-csrd.shapes.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
+evidence-os/edcc/edcc-domain-holon.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
 
 # L5 Application profile
-evidence-os/bra0-application-profile.ttl;DRAFT;audit/evidence-os-keet-2026-04-22.md;2026-04-23
+evidence-os/bra0-application-profile.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
