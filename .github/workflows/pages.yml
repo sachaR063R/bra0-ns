@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Check Keet gate whitelist
+      - name: Check ontology quality gate whitelist
         id: whitelist
         run: |
           count=$(grep -v '^#' docs-published.txt 2>/dev/null | grep -v '^$' | wc -l || echo 0)

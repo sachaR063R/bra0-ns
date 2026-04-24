@@ -14,7 +14,7 @@
 # Target selector: SPARQL (W3C SHACL §5.3) — SHACL Core does not combine
 # sh:targetClass with additional triple constraints natively.
 # Validate: rudof shacl-validate -s evo-story.shapes.ttl fixtures/evo-story/<happy-path|failure>.ttl
-# Quinn gates in CI (W04 PRD lock blocker-1); Nael owns Keet audit publication gate.
+# Quinn gates in CI (W04 PRD lock blocker-1); Nael owns ontology quality audit publication gate.
 #
 # Dropped v0.2.0 (ADR-053):
 #   evo:UserStoryShape            (sh:targetClass evo:UserStory — class retired)

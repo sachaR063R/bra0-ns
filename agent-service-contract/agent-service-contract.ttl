@@ -65,7 +65,7 @@
 # Portal, HolonicAspect + associated properties and disjointness
 # pair) is removed. Rationale: it carried no SHACL closure shape,
 # no testable axiom beyond one owl:disjointWith pair, and no
-# inference target exercised by any consuming query (Keet audit
+# inference target exercised by any consuming query (ontology quality audit
 # 2026-04-22, CONDITIONAL PASS). It adds zero protocol overhead
 # because it does zero protocol work.
 #
@@ -83,7 +83,7 @@
 # Reversibility (ADR-052 §3.3): a future ADR may reintroduce a
 # holonic OWL layer iff (a) at least three SHACL closure shapes
 # that exercise inference, (b) a peer-reviewed external authority
-# it aligns with, and (c) a LIRIS reviewer co-sign.
+# it aligns with, and (c) a external reviewer co-sign.
 # ══════════════════════════════════════════════════════════════
 
 # ── Classes ────────────────────────────────────────────────────
@@ -178,7 +178,7 @@ asc:OntologyScope a owl:Class ;
   rdfs:comment "The set of OWL/SHACL classes an agent is authorized to define, instantiate, or modify. Used with sh:targetClass to enumerate writable types."@en .
 
 # ── Disjointness axioms (P0-6; v0.5.0 adjusted per ADR-052) ──
-# Rationale: strengthen LIRIS-grade rigor by asserting mutually exclusive
+# Rationale: strengthen external-review-grade rigor by asserting mutually exclusive
 # class memberships where intrinsic semantics require it.
 # v0.5.0: the Holon ⊥ HolonicMembrane pair is dropped as a consequence
 # of ADR-052 (holonic OWL apparatus removed). The four remaining pairs
@@ -474,7 +474,7 @@ asc:role a owl:DatatypeProperty ;
   rdfs:domain asc:AgentService ;
   rdfs:range rdf:langString ;
   rdfs:label "role"@en ;
-  rdfs:comment "The functional role fulfilled by this agent within the team (e.g. architect, dev, qa, pm). Range is rdf:langString to support language-tagged descriptions (P0-3 Keet audit fix 2026-04-18)."@en .
+  rdfs:comment "The functional role fulfilled by this agent within the team (e.g. architect, dev, qa, pm). Range is rdf:langString to support language-tagged descriptions (P0-3 ontology quality audit fix 2026-04-18)."@en .
 
 asc:capability a owl:ObjectProperty ;
   rdfs:domain asc:AgentService ;

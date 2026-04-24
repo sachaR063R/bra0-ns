@@ -33,7 +33,7 @@ jobs:
           fi
           rudof --version
 
-      - name: Read Keet gate whitelist
+      - name: Read ontology quality gate whitelist
         id: whitelist
         run: |
           whitelist=$(grep -v '^#' docs-published.txt | grep -v '^$' || true)
@@ -67,4 +67,4 @@ jobs:
       - name: Summary
         run: |
           echo "Whitelisted ontologies: ${{ steps.whitelist.outputs.count }}"
-          echo "Ratchet floor: 50 (coupled-stack baseline, LIRIS-orthogonal)"
+          echo "Ratchet floor: 50 (coupled-stack baseline, audit-orthogonal)"

@@ -2,7 +2,7 @@
 # Validated by: Sacha Roger, Ontologist
 # Date: 2026-04-01
 # Status: DRAFT v1.0
-# Version: 1.0-draft — EDGY fidelity audit + Keet quality pass
+# Version: 1.0-draft — EDGY fidelity audit + ontology quality pass
 #
 # COMPLIANCE METADATA - EDGY OWL 2.0
 # Created: 2026-02-12
@@ -65,14 +65,14 @@
 
 <http://www.omyn.ai/schema/edgy#> rdf:type owl:Ontology ;
     dcterms:title "OntolEDGY: Enterprise Design Graph InterplaY Ontology - v1.0-draft"@en ;
-    dcterms:description "OntolEDGY v1.0-draft — EDGY wiki fidelity audit (24 named links verified by SPARQL) + Keet quality methodology. 6 corrections applied, 1 deliberate departure documented (Organisation as CAS)."@en ;
+    dcterms:description "OntolEDGY v1.0-draft — EDGY wiki fidelity audit (24 named links verified by SPARQL) + ontology quality methodology. 6 corrections applied, 1 deliberate departure documented (Organisation as CAS)."@en ;
     dcterms:creator "Intersection Group" ;
     dcterms:contributor "Sacha Roger (Ontologist validator), Omyn AI" ;
     dcterms:version "1.0-draft" ;
     dcterms:created "2026-02-12" ;
     dcterms:modified "2026-04-01" ;
     dcterms:validatedBy "Sacha Roger, Ontologist - 2026-04-01" ;
-    owl:versionInfo "v1.0-draft — EDGY fidelity audit + Keet quality pass" ;
+    owl:versionInfo "v1.0-draft — EDGY fidelity audit + ontology quality pass" ;
     owl:priorVersion <http://www.omyn.ai/schema/edgy/0.95> ;
     dcterms:license "https://creativecommons.org/licenses/by-sa/4.0/" .
 

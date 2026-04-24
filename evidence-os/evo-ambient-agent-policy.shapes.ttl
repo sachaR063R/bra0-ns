@@ -24,7 +24,7 @@
 
 evo:AmbientAgentPolicyShape
     a sh:NodeShape ;
-    # P0-4 fix (Keet audit 2026-04-18): replaced sh:targetClass odrl:Policy
+    # P0-4 fix (ontology quality audit 2026-04-18): replaced sh:targetClass odrl:Policy
     # with SPARQL target filtering to policies carrying evo:agentRoleProfile.
     # This prevents over-matching on asc: governance policies that are NOT
     # ambient-agent policies.

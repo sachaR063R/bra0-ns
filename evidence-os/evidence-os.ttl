@@ -41,7 +41,7 @@
 # Design principles:
 #   I5  — W3C reuse before extension (PROV-O, DCAT, SKOS, ODRL, SOSA)
 #   I10 — KE precision: TBox/ABox separation strict
-#   Keet — no speculative classes; every class justified by 2+ use cases
+#   ontology quality — no speculative classes; every class justified by 2+ use cases
 #   Naming — UpperCamelCase classes, lowerCamelCase predicates
 #
 # License:  MIT OR Apache-2.0 (per repo root)
@@ -354,7 +354,7 @@ evo:nodeBadge a owl:DatatypeProperty ;
     rdfs:isDefinedBy <https://schema.bra0.org/evidence-os> .
 
 # =============================================================================
-# Disjointness Axioms (Keet Accuracy — prevent conflation)
+# Disjointness Axioms (ontology quality Accuracy — prevent conflation)
 # =============================================================================
 # Post-ADR-053: the top-level AllDisjointClasses block
 # ( evo:Decision evo:Evidence evo:Change evo:Control ) is dropped.
@@ -374,7 +374,7 @@ evo:nodeBadge a owl:DatatypeProperty ;
 # =============================================================================
 # Changelog
 # =============================================================================
-# 0.2.0 | 2026-04-23 | Strict purge per ADR-053 (Keet Consistency +
+# 0.2.0 | 2026-04-23 | Strict purge per ADR-053 (ontology quality Consistency +
 #        Conciseness lift from CONDITIONAL to PASS). Removed top-level
 #        evo:Decision, evo:Evidence, evo:Change (re-stated PROV-O with
 #        no added inference). Removed evo:UserStory, evo:AcceptanceCriterion
@@ -392,11 +392,11 @@ evo:nodeBadge a owl:DatatypeProperty ;
 #        (domain prov:Activity), evo:nodeLabel / evo:nodeBadge
 #        (domain dcat:Catalog). Pruned top-level AllDisjointClasses.
 #        No compatibility shim. Breaking change.
-# 0.1.0 | 2026-04-18 | First formal TBox. Resolves P0-1 (Keet audit).
+# 0.1.0 | 2026-04-18 | First formal TBox. Resolves P0-1 (ontology quality audit).
 #        Translates arch-delta v0.1.4 §3.2 + §3.2.1 + §3.2.2 prose
 #        into OWL declarations. Integrates co-storm Q1 (Decision
 #        dual-nature), Q3 (ComplianceFramework, FrameworkArticle,
 #        FrameworkMapping), Q5 (groundingMode on Policy). Applies
 #        P0-2 (declaredContext convergence), P0-5 (evo:role renamed
-#        to evo:agentRoleProfile). Disjointness axioms per Keet
+#        to evo:agentRoleProfile). Disjointness axioms per ontology engineering literature
 #        Accuracy dimension. Method: NL→OWL per Mateiu & Groza (2023).

@@ -24,18 +24,18 @@ Out of scope (hosted elsewhere):
 
 The authoritative source for every TTL in `ns/` lives in the private
 governance repository `bra0_meta`, under `ontologies/governance/`. Files
-arrive here only after they pass a Keet 6-dimension audit and Sacha
+arrive here only after they pass a 6-dimension ontology quality audit and Sacha
 explicitly approves publication (ADR-054 discipline).
 
 Do not edit the TTL files here directly. All modifications flow
-`bra0_meta → (Keet audit) → Sacha review → publish script → this repo`.
+`bra0_meta → (ontology quality audit) → Sacha review → publish script → this repo`.
 
 ## Publication discipline (ADR-054)
 
 Every published ontology carries one of four badges:
 
 - **DRAFT** — published for peer visibility, no external validation.
-- **PROPOSED** — submitted to an external authority (W3C, OMG, LIRIS, peer-reviewed venue), no sign-off yet.
+- **PROPOSED** — submitted to an external authority (W3C, OMG, peer-reviewed venue), no sign-off yet.
 - **ADOPTED** — accepted by an external authority.
 - **DEPRECATED** — superseded; IRIs remain resolvable, banner redirects.
 
@@ -62,7 +62,7 @@ Australian Linked Data Working Group).
 
 `.github/workflows/validate.yml` runs [rudof](https://github.com/rudof-project/rudof)
 SHACL validation on every TTL listed in `docs-published.txt`. Ratchet
-floor = 50 violations (LIRIS-orthogonal coupled-stack baseline).
+floor = 50 violations (audit-orthogonal coupled-stack baseline).
 
 Both workflows are no-op pass-through during the bootstrap phase
 (no ontologies whitelisted yet) and activate on first publication.
@@ -71,7 +71,7 @@ Both workflows are no-op pass-through during the bootstrap phase
 
 - **Single controller**: Sacha Roger (`sachaR063R <sacha@omyn.ai>`).
 - **Commits**: Sacha-only. No AI attribution.
-- **Keet gate**: `docs-published.txt` is the whitelist. No whitelist
+- **ontology quality gate**: `docs-published.txt` is the whitelist. No whitelist
   entry = no publication.
 - **Legal**: dual-licensed MIT OR Apache-2.0 (see `LICENSE-MIT`,
   `LICENSE-APACHE`). Individual TTL files may carry a distinct license
