@@ -34,6 +34,3 @@ evidence-os/edcc/edcc-frameworks.ttl;DRAFT;audit/evidence-os-ontology-quality-20
 evidence-os/edcc/edcc-pemd.shapes.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
 evidence-os/edcc/edcc-csrd.shapes.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
 evidence-os/edcc/edcc-domain-holon.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
-
-# L5 Application profile
-evidence-os/bra0-application-profile.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
