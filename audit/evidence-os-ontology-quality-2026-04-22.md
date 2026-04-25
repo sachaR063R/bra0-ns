@@ -1,12 +1,11 @@
 # 6-Dimension Ontology Quality Audit — Coupled bra0 Stack
 
-> **Auditor:** Nael (Architect)
+> **Auditor:** bra0 ontology team
 > **Date:** 2026-04-22
 > **Protocol:** six-dimension ontology quality framework (Accuracy · Completeness · Conciseness · Adaptability · Clarity · Consistency)
 > **Scope:** the **coupled TBox** of the 5 bra0 ontology layers — not each file in isolation.
 >    `bra0-stack.ttl` imports: Essence Kernel + ASC + Evidence Ontology + EDGY (+ BFO transitively).
 > **Evidence commits:** 2dbe924 + b37da4e + 5b5ce32 (post P0-6, P0-10, stack, decision memo).
-> **Session driver:** `worksheet-onto-llm-evo-asc-2026-04-22.md` — Slot F.
 > **Complements:** file-level audit of site-docs isolated files (17/17 PASS).
 > **Tool:** `rudof shacl-validate -s shapes-coupled.ttl <coupled files>`.
 
@@ -16,7 +15,7 @@
 
 | Dim | Verdict | Severity | Evidence path |
 |-----|---------|----------|---------------|
-| 1. Accuracy | **CONDITIONAL** | Medium | `edgy:People ⊏ BFO_0000040` conflict with aggregate semantics (audit challenge-ontoledgy-v1-rigor-audit-2026-04-22.md) |
+| 1. Accuracy | **CONDITIONAL** | Medium | `edgy:People ⊏ BFO_0000040` conflict with aggregate semantics |
 | 2. Completeness | **CONDITIONAL** | Medium | P0-2 (3-Story) leaves a coverage gap at the cross-layer boundary; arbitration-pending |
 | 3. Conciseness | **CONDITIONAL** | Low | `asc:AgentService` carries 3 parents (P0-7); `evo:ComplianceFramework` 2 parents (P0-8) — defence text missing |
 | 4. Adaptability | **PASS** | — | `owl:versionIRI` now on both asc: (0.4.0) and evo: (0.1.0); stack 0.1.0 |
@@ -35,11 +34,11 @@
 
 - **PASS** at asc: level — BFO grounding is coherent (`Holon ⊏ MaterialEntity`, `HolonicMembrane ⊏ GDC`, `Mandate ⊏ HolonicMembrane`); disjointness axioms added today (P0-6) prevent the worst cross-category mistypings.
 - **PASS** at evo: level — every class grounded via `asc:Holon` or `prov:Entity`/`prov:Activity`; `evo:declaredContext rdfs:range sd:NamedGraph` (P0-4) gives the reasoner something to check.
-- **CONDITIONAL** at edgy: level — `edgy:People ⊏ BFO:0000040` (material entity) is ontologically imprecise when `edgy:People` denotes an aggregate. BFO has `BFO:0000027` (object aggregate) and `BFO:0000030` (object) as more precise anchors. Audited in `challenge-ontoledgy-v1-rigor-audit-2026-04-22.md` under R-? Accuracy.
+- **CONDITIONAL** at edgy: level — `edgy:People ⊏ BFO:0000040` (material entity) is ontologically imprecise when `edgy:People` denotes an aggregate. BFO has `BFO:0000027` (object aggregate) and `BFO:0000030` (object) as more precise anchors.
 - **PASS** at essence kernel level — states-as-individuals, areas-as-individuals, all properties with domain/range (C1-C6 ontology-engineering fixes already applied at creation time per `essence-kernel.ttl` header).
 
 ### Gap
-The conflict on `edgy:People` BFO typing propagates to the coupled stack because `edgy:` is imported. An external reviewer working through `ontoledgy-bfo-alignment.ttl` will land on this. Remediation item **R-? (BFO-People)** in the EDGY audit.
+The conflict on `edgy:People` BFO typing propagates to the coupled stack because `edgy:` is imported. An external reviewer working through `ontoledgy-bfo-alignment.ttl` will land on this. Remediation tracked under BFO-People in the EDGY audit backlog.
 
 ### Verdict
 **CONDITIONAL** — stack Accuracy is held back by the one EDGY typing call. Does not block today; must be resolved before external publication.
@@ -52,7 +51,7 @@ The conflict on `edgy:People` BFO typing propagates to the coupled stack because
 
 ### Evidence
 
-- 17/17 CQs answerable on fixtures (Slot B deliverable). Matrix at `_bmad/work/onto-articulation-2026-04-22/cq-matrix.md`.
+- 17/17 CQs answerable on fixtures. CQ matrix maintained internally.
 - P0-1 closes the evo:→asc: import gap (earlier evo: could not reference asc:Mandate without dangling prefix).
 - P0-3 declares `evo:byAgentService` and `evo:underMandate` in the TBox; previously only in fixtures. CQ-X-1 now TBox-grounded, not just ABox-answerable.
 - P0-4 gives `evo:declaredContext` a range; CQ-evo-4 is shape-enforceable.
@@ -164,9 +163,9 @@ Nine items tightened since 2026-04-20. Each one a committed ratchet.
 
 ---
 
-## Recommendation to Sacha
+## Recommendation
 
-The coupled stack would be **reviewer-presentable** once the four CONDITIONAL dimensions lift to PASS, which requires exactly the four arbitration answers from the decision memo:
+The coupled stack is **reviewer-presentable** once the four CONDITIONAL dimensions lift to PASS, which requires exactly the four arbitration answers from the decision memo:
 
 | Memo item | Lifts dimension | Commit cost (post-decision) |
 |---|---|---|
@@ -198,4 +197,4 @@ rudof shacl-validate \
 # => parses clean; violations all on evoQ prototype (orthogonal)
 ```
 
-Audit closed by Nael 2026-04-22.
+Audit closed 2026-04-22.

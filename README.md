@@ -8,7 +8,7 @@ resolution host for bra0 RDF vocabularies.
 This repository hosts the HTML + Turtle renderings of every bra0
 product-facing RDF vocabulary whose namespace root is `schema.bra0.org`.
 
-Current in-scope namespaces (per Nael ratification 2026-04-17):
+Current in-scope namespaces (ratified 2026-04-17):
 
 - `cap:` → `https://schema.bra0.org/capability#` (capability operations)
 - `bra0m:` → `https://schema.bra0.org/module#` (module registry)
@@ -82,5 +82,5 @@ Both workflows are no-op pass-through during the bootstrap phase
 - Project documentation: https://bra0.org/
 - Source repository (product): https://github.com/sachaR063R/bra0
 - Governance repository (private): bra0_meta (internal)
-- ADR-054 publication discipline: see bra0_meta `_bmad/docs/`
-- ADR-056 domain acquisition: see bra0_meta `_bmad/docs/`
+- ADR-054 publication discipline: maintained in the governance repository
+- ADR-056 domain acquisition: maintained in the governance repository

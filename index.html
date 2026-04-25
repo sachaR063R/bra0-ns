@@ -30,18 +30,6 @@
 .ts-badge--info { background: rgba(96,165,250,0.12); color: var(--plan); }
 .ts-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
 
-/* Layer model */
-.ts-layer-grid { display: grid; grid-template-columns: 90px 1fr; gap: 1px; background: var(--border-bright); border-radius: 8px; overflow: hidden; margin-top: 16px; }
-.ts-layer-label, .ts-layer-content { padding: 10px 14px; background: var(--surface); font-size: 13px; }
-.ts-layer-label { font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; font-family: var(--font-mono); }
-.ts-layer-content { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; color: var(--text-dim); }
-.ts-layer-content code { font-size: 12px; color: var(--text); background: var(--surface2); padding: 1px 5px; border-radius: 3px; }
-.ts-l1 .ts-layer-label { color: var(--cp); }
-.ts-l2 .ts-layer-label { color: var(--sl); }
-.ts-l3 .ts-layer-label { color: var(--orange); }
-.ts-l5 .ts-layer-label { color: var(--purple); }
-@media (max-width: 640px) { .ts-layer-grid { grid-template-columns: 1fr; } .ts-layer-label { padding: 8px 14px 0; } }
-
 /* Namespace groups */
 .ts-ns { margin-top: 28px; }
 .ts-ns h3 { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
@@ -58,7 +46,6 @@
 .ts-type--tbox { background: var(--purple-dim, rgba(167,139,250,0.12)); color: var(--purple); }
 .ts-type--shapes { background: var(--green-dim, rgba(67,202,155,0.12)); color: var(--ok); }
 .ts-type--ext { background: var(--orange-dim, rgba(251,104,24,0.12)); color: var(--orange); }
-.ts-type--profile { background: rgba(96,165,250,0.12); color: var(--plan); }
 .ts-type--abox { background: var(--yellow-dim, rgba(255,232,8,0.12)); color: var(--warn); }
 .ts-badge-sm { font-size: 10px; padding: 2px 6px; border-radius: 3px; font-weight: 600; font-family: var(--font-mono); }
 .ts-badge-draft { background: var(--yellow-dim, rgba(255,232,8,0.12)); color: var(--warn); }
@@ -171,37 +158,6 @@
       <span class="ts-badge ts-badge--ok">SHACL validated (rudof)</span>
       <span class="ts-badge ts-badge--warn">20 ontologies &middot; DRAFT</span>
       <span class="ts-badge ts-badge--info">6-dim quality audited</span>
-    </div>
-
-    <!-- ════════════ LAYER MODEL ════════════ -->
-    <h2>
-      <span data-en>Vocabulary Layers</span>
-      <span data-fr>Couches de vocabulaire</span>
-    </h2>
-    <div class="ts-layer-grid">
-      <div class="ts-l1 ts-layer-label">L1 Core</div>
-      <div class="ts-l1 ts-layer-content">
-        <code>asc:</code> Agent Service Contracts &nbsp;&middot;&nbsp;
-        <code>ess:</code> Essence Kernel &nbsp;&middot;&nbsp;
-        <code>bra0m:</code> Module Registry
-      </div>
-      <div class="ts-l2 ts-layer-label">L2 KS</div>
-      <div class="ts-l2 ts-layer-content">
-        <code>cap:</code> Capability Operations &nbsp;&middot;&nbsp;
-        <code>edgy:</code> Enterprise Design (OntoEDGY) &nbsp;&middot;&nbsp;
-        <code>re:</code> Reverse Engineering
-      </div>
-      <div class="ts-l3 ts-layer-label">L3 Product</div>
-      <div class="ts-l3 ts-layer-content">
-        <code>evo:</code> Evidence OS &nbsp;&middot;&nbsp;
-        <code>evoQ:</code> Query Shapes &nbsp;&middot;&nbsp;
-        <code>edcc:</code> EDCC Extension
-      </div>
-      <div class="ts-l5 ts-layer-label">L5 Profile</div>
-      <div class="ts-l5 ts-layer-content">
-        <span data-en>bra0 Application Profile &mdash; imports L1&ndash;L3, adds project-level constraints</span>
-        <span data-fr>Profil applicatif bra0 &mdash; importe L1&ndash;L3, ajoute les contraintes projet</span>
-      </div>
     </div>
 
     <!-- ════════════ CATALOGUE ════════════ -->
@@ -381,26 +337,6 @@
           <tr>
             <td class="file"><a href="evidence-os/edcc/edcc-domain-holon.ttl">edcc-domain-holon.ttl</a></td>
             <td><span class="ts-type ts-type--abox">ABox seed</span></td>
-            <td><span class="ts-badge-sm ts-badge-draft">DRAFT</span></td>
-            <td><a class="ts-audit" href="https://github.com/sachaR063R/bra0-ns/blob/main/audit/evidence-os-ontology-quality-2026-04-22.md">Audit 2026-04-22</a></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- ── L5 Profile ── -->
-    <div class="ts-ns">
-      <h3><span class="prefix">L5</span> bra0 Application Profile</h3>
-      <div class="iri">
-        <span data-en>Imports L1&ndash;L3 &middot; project-level constraints</span>
-        <span data-fr>Importe L1&ndash;L3 &middot; contraintes projet</span>
-      </div>
-      <table class="ts-table">
-        <thead><tr><th>File</th><th>Type</th><th>Badge</th><th>Audit</th></tr></thead>
-        <tbody>
-          <tr>
-            <td class="file"><a href="evidence-os/bra0-application-profile.ttl">bra0-application-profile.ttl</a></td>
-            <td><span class="ts-type ts-type--profile">Profile</span></td>
             <td><span class="ts-badge-sm ts-badge-draft">DRAFT</span></td>
             <td><a class="ts-audit" href="https://github.com/sachaR063R/bra0-ns/blob/main/audit/evidence-os-ontology-quality-2026-04-22.md">Audit 2026-04-22</a></td>
           </tr>
