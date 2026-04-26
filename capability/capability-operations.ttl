@@ -4,6 +4,7 @@
 @prefix owl:   <http://www.w3.org/2002/07/owl#> .
 @prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix vann:  <http://purl.org/vocab/vann/> .
 @prefix prov:  <http://www.w3.org/ns/prov#> .
 @prefix cap:   <https://schema.bra0.org/capability#> .
 @prefix obo:   <http://purl.obolibrary.org/obo/> .
@@ -12,7 +13,7 @@
 #
 # Capability Operations Registry — operational triples per capability
 # --------------------------------------------------------------------
-# Owner: Nael (Architect & Engineer) — absolute architectural authority (D16)
+# Owner: bra0 ontology team
 # Authoring source for the (interface · SPARQL · CLI) triple rendered on
 # bra0/public/blueprint.html and bra0/public/docs/reference/capabilities.html.
 # D18 (Progressive site-docs publication) anchor set — W01 first-pass.
@@ -22,7 +23,17 @@
 # Status ground truth: bra0/public/blueprint.html .cap blocks.
 #
 
-<> dcterms:license <https://creativecommons.org/licenses/by-sa/4.0/> .
+# ─── Ontology declaration ────────────────────────────────────────────
+
+<https://schema.bra0.org/capability> a owl:Ontology ;
+    rdfs:label "bra0 Capability Operations"@en ;
+    rdfs:comment "Operational vocabulary for the bra0 48-capability blueprint. Defines cap:Capability as a BFO:disposition (realizable continuant) and cap:Realization as prov:Activity (the process by which a capability is exercised). Source TBox for the (interface · SPARQL · CLI) triple rendered on blueprint + capabilities reference pages."@en ;
+    owl:versionInfo "0.1.0" ;
+    vann:preferredNamespacePrefix "cap" ;
+    vann:preferredNamespaceUri "https://schema.bra0.org/capability#" ;
+    dcterms:created "2026-04-20"^^xsd:date ;
+    dcterms:modified "2026-04-24"^^xsd:date ;
+    dcterms:license <https://creativecommons.org/licenses/by-sa/4.0/> .
 
 # ─── Vocabulary declarations ─────────────────────────────────────────
 

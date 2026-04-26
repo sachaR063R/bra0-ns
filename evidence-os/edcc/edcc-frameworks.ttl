@@ -1,5 +1,6 @@
 @prefix edcc:    <https://schema.bra0.org/evidence-os/edcc#> .
 @prefix evo:     <https://schema.bra0.org/evidence-os#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
@@ -13,10 +14,18 @@
 # These are reference individuals — named regulatory frameworks that
 # edcc:CircularControl instances link to via evo:requiredBy.
 #
-# Owner:    Nael (Architect)
+# Owner:    bra0 ontology team
 # Date:     2026-04-17
 # License:  MIT OR Apache-2.0
 # =============================================================================
+
+<https://schema.bra0.org/evidence-os/edcc/frameworks> a owl:Ontology ;
+    rdfs:label "EDCC Compliance Framework Instances"@en ;
+    rdfs:comment "Reference ABox of named regulatory frameworks (RE2020, CSRD, REP, AGEC, …) that edcc:CircularControl instances link to via evo:requiredBy. Travels alongside the EDCC bridge TBox."@en ;
+    owl:versionInfo "0.1.0" ;
+    dcterms:created "2026-04-17"^^xsd:date ;
+    dcterms:license <https://creativecommons.org/licenses/by-sa/4.0/> ;
+    owl:imports <https://schema.bra0.org/evidence-os/edcc> .
 
 edcc:RE2020 a evo:ComplianceFramework ;
     rdfs:label "RE2020"@en ;

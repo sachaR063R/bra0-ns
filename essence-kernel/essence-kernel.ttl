@@ -13,9 +13,9 @@
 # Version: 1.0.0 — 2026-04-03
 #
 # BFO-grounded, ontology-engineering-compliant reconstruction from scratch.
-# Source of truth: OMG Essence 2.0 spec + _bmad/_config/essence.yaml
+# Source of truth: OMG Essence 2.0 spec
 #
-# Design choices (Nael, per ontology engineering methodology):
+# Design choices (per ontology engineering methodology):
 # - States are individuals, not classes (ontology quality audit C2 fix)
 # - Areas are individuals, not a class hierarchy (ontology quality audit M1 fix)
 # - No owl:equivalentClass abuse (ontology quality audit C3/C4 fix)

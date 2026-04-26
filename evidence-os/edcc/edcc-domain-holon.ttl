@@ -4,6 +4,7 @@
 @prefix evo:     <https://schema.bra0.org/evidence-os#> .
 @prefix edcc:    <https://schema.bra0.org/evidence-os/edcc#> .
 @prefix edgy:    <http://www.omyn.ai/schema/edgy#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
@@ -23,11 +24,19 @@
 # BFO grounding: asc:Holon → BFO:object (independent continuant)
 # OntoEDGY: scenarios = edgy:Experience specializations (Task, Journey, Channel)
 #
-# Owner:    Nael (Architect)
+# Owner:    bra0 ontology team
 # Date:     2026-04-17
 # Story:    DHD-07
 # License:  MIT OR Apache-2.0
 # =============================================================================
+
+<https://schema.bra0.org/evidence-os/edcc/domain-holon> a owl:Ontology ;
+    rdfs:label "EDCC Domain Holon — dashboard configuration"@en ;
+    rdfs:comment "Construction Circular Data Space (Espace de Donnees) dashboard configuration: a dcat:Catalog of edgy:Experience scenarios (Task / Journey / Channel) consumed by diagnostiqueurs PEMD, maitres d'ouvrage, materiauthequeurs, and SCIC auditors. ABox; travels with the user's wallet."@en ;
+    owl:versionInfo "0.1.0" ;
+    dcterms:created "2026-04-17"^^xsd:date ;
+    dcterms:license <https://creativecommons.org/licenses/by-sa/4.0/> ;
+    owl:imports <https://schema.bra0.org/evidence-os/edcc> .
 
 edcc:EDCCDomain a dcat:Catalog ;
     rdfs:label "Construction Circulaire EDCC"@fr ;

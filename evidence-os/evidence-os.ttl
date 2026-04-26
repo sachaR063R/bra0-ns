@@ -19,7 +19,7 @@
 # Evidence OS TBox — Formal Class and Predicate Declarations
 # =============================================================================
 #
-# Owner:    Nael (Architect) — D16 absolute authority
+# Owner:    bra0 ontology team
 # Version:  0.2.0
 # Date:     2026-04-23
 # Status:   Post-ADR-053 strict purge — top-level Decision/Change/Evidence/
@@ -41,7 +41,7 @@
 # Design principles:
 #   I5  — W3C reuse before extension (PROV-O, DCAT, SKOS, ODRL, SOSA)
 #   I10 — KE precision: TBox/ABox separation strict
-#   ontology quality — no speculative classes; every class justified by 2+ use cases
+#   ontology engineering methodology — no speculative classes; every class justified by 2+ use cases
 #   Naming — UpperCamelCase classes, lowerCamelCase predicates
 #
 # License:  MIT OR Apache-2.0 (per repo root)
@@ -53,7 +53,7 @@
     owl:versionIRI <https://schema.bra0.org/evidence-os/0.2.0> ;
     dcterms:title "Evidence Ontology"@en ;
     dcterms:description "Product-facing vocabulary for the Evidence OS 90-day reframe cycle. Post-ADR-053: one surviving top-level class (Control), sub-classes re-parented directly on PROV-O (prov:Activity / prov:Entity), compliance framework layer on SKOS, requirements traceability on OMG Essence alpha states (via ess:advancesAlpha in ABox). No bra0-namespace re-statement of PROV-O patterns."@en ;
-    dcterms:creator "Nael (Architect)" ;
+    dcterms:creator "bra0 ontology team" ;
     dcterms:created "2026-04-18"^^xsd:date ;
     dcterms:modified "2026-04-23"^^xsd:date ;
     vann:preferredNamespacePrefix "evo" ;
@@ -269,7 +269,7 @@ evo:byAgentService a owl:ObjectProperty ;
     rdfs:domain evo:AmbientAgentInvocation ;
     rdfs:range asc:AgentService ;
     rdfs:label "by agent service"@en ;
-    rdfs:comment "The asc:AgentService that performed this ambient-agent invocation. Sub-property of prov:wasAssociatedWith — every invocation MUST be attributable to exactly one AgentService (Quinn invariant, enforced by the evo-ambient-agent-policy shape)."@en ;
+    rdfs:comment "The asc:AgentService that performed this ambient-agent invocation. Sub-property of prov:wasAssociatedWith — every invocation MUST be attributable to exactly one AgentService (invariant enforced by the evo-ambient-agent-policy shape)."@en ;
     rdfs:isDefinedBy <https://schema.bra0.org/evidence-os> .
 
 evo:underMandate a owl:ObjectProperty ;
@@ -354,7 +354,7 @@ evo:nodeBadge a owl:DatatypeProperty ;
     rdfs:isDefinedBy <https://schema.bra0.org/evidence-os> .
 
 # =============================================================================
-# Disjointness Axioms (ontology quality Accuracy — prevent conflation)
+# Disjointness Axioms (ontology engineering methodology Accuracy — prevent conflation)
 # =============================================================================
 # Post-ADR-053: the top-level AllDisjointClasses block
 # ( evo:Decision evo:Evidence evo:Change evo:Control ) is dropped.
@@ -374,7 +374,7 @@ evo:nodeBadge a owl:DatatypeProperty ;
 # =============================================================================
 # Changelog
 # =============================================================================
-# 0.2.0 | 2026-04-23 | Strict purge per ADR-053 (ontology quality Consistency +
+# 0.2.0 | 2026-04-23 | Strict purge per ADR-053 (ontology engineering methodology Consistency +
 #        Conciseness lift from CONDITIONAL to PASS). Removed top-level
 #        evo:Decision, evo:Evidence, evo:Change (re-stated PROV-O with
 #        no added inference). Removed evo:UserStory, evo:AcceptanceCriterion
@@ -398,5 +398,5 @@ evo:nodeBadge a owl:DatatypeProperty ;
 #        dual-nature), Q3 (ComplianceFramework, FrameworkArticle,
 #        FrameworkMapping), Q5 (groundingMode on Policy). Applies
 #        P0-2 (declaredContext convergence), P0-5 (evo:role renamed
-#        to evo:agentRoleProfile). Disjointness axioms per ontology engineering literature
+#        to evo:agentRoleProfile). Disjointness axioms per ontology engineering methodology
 #        Accuracy dimension. Method: NL→OWL per Mateiu & Groza (2023).

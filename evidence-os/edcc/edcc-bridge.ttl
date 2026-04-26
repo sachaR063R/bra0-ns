@@ -18,7 +18,7 @@
 # EDCC Bridge Ontology — Construction Circular Data Space ↔ Evidence OS
 # =============================================================================
 #
-# Owner:    Nael (Architect) — EDCC demo sprint
+# Owner:    bra0 ontology team
 # Version:  0.1.0
 # Date:     2026-04-17
 # Status:   Bridge ontology for EDCC consortium demonstration
@@ -46,7 +46,7 @@
     owl:versionInfo "0.1.0" ;
     dcterms:title "EDCC Bridge Ontology"@en ;
     dcterms:description "Construction Circular Data Space bridge linking opendthX (ETSI ES 204 114) and ISO 19650/23386 concepts to Evidence OS governance classes (Decision, Evidence, Change, Control). Designed for the EDCC consortium demonstration."@en ;
-    dcterms:creator "Nael (Architect)" ;
+    dcterms:creator "bra0 ontology team" ;
     dcterms:created "2026-04-17"^^xsd:date ;
     owl:imports <https://schema.bra0.org/evidence-os> .
 
