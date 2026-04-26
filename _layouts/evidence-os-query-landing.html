@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>evidence-os/query — SHACL result-structure shapes</title>
+<meta name="description" content="SHACL shapes that validate the structure of evidence-os SPARQL query results.">
+<link rel="alternate" type="text/turtle" href="evoQ-kpi-shapes.shapes.ttl">
+<style>
+  body { font-family: -apple-system, system-ui, sans-serif; max-width: 60em; margin: 2em auto; padding: 0 1em; color: #222; line-height: 1.5; }
+  h1 { font-size: 1.5em; margin-bottom: 0.2em; }
+  h2 { font-size: 1.1em; margin-top: 1.8em; border-bottom: 1px solid #ddd; padding-bottom: 0.3em; }
+  code { background: #f5f5f5; padding: 0.1em 0.3em; border-radius: 3px; font-size: 0.92em; }
+  ul.shapes { list-style: none; padding-left: 0; }
+  ul.shapes li { padding: 0.4em 0; border-bottom: 1px solid #eee; }
+  ul.shapes li code { font-weight: 600; }
+  .ns-audit-meta { background:#e7f3ff; border-left:4px solid #0066cc; padding:0.7em 1em; margin:1em 0; font-size:0.9em; }
+  .ns-static-note { background:#f5f5f5; border-left:4px solid #888; padding:0.7em 1em; margin:1em 0; font-size:0.9em; }
+  a { color: #0066cc; }
+  footer { margin-top: 3em; font-size: 0.85em; color: #666; border-top: 1px solid #ddd; padding-top: 1em; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>evidence-os/query</h1>
+  <p>Namespace IRI: <code>https://schema.bra0.org/evidence-os/query#</code> · prefix <code>evoQ:</code></p>
+
+  <aside class="ns-audit-meta">
+    Badge: <strong>DRAFT</strong> ·
+    Audit: <a href="../../audit/evidence-os-ontology-quality-2026-04-22.md">evidence-os-ontology-quality-2026-04-22.md</a> ·
+    Published: 2026-04-23
+  </aside>
+
+  <aside class="ns-static-note">
+    This namespace carries SHACL result-structure shapes only. The page below is a hand-written static landing per ADR-058 §2.11; pyLODE rendering is reserved for ontologies. The canonical artefact is the raw Turtle file linked above.
+  </aside>
+</header>
+
+<main>
+
+<section>
+  <h2>Scope</h2>
+  <p>SHACL shapes that validate the structure of SPARQL query results produced by the evidence-os layer (KPI, trust-coverage, freshness, traceability, latency, change-link). These shapes do not declare an OWL ontology; they declare conformance contracts on result rows.</p>
+</section>
+
+<section>
+  <h2>Artefacts</h2>
+  <ul>
+    <li>Turtle source — <a href="evoQ-kpi-shapes.shapes.ttl"><code>evoQ-kpi-shapes.shapes.ttl</code></a></li>
+    <li>Audit — <a href="../../audit/evidence-os-ontology-quality-2026-04-22.md"><code>evidence-os-ontology-quality-2026-04-22.md</code></a></li>
+    <li>License — <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a></li>
+  </ul>
+</section>
+
+<section>
+  <h2>Shapes</h2>
+  <p>Each shape below is anchored at <code>#&lt;LocalName&gt;</code>. Fragment dereference returns this page; for SHACL semantics consult the Turtle source.</p>
+  <ul class="shapes">
+    <li id="ChangeLinkRatioShape"><code>evoQ:ChangeLinkRatioShape</code></li>
+    <li id="CompletenessFreshnessResultShape"><code>evoQ:CompletenessFreshnessResultShape</code></li>
+    <li id="ConnectorIngestResultShape"><code>evoQ:ConnectorIngestResultShape</code></li>
+    <li id="ControlGapResultShape"><code>evoQ:ControlGapResultShape</code></li>
+    <li id="DemoReadinessShape"><code>evoQ:DemoReadinessShape</code></li>
+    <li id="DogfoodFreshnessResultShape"><code>evoQ:DogfoodFreshnessResultShape</code></li>
+    <li id="GroundingResultShape"><code>evoQ:GroundingResultShape</code></li>
+    <li id="OnboardingLatencyShape"><code>evoQ:OnboardingLatencyShape</code></li>
+    <li id="PackBundleShape"><code>evoQ:PackBundleShape</code></li>
+    <li id="PackExportLatencyShape"><code>evoQ:PackExportLatencyShape</code></li>
+    <li id="RogueCommitDetectionShape"><code>evoQ:RogueCommitDetectionShape</code></li>
+    <li id="TimeToRationaleSampleShape"><code>evoQ:TimeToRationaleSampleShape</code></li>
+    <li id="TraceabilityCompletenessResultShape"><code>evoQ:TraceabilityCompletenessResultShape</code></li>
+    <li id="TraceFidelityResultShape"><code>evoQ:TraceFidelityResultShape</code></li>
+    <li id="VerifiabilityLatencyResultShape"><code>evoQ:VerifiabilityLatencyResultShape</code></li>
+  </ul>
+</section>
+
+<section>
+  <h2>Validation</h2>
+  <p>Shape conformance is exercised with <a href="https://github.com/rudof-project/rudof"><code>rudof</code></a>:</p>
+  <pre><code>rudof shacl-validate -s evoQ-kpi-shapes.shapes.ttl &lt;result-rows&gt;.ttl</code></pre>
+</section>
+
+</main>
+
+<footer>
+  <p>Part of <a href="../../">schema.bra0.org</a>. Pages source: <a href="https://github.com/sachaR063R/bra0-ns">sachaR063R/bra0-ns</a>.</p>
+</footer>
+
+</body>
+</html>
