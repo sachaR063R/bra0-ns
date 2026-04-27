@@ -11,27 +11,7 @@
 
 # ══════════════════════════════════════════════════════════════
 # SHACL Shapes for Agent Service Contracts
-# Validates agent instances against asc: ontology v0.5.0
-# ADR-020 — Step 5 (Diana validation)
-#
-# v0.5 (ADR-052, 2026-04-23): Deholonize. No holonic closure
-# shapes ever existed in this bundle (verified: grep for
-# HolonShape / HolonicMembraneShape / PortalShape / HolarchyShape
-# / HolonicAspectShape returns zero hits). This commit is an
-# explicit no-op entry for the ADR-052 §5 sequence and bumps
-# the bundle's target version pointer to v0.5.0. All surviving
-# shapes (AgentService, Capability, Mandate, BootstrapIdentity,
-# ToolPolicy, SubagentPolicy, PluginHook, ExecApproval, Story)
-# continue to validate their targets against the PROV-O + DCAT
-# + ODRL-grounded ontology without edit.
-#
-# v0.3: Governance Hardening — GovernedAgentShape,
-# MandateShape, BootstrapIdentityCompleteShape,
-# PolicyCompletenessShape. Non-breaking additions.
-#
-# v0.2: Added shapes for Skill, Plugin, GatingRequirements,
-# BootstrapIdentity, ToolPolicy, SubagentPolicy, PluginHook,
-# ExecApproval
+# Validates agent instances against asc: ontology v0.6.0
 # ══════════════════════════════════════════════════════════════
 
 # ── AgentService Shape ────────────────────────────────────────
@@ -584,4 +564,136 @@ asc:ExecApprovalShape a sh:NodeShape ;
     sh:minCount 1 ;
     sh:in ( "deny" "allowlist" "full" ) ;
     sh:message "Exec approval must have a security mode (deny|allowlist|full)"
+  ] .
+
+# ══════════════════════════════════════════════════════════════
+# Shapes — META portal, Input defence, Selection-by-fingerprint
+# ══════════════════════════════════════════════════════════════
+
+# ── OpMode Value Shape ────────────────────────────────────────
+# Every Capability declaring asc:opMode MUST use one of the
+# three canonical values. Without this enum, a typo such as
+# "MET" would silently bypass the META gate downstream.
+
+asc:OpModeValueShape a sh:NodeShape ;
+  sh:targetClass asc:Capability ;
+  rdfs:label "OpMode Value Shape"@en ;
+  rdfs:comment "Constrains asc:opMode to its canonical enum. Capabilities without an asc:opMode are unaffected (default operational mode is OPS by convention)."@en ;
+
+  sh:property [
+    sh:path asc:opMode ;
+    sh:datatype xsd:string ;
+    sh:in ( "META" "DEV" "OPS" ) ;
+    sh:severity sh:Violation ;
+    sh:message "asc:opMode MUST be one of 'META', 'DEV', 'OPS' (or absent for default OPS)."@en
+  ] .
+
+# ── META Capability Gate ─────────────────────────────────────
+# Any capability declared as asc:opMode = "META" MUST carry an
+# asc:sachaSignedFrontmatter literal. META capabilities can
+# modify the rules other capabilities follow; without the
+# controller-signed frontmatter, no agent commit may touch them.
+# The pre-commit hook verifies the signature; this shape verifies
+# its presence.
+
+asc:MetaCapabilityGateShape a sh:NodeShape ;
+  sh:targetClass asc:Capability ;
+  rdfs:label "META Capability Gate Shape"@en ;
+  rdfs:comment "Every capability with asc:opMode = 'META' MUST carry a controller-signed frontmatter literal. The literal is the audit anchor; signature verification is a pre-commit-hook responsibility. Encoded as 'NOT (opMode=META AND sachaSignedFrontmatter absent)' for SHACL Core portability (sh:SPARQLTarget not universally supported by validators)."@en ;
+  sh:severity sh:Violation ;
+  sh:message "META capability MUST carry asc:sachaSignedFrontmatter (single-controller gate)."@en ;
+
+  sh:not [
+    a sh:NodeShape ;
+    sh:property [
+      sh:path asc:opMode ;
+      sh:hasValue "META"
+    ] ;
+    sh:property [
+      sh:path asc:sachaSignedFrontmatter ;
+      sh:maxCount 0
+    ]
+  ] .
+
+# ── Input Defence MANDATORY ──────────────────────────────────
+# Any agent that reads external content (asc:readsExternalContent
+# = true) MUST declare an asc:inputDefence configuration. No
+# exception: the absence of the property is interpreted as
+# "does not read external content" and is therefore safe; setting
+# it to true commits the agent to the defence configuration.
+
+asc:InputDefenceMandatoryShape a sh:NodeShape ;
+  sh:targetClass asc:AgentService ;
+  rdfs:label "Input Defence Mandatory Shape"@en ;
+  rdfs:comment "Every agent declaring asc:readsExternalContent = true MUST declare an asc:inputDefence configuration. Reading untrusted content without a declared defence is a contract violation. Encoded as 'NOT (readsExternalContent=true AND inputDefence absent)' for SHACL Core portability."@en ;
+  sh:severity sh:Violation ;
+  sh:message "Agent reading external content MUST declare asc:inputDefence (L1-L3 + L5 MANDATORY)."@en ;
+
+  sh:not [
+    a sh:NodeShape ;
+    sh:property [
+      sh:path asc:readsExternalContent ;
+      sh:hasValue true
+    ] ;
+    sh:property [
+      sh:path asc:inputDefence ;
+      sh:maxCount 0
+    ]
+  ] .
+
+# ── Input Defence Completeness ───────────────────────────────
+# An asc:InputDefence resource MUST carry both a content
+# sanitiser (L1-L3 deterministic) and a canary token (L5
+# leakage detection). L4/L4b/L6 are declared-future-extension
+# only and are not required.
+
+asc:InputDefenceCompletenessShape a sh:NodeShape ;
+  sh:targetClass asc:InputDefence ;
+  rdfs:label "Input Defence Completeness Shape"@en ;
+  rdfs:comment "Every asc:InputDefence MUST carry both a sanitiser (L1-L3) and a canary token (L5). Either alone is insufficient: a sanitiser without a canary cannot detect leakage; a canary without a sanitiser leaks before detection."@en ;
+
+  sh:property [
+    sh:path asc:hasContentSanitiser ;
+    sh:minCount 1 ;
+    sh:datatype xsd:string ;
+    sh:severity sh:Violation ;
+    sh:message "InputDefence MUST declare asc:hasContentSanitiser (L1-L3)."@en
+  ] ;
+
+  sh:property [
+    sh:path asc:hasCanaryToken ;
+    sh:minCount 1 ;
+    sh:datatype xsd:string ;
+    sh:severity sh:Violation ;
+    sh:message "InputDefence MUST declare asc:hasCanaryToken (L5)."@en
+  ] .
+
+# ── Provider-Name Forbidden ──────────────────────────────────
+# When a SubagentPolicy declares asc:modelSelection (capability-
+# hash or shacl-profile), the legacy asc:subagentModel literal
+# MUST be empty. Provider-name selection bypasses llmGateway
+# portability and is a CI-failable contract breach.
+
+asc:ProviderNameForbiddenShape a sh:NodeShape ;
+  sh:targetClass asc:SubagentPolicy ;
+  rdfs:label "Provider-Name Forbidden Shape"@en ;
+  rdfs:comment "When a SubagentPolicy declares asc:modelSelection, the legacy asc:subagentModel literal MUST be absent. Provider-name selection bypasses llmGateway portability and is a contract violation. Two constraints: (a) modelSelection values restricted to canonical enum; (b) coexistence of modelSelection and subagentModel forbidden — encoded via sh:not for SHACL Core portability."@en ;
+
+  sh:property [
+    sh:path asc:modelSelection ;
+    sh:in ( "capability-hash" "shacl-profile" ) ;
+    sh:severity sh:Violation ;
+    sh:message "asc:modelSelection MUST be one of 'capability-hash' or 'shacl-profile'."@en
+  ] ;
+
+  sh:not [
+    a sh:NodeShape ;
+    sh:property [
+      sh:path asc:modelSelection ;
+      sh:minCount 1
+    ] ;
+    sh:property [
+      sh:path asc:subagentModel ;
+      sh:minCount 1
+    ]
   ] .

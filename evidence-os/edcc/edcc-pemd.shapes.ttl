@@ -9,14 +9,13 @@
 
 #
 # SHACL shapes — EDCC Construction Domain: PEMD Diagnostic + Material Passport
-# Scope: CU2 (circular supply) validation for EDCC demo
-# Validate: rudof shacl-validate -s edcc-pemd.shapes.ttl fixtures/edcc-pemd/<happy-path|failure>.ttl
+# Scope: circular-supply use-case validation
 #
 
 <> dcterms:license <https://creativecommons.org/licenses/by-sa/4.0/> .
 
 #######################################################################
-# edcc:PEMDDiagnosticShape (S2)
+# edcc:PEMDDiagnosticShape
 # Target: edcc:PEMDDiagnostic
 # Validates PEMD diagnostic completeness per RE2020 + Code Environnement
 #######################################################################
@@ -122,7 +121,7 @@ edcc:MaterialLotShape
     ] .
 
 #######################################################################
-# edcc:MaterialPassportShape (S3)
+# edcc:MaterialPassportShape
 # Target: edcc:MaterialPassport
 # Validates DPP material passport per EU Regulation 2024/1781
 #######################################################################

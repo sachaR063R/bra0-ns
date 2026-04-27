@@ -13,21 +13,18 @@
 #
 # Capability Operations Registry — operational triples per capability
 # --------------------------------------------------------------------
-# Owner: bra0 ontology team
-# Authoring source for the (interface · SPARQL · CLI) triple rendered on
-# bra0/public/blueprint.html and bra0/public/docs/reference/capabilities.html.
-# D18 (Progressive site-docs publication) anchor set — W01 first-pass.
+# Authoring source for the (interface · SPARQL · CLI) triple rendered
+# on the capabilities reference pages.
 #
 # Coverage: 10/48 capabilities populated here (Evidence OS V1 anchor set).
-# Remaining 38 grow progressively at W04/W06/W08/W10/W13 per D18.
-# Status ground truth: bra0/public/blueprint.html .cap blocks.
+# Remaining 38 grow progressively across subsequent releases.
 #
 
 # ─── Ontology declaration ────────────────────────────────────────────
 
 <https://schema.bra0.org/capability> a owl:Ontology ;
     rdfs:label "bra0 Capability Operations"@en ;
-    rdfs:comment "Operational vocabulary for the bra0 48-capability blueprint. Defines cap:Capability as a BFO:disposition (realizable continuant) and cap:Realization as prov:Activity (the process by which a capability is exercised). Source TBox for the (interface · SPARQL · CLI) triple rendered on blueprint + capabilities reference pages."@en ;
+    rdfs:comment "Operational vocabulary for the bra0 48-capability blueprint. Defines cap:Capability as a BFO:disposition (realizable continuant) and cap:Realization as prov:Activity (the process by which a capability is exercised). Source TBox for the (interface · SPARQL · CLI) triple rendered on capabilities reference pages."@en ;
     owl:versionInfo "0.1.0" ;
     vann:preferredNamespacePrefix "cap" ;
     vann:preferredNamespaceUri "https://schema.bra0.org/capability#" ;
@@ -94,7 +91,7 @@ cap:hasCliOperation a owl:DatatypeProperty ;
 cap:implementationStatus a owl:DatatypeProperty ;
     rdfs:domain cap:Capability ;
     rdfs:range xsd:string ;
-    skos:definition "One of: shipped | partial | planned | gap. Mirrors blueprint.html badge."@en .
+    skos:definition "One of: shipped | partial | planned | gap."@en .
 
 cap:family a owl:DatatypeProperty ;
     rdfs:domain cap:Capability ;
@@ -177,7 +174,7 @@ INSERT {
   FILTER NOT EXISTS { ?r a sh:ValidationReport ; sh:conforms false ; sh:scope ?ks }
 }""" ;
     cap:hasCliOperation "topo kspace promote <iri> --from draft --to review" ;
-    rdfs:comment "Stages: draft → review → published. SHACL gate at each promotion. PROV-O trace per promotion. ADR-032."@en .
+    rdfs:comment "Stages: draft → review → published. SHACL gate at each promotion. PROV-O trace per promotion."@en .
 
 # SL-1 Ontology Authoring
 cap:SL-1 a cap:Capability ;
@@ -235,7 +232,7 @@ SELECT ?decision ?rationale WHERE {
             evo:rationale ?rationale .
 } ORDER BY DESC(?decision)""" ;
     cap:hasCliOperation "topo watch --query live.rq --deps urn:entity:X,urn:entity:Y" ;
-    rdfs:comment "Zustand mutations → debounced 100 ms re-eval → subscribers update. Powers charts, grids, inspector. ADR-031."@en .
+    rdfs:comment "Zustand mutations → debounced 100 ms re-eval → subscribers update. Powers charts, grids, inspector."@en .
 
 # SL-9 KnowledgeSpace Templates
 cap:SL-9 a cap:Capability ;
@@ -255,7 +252,7 @@ CONSTRUCT {
   }
 }""" ;
     cap:hasCliOperation "topo template list | topo template apply <template-id> --to <kspace-iri> | topo template validate <template-id>" ;
-    rdfs:comment "Template bundles: TBox + shapes + queries + sample ABox. 3 built-ins: SKOS Taxonomy, EDGY Enterprise Design, Research Bibliography. ADR-035."@en .
+    rdfs:comment "Template bundles: TBox + shapes + queries + sample ABox. 3 built-ins: SKOS Taxonomy, EDGY Enterprise Design, Research Bibliography."@en .
 
 # DP-2 SPARQL Operations
 cap:DP-2 a cap:Capability ;
@@ -335,7 +332,7 @@ SELECT ?iotObs ?encounter WHERE {
     cap:hasCliOperation "topo reflect" ;
     rdfs:comment "Multi-phase SPARQL analysis: corroboration, anomalies, temporal coherence."@en .
 
-# ─── T1 shipped additions — W03-W04 batch (NS family) ────────────────
+# ─── T1 shipped additions — NS family ────────────────────────────────
 
 # NS-1 Gap Detection
 cap:NS-1 a cap:Capability ;

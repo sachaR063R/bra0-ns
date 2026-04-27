@@ -6,19 +6,15 @@
 @prefix evo:     <https://schema.bra0.org/evidence-os#> .
 
 #
-# SHACL shapes — OntoEDGY product-cycle sub-classes: TestRun + CoverageReport + DatasetFixture
-# Scope: arch-delta v0.1.4 §3.2.1 (test-evidence layer feeding D19 JUnit XML connector)
-# Validate: rudof shacl-validate -s evo-test-evidence.shapes.ttl fixtures/evo-test-evidence/<happy-path|failure>.ttl
-# Quinn gates in CI; consumes E1.test-automation connector output (v0.7 Wave 2 W08 third MUST per D19).
-#
-# Count: 3 of the 22-canon shape catalogue (Nael Q-β 2026-04-17).
+# SHACL shapes — Product-cycle sub-classes: TestRun + CoverageReport + DatasetFixture
+# Test-evidence layer fed by the JUnit XML connector.
 #
 
 <> dcterms:license <https://creativecommons.org/licenses/by-sa/4.0/> .
 
 #######################################################################
 # evo:TestRunShape
-# Target: evo:TestRun (arch-delta §3.2.1 row 6 — prov:Entity subclass, post-ADR-053)
+# Target: evo:TestRun (prov:Entity subclass)
 # Test execution artifact; binds to the commit tested + the dataset fixture used.
 #######################################################################
 
@@ -26,7 +22,7 @@ evo:TestRunShape
     a sh:NodeShape ;
     sh:targetClass evo:TestRun ;
     rdfs:label "Test-run shape"@en ;
-    rdfs:comment "Validates evo:TestRun instances ingested from JUnit XML per D19 third MUST connector. Binds the run to its commit (evo:onCommit) and fixture (evo:onDataset) per arch-delta §3.2.1 cross-cutting predicates."@en ;
+    rdfs:comment "Validates evo:TestRun instances ingested from JUnit XML. Binds the run to its commit (evo:onCommit) and fixture (evo:onDataset) cross-cutting predicates."@en ;
     sh:property [
         sh:path dcterms:identifier ;
         sh:datatype xsd:string ;
@@ -49,18 +45,18 @@ evo:TestRunShape
         sh:path evo:onCommit ;
         sh:class evo:Commit ;
         sh:minCount 1 ; sh:maxCount 1 ;
-        sh:message "evo:TestRun MUST bind evo:onCommit to the evo:Commit tested (provenance edge, arch-delta §3.2.1)."@en ;
+        sh:message "evo:TestRun MUST bind evo:onCommit to the evo:Commit tested (provenance edge)."@en ;
     ] ,
     [
         sh:path evo:onDataset ;
         sh:class evo:DatasetFixture ;
         sh:minCount 1 ;
-        sh:message "evo:TestRun MUST bind evo:onDataset to ≥1 evo:DatasetFixture (fixture used, arch-delta §3.2.1)."@en ;
+        sh:message "evo:TestRun MUST bind evo:onDataset to ≥1 evo:DatasetFixture (fixture used)."@en ;
     ] .
 
 #######################################################################
 # evo:CoverageReportShape
-# Target: evo:CoverageReport (arch-delta §3.2.1 row 7 — prov:Entity)
+# Target: evo:CoverageReport (prov:Entity)
 # Aggregated coverage artifact emitted per test-run; feeds Trust Coverage KPI.
 #######################################################################
 
@@ -92,8 +88,8 @@ evo:CoverageReportShape
 
 #######################################################################
 # evo:DatasetFixtureShape
-# Target: evo:DatasetFixture (arch-delta §3.2.1 row 8 — prov:Entity)
-# Test-data snapshot; anchors deterministic replay (dogfood discipline).
+# Target: evo:DatasetFixture (prov:Entity)
+# Test-data snapshot; anchors deterministic replay.
 #######################################################################
 
 evo:DatasetFixtureShape

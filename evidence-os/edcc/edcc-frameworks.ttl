@@ -10,12 +10,10 @@
 # EDCC Compliance Framework Instances (ABox)
 # =============================================================================
 #
-# Extracted from edcc-bridge.ttl per ontology quality audit F8.1 (TBox/ABox separation).
+# Extracted from edcc-bridge.ttl for TBox/ABox separation.
 # These are reference individuals — named regulatory frameworks that
 # edcc:CircularControl instances link to via evo:requiredBy.
 #
-# Owner:    bra0 ontology team
-# Date:     2026-04-17
 # License:  MIT OR Apache-2.0
 # =============================================================================
 

@@ -18,10 +18,8 @@
 # EDCC Bridge Ontology — Construction Circular Data Space ↔ Evidence OS
 # =============================================================================
 #
-# Owner:    bra0 ontology team
 # Version:  0.1.0
-# Date:     2026-04-17
-# Status:   Bridge ontology for EDCC consortium demonstration
+# Status:   Bridge ontology for the construction circular data space
 #
 # Purpose:  Maps opendthX / construction-domain concepts to Evidence OS
 #           governance classes. Evidence OS remains domain-agnostic;
@@ -33,20 +31,18 @@
 #            ISO 16739 (IFC)
 #
 # Principle: rdfs:seeAlso for alignment claims (not owl:equivalentClass).
-#            We do NOT claim formal equivalence we cannot defend.
-#            Didier Balaguer (datBIM) will review these alignments.
+#            Formal equivalence is not asserted where it cannot be defended.
 #
 # Namespace: edcc: = https://schema.bra0.org/evidence-os/edcc#
-#            (product-facing, under evo: umbrella, NOT a separate ontology)
+#            (product-facing, under evo: umbrella, not a separate ontology)
 #
-# License:  MIT OR Apache-2.0 (per repo root)
+# License:  MIT OR Apache-2.0
 # =============================================================================
 
 <https://schema.bra0.org/evidence-os/edcc> a owl:Ontology ;
     owl:versionInfo "0.1.0" ;
     dcterms:title "EDCC Bridge Ontology"@en ;
-    dcterms:description "Construction Circular Data Space bridge linking opendthX (ETSI ES 204 114) and ISO 19650/23386 concepts to Evidence OS governance classes (Decision, Evidence, Change, Control). Designed for the EDCC consortium demonstration."@en ;
-    dcterms:creator "bra0 ontology team" ;
+    dcterms:description "Construction Circular Data Space bridge linking opendthX (ETSI ES 204 114) and ISO 19650/23386 concepts to Evidence OS governance classes (Decision, Evidence, Change, Control)."@en ;
     dcterms:created "2026-04-17"^^xsd:date ;
     owl:imports <https://schema.bra0.org/evidence-os> .
 
@@ -277,7 +273,7 @@ edcc:naceCode a owl:DatatypeProperty ;
     rdfs:isDefinedBy <https://schema.bra0.org/evidence-os/edcc> .
 
 # =============================================================================
-# §2b — edccQ: Query-Result Predicates (ontology quality audit F2.2 — must be declared)
+# §2b — edccQ: Query-Result Predicates
 # =============================================================================
 
 edccQ:reportingScope a owl:DatatypeProperty ;
@@ -345,15 +341,12 @@ edccQ:counterfactualMethod a owl:DatatypeProperty ;
 # =============================================================================
 # §4 — Compliance Framework Instances
 # =============================================================================
-# EXTRACTED to edcc-frameworks.ttl (ABox) per ontology quality audit F8.1 (TBox/ABox separation).
+# Framework individuals are extracted to edcc-frameworks.ttl (ABox) for TBox/ABox separation.
 # Reference individuals: edcc:RE2020, edcc:CSRD, edcc:REP, edcc:AGEC, edcc:DPP, edcc:ETSI_ES_204_114
 # Load edcc-frameworks.ttl alongside this TBox for full dataset resolution.
 
 # =============================================================================
 # Changelog
 # =============================================================================
-# 0.1.0 | 2026-04-17 | Initial bridge ontology for EDCC demo.
-#        16 classes, 15 predicates, 6 framework instances.
-#        Alignment via rdfs:seeAlso (not owl:equivalentClass).
-#        Follows Evidence OS TBox patterns (ontology-engineering-compliant naming,
-#        disjointness axioms, PROV-O/DCAT reuse).
+# 0.1.0 | Initial bridge ontology — 16 classes, 15 predicates, 6 framework
+#        instances; alignment via rdfs:seeAlso (not owl:equivalentClass).

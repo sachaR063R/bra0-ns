@@ -9,28 +9,21 @@
 
 #
 # SHACL shapes — KPI / query-result / structural validators
-# Scope: PRD V1 §6.2 KPI table + RQ1-RQ4 result structures + arch-delta v0.1.4 §3.2.2 operational predicates
-# Validate: rudof shacl-validate -s evoQ-kpi-shapes.shapes.ttl fixtures/evoQ-kpi-shapes/<happy-path|failure>.ttl
-# Quinn gates in CI; ship gates §2.3.1 + §3.3.1 + §4.3.1 per roadmap-evidence-os.md.
-#
-# Count: 13 canonical evoQ:*ResultShape (Nael Q-β 2026-04-17) + 2 extras (Nael Concern 1 discretion):
-# canonical 1-13 per Q-β decision memo + evoQ:PackBundleShape (structural, distinct from PackExportLatencyShape)
-# + evoQ:ConnectorIngestResultShape (PRD AC-W1.4 — added per Nael discretion clause, does not revise 22-count).
-#
-# Predicate declaration policy (Q-δ Bucket 1, W3C SHACL 1.2 §2.1): all evoQ:* result-structure predicates
-# declared inline here as sh:path IRIs; no separate TBox required.
+# Validators for KPI-result rows and operational predicates.
+# All evoQ:* result-structure predicates are declared inline as
+# sh:path IRIs (W3C SHACL 1.2 §2.1); no separate TBox required.
 #
 
 <> dcterms:license <https://creativecommons.org/licenses/by-sa/4.0/> .
 
 #######################################################################
-# 1. evoQ:TraceabilityCompletenessResultShape (RQ1 §2.5)
+# 1. evoQ:TraceabilityCompletenessResultShape
 #######################################################################
 
 evoQ:TraceabilityCompletenessResultShape
     a sh:NodeShape ;
-    rdfs:label "Traceability-completeness result shape (RQ1)"@en ;
-    rdfs:comment "Validates the SPARQL result row of the Trust Coverage (traceability-completeness) query per RQ1 §2.4 + §2.5 + PRD §6.1."@en ;
+    rdfs:label "Traceability-completeness result shape"@en ;
+    rdfs:comment "Validates the SPARQL result row of the Trust Coverage (traceability-completeness) query."@en ;
     sh:targetNode evoQ:TraceabilityCompletenessResult ;
     sh:property [
         sh:path evoQ:withEvidence ;
@@ -59,17 +52,17 @@ evoQ:TraceabilityCompletenessResultShape
         sh:datatype xsd:string ;
         sh:in ( "strict" "relaxed" ) ;
         sh:minCount 1 ; sh:maxCount 1 ;
-        sh:message "thresholdMode MUST be 'strict' (θ) or 'relaxed' (θ') per RQ1 §2.3."@en ;
+        sh:message "thresholdMode MUST be 'strict' (θ) or 'relaxed' (θ')."@en ;
     ] .
 
 #######################################################################
-# 2. evoQ:TimeToRationaleSampleShape (PRD §6.2 row 1)
+# 2. evoQ:TimeToRationaleSampleShape
 #######################################################################
 
 evoQ:TimeToRationaleSampleShape
     a sh:NodeShape ;
     rdfs:label "Time-to-rationale sample shape"@en ;
-    rdfs:comment "Validates a single wallclock sample for time-to-rationale KPI (indexed ADR opened → trail entry visible) per PRD §6.2 row 1."@en ;
+    rdfs:comment "Validates a single wallclock sample for time-to-rationale KPI (indexed decision opened → trail entry visible)."@en ;
     sh:targetNode evoQ:TimeToRationaleSample ;
     sh:property [
         sh:path evoQ:decisionIri ;
@@ -91,13 +84,13 @@ evoQ:TimeToRationaleSampleShape
     ] .
 
 #######################################################################
-# 3. evoQ:ChangeLinkRatioShape (PRD §6.2 — canonical; deprecates evoQ:LinkRatioShape alias)
+# 3. evoQ:ChangeLinkRatioShape (canonical; deprecates evoQ:LinkRatioShape alias)
 #######################################################################
 
 evoQ:ChangeLinkRatioShape
     a sh:NodeShape ;
     rdfs:label "Change-link-ratio shape (canonical)"@en ;
-    rdfs:comment "Validates % changes linked to ticket + informing decision — PRD §6.2 KPI + D08 v0.7 dogfood gate ≥ 0.80 on bra0_meta corpus. Canonical name per Nael Concern 1; evoQ:LinkRatioShape is the deprecated alias."@en ;
+    rdfs:comment "Validates % of changes linked to a ticket and an informing decision; dogfood gate ≥ 0.80. evoQ:LinkRatioShape is the deprecated alias."@en ;
     sh:targetNode evoQ:ChangeLinkRatioResult ;
     sh:property [
         sh:path evoQ:linkedCount ;
@@ -119,17 +112,17 @@ evoQ:ChangeLinkRatioShape
         sh:minInclusive 0.0 ;
         sh:maxInclusive 1.0 ;
         sh:minCount 1 ; sh:maxCount 1 ;
-        sh:message "ratio MUST be xsd:decimal in [0.0, 1.0]; D08 v0.7 gate passes only at ratio ≥ 0.80 on bra0_meta corpus."@en ;
+        sh:message "ratio MUST be xsd:decimal in [0.0, 1.0]; dogfood gate passes only at ratio ≥ 0.80."@en ;
     ] .
 
 #######################################################################
-# 4. evoQ:ControlGapResultShape (PRD §6.2 — canonical; deprecates evoQ:GapDetectorResultShape alias)
+# 4. evoQ:ControlGapResultShape (canonical; deprecates evoQ:GapDetectorResultShape alias)
 #######################################################################
 
 evoQ:ControlGapResultShape
     a sh:NodeShape ;
     rdfs:label "Control-gap result shape (canonical)"@en ;
-    rdfs:comment "Validates a row in the 'controls without evidence' query result — PRD §6.2 row 3 + §4.3 W3 MUST gap detector. Canonical name per Nael Concern 1; evoQ:GapDetectorResultShape is the deprecated alias. Includes rogue-commit + AC-less variants (arch-delta §3.3 gap-detector family)."@en ;
+    rdfs:comment "Validates a row in the 'controls without evidence' query result. evoQ:GapDetectorResultShape is the deprecated alias. Includes rogue-commit and AC-less variants of the gap-detector family."@en ;
     sh:targetNode evoQ:ControlGapResult ;
     sh:property [
         sh:path evoQ:control ;
@@ -148,37 +141,37 @@ evoQ:ControlGapResultShape
         sh:datatype xsd:string ;
         sh:in ( "no-evidence" "rogue-commit" "ac-less" "framework-binding" ) ;
         sh:minCount 1 ; sh:maxCount 1 ;
-        sh:message "gapKind MUST be one of 'no-evidence'|'rogue-commit'|'ac-less'|'framework-binding' per arch-delta §3.3 gap-detector family."@en ;
+        sh:message "gapKind MUST be one of 'no-evidence'|'rogue-commit'|'ac-less'|'framework-binding' (gap-detector family)."@en ;
     ] ,
     [
         sh:path evoQ:wallLabel ;
         sh:datatype xsd:string ;
         sh:in ( "Unprovable evidence" "Fragmented decisions" "Data risks" "AI opacity" ) ;
         sh:minCount 1 ; sh:maxCount 1 ;
-        sh:message "wallLabel MUST be one of the 4 walls per H-UX-07 labelling rule."@en ;
+        sh:message "wallLabel MUST be one of the 4 walls."@en ;
     ] ,
     [
         sh:path evoQ:severityTier ;
         sh:datatype xsd:string ;
         sh:in ( "critical" "major" "minor" ) ;
         sh:minCount 0 ; sh:maxCount 1 ;
-        sh:message "severityTier is optional; if present MUST be 'critical'|'major'|'minor' (Q1 W05 may widen to controlled-vocabulary IRI per Nael Concern 4)."@en ;
+        sh:message "severityTier is optional; if present MUST be 'critical'|'major'|'minor' (may widen to controlled-vocabulary IRI in a future release)."@en ;
     ] ,
     [
         sh:path evoQ:detectionLatencyMillis ;
         sh:datatype xsd:nonNegativeInteger ;
         sh:minCount 0 ; sh:maxCount 1 ;
-        sh:message "detectionLatencyMillis is optional; measures Q7 budget (≤500ms on 100k-quad graph)."@en ;
+        sh:message "detectionLatencyMillis is optional; budget ≤500ms on a 100k-quad graph."@en ;
     ] .
 
 #######################################################################
-# 5. evoQ:PackExportLatencyShape (PRD §6.2 row 4 — time-to-prepare-audit)
+# 5. evoQ:PackExportLatencyShape — time-to-prepare-audit
 #######################################################################
 
 evoQ:PackExportLatencyShape
     a sh:NodeShape ;
     rdfs:label "Pack-export-latency shape"@en ;
-    rdfs:comment "Validates time-to-prepare-audit latency samples (wallclock frame 1 → bundle-ready). PRD §6.2 row 4; storyboard-audit-pack 4:51 live-measured post-W29 per Athena Finding 3."@en ;
+    rdfs:comment "Validates time-to-prepare-audit latency samples (wallclock frame 1 → bundle-ready)."@en ;
     sh:targetNode evoQ:PackExportLatencySample ;
     sh:property [
         sh:path evoQ:framework ;
@@ -206,13 +199,13 @@ evoQ:PackExportLatencyShape
     ] .
 
 #######################################################################
-# 6. evoQ:RogueCommitDetectionShape (PRD §6.2 row 5 — D19 cascade)
+# 6. evoQ:RogueCommitDetectionShape
 #######################################################################
 
 evoQ:RogueCommitDetectionShape
     a sh:NodeShape ;
-    rdfs:label "Rogue-commit-detection shape (D19 cascade)"@en ;
-    rdfs:comment "Validates rogue-commit detector output (commits without prov:wasInformedBy ADR linkage). Relocated to E4 per Nael Finding 6 — arch-delta §3.3 Data Plane gap-detector authority."@en ;
+    rdfs:label "Rogue-commit-detection shape"@en ;
+    rdfs:comment "Validates rogue-commit detector output (commits without prov:wasInformedBy decision-record linkage)."@en ;
     sh:targetNode evoQ:RogueCommitDetectionResult ;
     sh:property [
         sh:path evoQ:commit ;
@@ -224,7 +217,7 @@ evoQ:RogueCommitDetectionShape
         sh:path evoQ:detectionLatencyMillis ;
         sh:datatype xsd:nonNegativeInteger ;
         sh:minCount 1 ; sh:maxCount 1 ;
-        sh:message "detectionLatencyMillis MUST be xsd:nonNegativeInteger (Q7 budget ≤500ms / 100k-quad)."@en ;
+        sh:message "detectionLatencyMillis MUST be xsd:nonNegativeInteger (budget ≤500ms / 100k-quad)."@en ;
     ] ,
     [
         sh:path prov:generatedAtTime ;
@@ -234,13 +227,13 @@ evoQ:RogueCommitDetectionShape
     ] .
 
 #######################################################################
-# 7. evoQ:OnboardingLatencyShape (PRD §6.2 — Kokoro H-UX-04 ≤10-min gate)
+# 7. evoQ:OnboardingLatencyShape
 #######################################################################
 
 evoQ:OnboardingLatencyShape
     a sh:NodeShape ;
-    rdfs:label "Onboarding-latency shape (H-UX-04 gate)"@en ;
-    rdfs:comment "Validates `topo connect → ask → pack` end-to-end wallclock per Kokoro H-UX-04 ≤10-min gate. Held at v0.7 ship per D-α 2026-04-17 (seed templates)."@en ;
+    rdfs:label "Onboarding-latency shape"@en ;
+    rdfs:comment "Validates `topo connect → ask → pack` end-to-end wallclock against the ≤10-min onboarding gate."@en ;
     sh:targetNode evoQ:OnboardingLatencySample ;
     sh:property [
         sh:path evoQ:latencyMillis ;
@@ -262,25 +255,25 @@ evoQ:OnboardingLatencyShape
     ] .
 
 #######################################################################
-# 8. evoQ:GroundingResultShape (RQ2 §3.5)
+# 8. evoQ:GroundingResultShape
 #######################################################################
 
 evoQ:GroundingResultShape
     a sh:NodeShape ;
-    rdfs:label "Grounding-result shape (RQ2)"@en ;
-    rdfs:comment "Validates grounding-protocol output row — RQ2 §3.5 + PRD §6.2 (ship-blocking hard gate per Noam Finding 2). Every W4 answer carries PROV-O OR refusal artifact."@en ;
+    rdfs:label "Grounding-result shape"@en ;
+    rdfs:comment "Validates grounding-protocol output row — every ambient-agent answer carries PROV-O trace OR a refusal artifact (ship-blocking hard gate)."@en ;
     sh:targetNode evoQ:GroundingResult ;
     sh:property [
         sh:path evoQ:invocation ;
         sh:class evo:AmbientAgentInvocation ;
         sh:minCount 1 ; sh:maxCount 1 ;
-        sh:message "invocation MUST be an evo:AmbientAgentInvocation (arch-delta v0.1.4 §3.2.2)."@en ;
+        sh:message "invocation MUST be an evo:AmbientAgentInvocation."@en ;
     ] ,
     [
         sh:path evoQ:grounded ;
         sh:datatype xsd:boolean ;
         sh:minCount 1 ; sh:maxCount 1 ;
-        sh:message "grounded MUST be xsd:boolean. True = PROV-O trace present; False = RefusalArtifact emitted (see evo:Evidence + dcterms:type 'RefusalArtifact' per Nael Q-γ)."@en ;
+        sh:message "grounded MUST be xsd:boolean. True = PROV-O trace present; False = RefusalArtifact emitted (see evo:Evidence + dcterms:type 'RefusalArtifact')."@en ;
     ] ,
     [
         sh:path evoQ:entity ;
@@ -296,13 +289,13 @@ evoQ:GroundingResultShape
     ] .
 
 #######################################################################
-# 9. evoQ:DemoReadinessShape (RQ3 §4.5)
+# 9. evoQ:DemoReadinessShape
 #######################################################################
 
 evoQ:DemoReadinessShape
     a sh:NodeShape ;
-    rdfs:label "Demo-readiness shape (RQ3 dogfood gate)"@en ;
-    rdfs:comment "Validates demo-readiness result — RQ3 §4.5 dogfood-rate = 1.0 CI gate per release. D08 v0.7 / v0.8 + D21 v0.9 release-demo cross-epic."@en ;
+    rdfs:label "Demo-readiness shape"@en ;
+    rdfs:comment "Validates demo-readiness result — dogfood-rate = 1.0 CI gate per release."@en ;
     sh:targetNode evoQ:DemoReadinessResult ;
     sh:property [
         sh:path evoQ:ratio ;
@@ -310,7 +303,7 @@ evoQ:DemoReadinessShape
         sh:minInclusive 0.0 ;
         sh:maxInclusive 1.0 ;
         sh:minCount 1 ; sh:maxCount 1 ;
-        sh:message "dogfood-rate MUST be xsd:decimal in [0.0, 1.0]; CI gate passes only at 1.0 per D08/D21."@en ;
+        sh:message "dogfood-rate MUST be xsd:decimal in [0.0, 1.0]; CI gate passes only at 1.0."@en ;
     ] ,
     [
         sh:path prov:generatedAtTime ;
@@ -320,13 +313,13 @@ evoQ:DemoReadinessShape
     ] .
 
 #######################################################################
-# 10. evoQ:DogfoodFreshnessResultShape (RQ3 §4.5 — distinct from DemoReadinessShape)
+# 10. evoQ:DogfoodFreshnessResultShape
 #######################################################################
 
 evoQ:DogfoodFreshnessResultShape
     a sh:NodeShape ;
-    rdfs:label "Dogfood-freshness result shape (RQ3)"@en ;
-    rdfs:comment "Validates dogfood-corpus freshness in days since last snapshot pin. RQ3 §4.5 — distinct from DemoReadinessShape; tracks whether the dogfood snapshot lags reality."@en ;
+    rdfs:label "Dogfood-freshness result shape"@en ;
+    rdfs:comment "Validates dogfood-corpus freshness in days since last snapshot pin. Distinct from DemoReadinessShape; tracks whether the dogfood snapshot lags reality."@en ;
     sh:targetNode evoQ:DogfoodFreshnessResult ;
     sh:property [
         sh:path evoQ:freshDays ;
@@ -343,13 +336,13 @@ evoQ:DogfoodFreshnessResultShape
     ] .
 
 #######################################################################
-# 11. evoQ:CompletenessFreshnessResultShape (RQ4 §5.5)
+# 11. evoQ:CompletenessFreshnessResultShape
 #######################################################################
 
 evoQ:CompletenessFreshnessResultShape
     a sh:NodeShape ;
-    rdfs:label "Completeness-freshness result shape (RQ4)"@en ;
-    rdfs:comment "RQ4 §5.5 — hybrid KG+LLM+Agent vs Ali 2022 baseline: how complete and fresh is the answer?"@en ;
+    rdfs:label "Completeness-freshness result shape"@en ;
+    rdfs:comment "Validates how complete and fresh an ambient-agent answer is, on the hybrid KG+LLM+Agent path."@en ;
     sh:targetNode evoQ:CompletenessFreshnessResult ;
     sh:property [
         sh:path evoQ:completenessRatio ;
@@ -368,13 +361,13 @@ evoQ:CompletenessFreshnessResultShape
     ] .
 
 #######################################################################
-# 12. evoQ:TraceFidelityResultShape (RQ4 §5.5)
+# 12. evoQ:TraceFidelityResultShape
 #######################################################################
 
 evoQ:TraceFidelityResultShape
     a sh:NodeShape ;
-    rdfs:label "Trace-fidelity result shape (RQ4)"@en ;
-    rdfs:comment "RQ4 §5.5 — does the PROV-O trace on an answer match the agent's bounded-context actions (accessed quads, policies evaluated)? Hybrid approach expected to outperform pure-ontology baseline."@en ;
+    rdfs:label "Trace-fidelity result shape"@en ;
+    rdfs:comment "Validates whether the PROV-O trace on an answer matches the agent's bounded-context actions (accessed quads, policies evaluated)."@en ;
     sh:targetNode evoQ:TraceFidelityResult ;
     sh:property [
         sh:path evoQ:ratio ;
@@ -388,17 +381,17 @@ evoQ:TraceFidelityResultShape
         sh:path evoQ:invocation ;
         sh:class evo:AmbientAgentInvocation ;
         sh:minCount 1 ; sh:maxCount 1 ;
-        sh:message "invocation MUST be an evo:AmbientAgentInvocation (arch-delta v0.1.4 §3.2.2)."@en ;
+        sh:message "invocation MUST be an evo:AmbientAgentInvocation."@en ;
     ] .
 
 #######################################################################
-# 13. evoQ:VerifiabilityLatencyResultShape (RQ4 §5.5)
+# 13. evoQ:VerifiabilityLatencyResultShape
 #######################################################################
 
 evoQ:VerifiabilityLatencyResultShape
     a sh:NodeShape ;
-    rdfs:label "Verifiability-latency result shape (RQ4)"@en ;
-    rdfs:comment "RQ4 §5.5 — time for a third party to verify an answer against the exported pack bundle. Hybrid vs baseline latency comparison."@en ;
+    rdfs:label "Verifiability-latency result shape"@en ;
+    rdfs:comment "Time for a third party to verify an answer against the exported pack bundle."@en ;
     sh:targetNode evoQ:VerifiabilityLatencyResult ;
     sh:property [
         sh:path evoQ:latencyMillis ;
@@ -414,14 +407,14 @@ evoQ:VerifiabilityLatencyResultShape
     ] .
 
 #######################################################################
-# Extra (Nael Concern 1 — distinct from evoQ:PackExportLatencyShape): evoQ:PackBundleShape
+# Extra: evoQ:PackBundleShape
 # Structural validator of the exported JSON-LD + PDF pack bundle.
 #######################################################################
 
 evoQ:PackBundleShape
     a sh:NodeShape ;
     rdfs:label "Pack-bundle structural shape"@en ;
-    rdfs:comment "Validates the structural integrity of an E8 pack bundle per PRD §4.5 AC-W5.1. Distinct from evoQ:PackExportLatencyShape (latency distribution) — Nael Concern 1 keeps both."@en ;
+    rdfs:comment "Validates the structural integrity of an exported pack bundle. Distinct from evoQ:PackExportLatencyShape (latency distribution)."@en ;
     sh:targetNode evoQ:PackBundle ;
     sh:property [
         sh:path evoQ:jsonldArtifact ;
@@ -450,14 +443,14 @@ evoQ:PackBundleShape
     ] .
 
 #######################################################################
-# Extra (Nael discretion — does not revise 22-count): evoQ:ConnectorIngestResultShape
-# Cross-cutting AC-W1.4 shape; validates per-connector ingest run outcome.
+# Extra: evoQ:ConnectorIngestResultShape
+# Cross-cutting shape; validates per-connector ingest run outcome.
 #######################################################################
 
 evoQ:ConnectorIngestResultShape
     a sh:NodeShape ;
-    rdfs:label "Connector-ingest-result shape (AC-W1.4)"@en ;
-    rdfs:comment "Validates per-ingest-run result per PRD cross-cutting AC-W1.4. One row per connector invocation."@en ;
+    rdfs:label "Connector-ingest-result shape"@en ;
+    rdfs:comment "Validates per-ingest-run result. One row per connector invocation."@en ;
     sh:targetNode evoQ:ConnectorIngestResult ;
     sh:property [
         sh:path evoQ:connectorName ;

@@ -1,53 +1,9 @@
-# === ONTOLOGIST VALIDATION ===
-# Validated by: Sacha Roger, Ontologist
-# Date: 2026-04-01
-# Status: DRAFT v1.0
-# Version: 1.0-draft — EDGY fidelity audit + ontology quality pass
-#
-# COMPLIANCE METADATA - EDGY OWL 2.0
-# Created: 2026-02-12
-# Modified: 2026-04-01
-# Source: ontoledgy_v0.95.ttl + EDGY wiki fidelity audit
-# Layer: DOMAIN
-# Compliance: W3C OWL 2 DL
-# Named Graph: https://schema.bra0.org/cross-domain/edgy#
-# Audit tool: bra0 topo + Oxigraph (dogfooding)
-# Reference: https://enterprise.design/wiki/EDGY
-#
-# CHANGES v1.0-draft (from v0.95):
-# - AUDIT: 6 SPARQL queries against EDGY wiki inventory (24 named links, 16 elements)
-# - FIX: authoredBy (Story->Org) -> authors (Org->Story) — EDGY wiki fidelity
-# - FIX: pursues domain People -> Organisation — EDGY wiki: "organisation pursues purpose"
-# - FIX: possesses -> has — EDGY wiki official verb
-# - FIX: creates domain Activity->Object -> Process->Product — EDGY wiki specific link
-# - FIX: marksA -> isPartOf — EDGY wiki: "task is part of journey"
-# - ADD: performsProcess (Org->Process) — missing Organisation link
-# - ADD: domain/range on uses (People|Activity|Task -> Object|Channel)
-# - ADD: domain/range on supports (Brand->Task)
-# - REMOVE: delivers (Process->Product) — not in EDGY wiki, replaced by creates
-# - KEEP: Organization subClassOf People — deliberate departure from EDGY structural
-#   rule (all intersections derive from Object). Justification: Organisation is a
-#   Complex Adaptive System formed by People, not a passive Object.
-#
-# PRIOR CHANGES v0.95 (from v0.94):
-# - Restored 22 specialized object properties lost in v0.94
-# - Restored all OWL existential restrictions (someValuesFrom)
-# - Restored edgy:Intersection class
-# - Restored rich EDGY wiki descriptions on all classes/properties
-# - Restored SKOS annotations on Purpose
-# - Restored rdfs:isDefinedBy on all terms
-# - Restored property hierarchy (subPropertyOf edgy:link)
-# - Preserved v0.94 additions: tree, belongsToFacet, intersectsWith
-# - Preserved v0.94 integration anchors: alignsWithGist, groundedInBFO
-# - Preserved v0.94 datatype properties and facet instances
-# - Fixed URI casing: Identityfacet -> IdentityFacet, etc.
-# - Fixed Organization: subClassOf People (was Object in legacy)
-# - Fixed People: added missing subClassOf Element
-# - Fixed URIs: pursue->pursues, featuresin->featuresIn, etc.
-# - Removed redundant pursuedby (doublon of pursues)
-# - Added missing viewedThrough restrictions on Purpose and Asset
-# - Fixed UTF-8 encoding artifacts in comments
-# - Removed erroneous owl:Thing redeclaration
+# ══════════════════════════════════════════════════════════════
+# OntolEDGY — Enterprise Design Graph InterplaY Ontology
+# Version 1.0-draft — 2026-04-01
+# OWL 2 DL formalization of the EDGY methodology
+# (Intersection Group, https://enterprise.design/wiki/EDGY).
+# ══════════════════════════════════════════════════════════════
 
 @prefix edgy: <https://schema.bra0.org/cross-domain/edgy#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
@@ -64,15 +20,13 @@
 #################################################################
 
 <https://schema.bra0.org/cross-domain/edgy#> rdf:type owl:Ontology ;
-    dcterms:title "OntolEDGY: Enterprise Design Graph InterplaY Ontology - v1.0-draft"@en ;
-    dcterms:description "OntolEDGY v1.0-draft — EDGY wiki fidelity audit (24 named links verified by SPARQL) + ontology quality methodology. 6 corrections applied, 1 deliberate departure documented (Organisation as CAS)."@en ;
+    dcterms:title "OntolEDGY: Enterprise Design Graph InterplaY Ontology"@en ;
+    dcterms:description "OntolEDGY — OWL 2 DL formalization of the EDGY methodology, verified against the EDGY wiki inventory (24 named links, 16 elements)."@en ;
     dcterms:creator "Intersection Group" ;
-    dcterms:contributor "Sacha Roger (Ontologist validator), Omyn AI" ;
     dcterms:version "1.0-draft" ;
     dcterms:created "2026-02-12" ;
     dcterms:modified "2026-04-01" ;
-    dcterms:validatedBy "Sacha Roger, Ontologist - 2026-04-01" ;
-    owl:versionInfo "v1.0-draft — EDGY fidelity audit + ontology quality pass" ;
+    owl:versionInfo "1.0-draft" ;
     owl:priorVersion <https://schema.bra0.org/cross-domain/edgy/0.95> ;
     dcterms:license "https://creativecommons.org/licenses/by-sa/4.0/" .
 

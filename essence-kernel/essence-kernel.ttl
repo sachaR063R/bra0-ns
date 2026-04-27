@@ -12,17 +12,16 @@
 # OMG Essence 2.0 (Jacobson et al. 2013) — OWL formalization
 # Version: 1.0.0 — 2026-04-03
 #
-# BFO-grounded, ontology-engineering-compliant reconstruction from scratch.
-# Source of truth: OMG Essence 2.0 spec
+# BFO-grounded reconstruction. Source of truth: OMG Essence 2.0 spec.
 #
-# Design choices (per ontology engineering methodology):
-# - States are individuals, not classes (ontology quality audit C2 fix)
-# - Areas are individuals, not a class hierarchy (ontology quality audit M1 fix)
-# - No owl:equivalentClass abuse (ontology quality audit C3/C4 fix)
-# - Single predecessorOf property (ontology quality audit C5 fix)
-# - All properties declared with domain/range (ontology quality audit C6 fix)
-# - Disjointness axioms on top-level classes (ontology quality audit M11 fix)
-# - External alignments in separate modules (ontology quality audit M12 fix)
+# Design choices:
+# - States are individuals, not classes
+# - Areas are individuals, not a class hierarchy
+# - No owl:equivalentClass abuse
+# - Single predecessorOf property
+# - All properties declared with domain/range
+# - Disjointness axioms on top-level classes
+# - External alignments in separate modules
 #
 # Coverage: 7 alphas × all states = 41 states (100%)
 #           6 competencies, 5 competency levels
@@ -40,7 +39,7 @@
   vann:preferredNamespaceUri "https://schema.bra0.org/essence-kernel#" ;
   dct:source "OMG Essence 2.0 (formal/18-10-02)" ;
   dct:license <https://www.omg.org/legal/ipr.htm> ;
-  dct:rights "OWL formalization of an OMG specification. Governed by OMG's non-assertion covenant (Royalty-Free implementation rights). NOT licensed under CC-BY-SA-4.0 like the rest of bra0_meta ontologies — see _bmad/docs/licensing-strategy.md §3.4 (exception E1) and THIRD-PARTY-LICENSES.md." .
+  dct:rights "OWL formalization of an OMG specification. Governed by OMG's non-assertion covenant (Royalty-Free implementation rights)." .
 
 # ══════════════════════════════════════════════════════════════
 # CLASSES

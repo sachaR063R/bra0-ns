@@ -7,27 +7,22 @@
 
 #
 # SHACL shape — Ambient-agent ODRL policy profile
-# Scope: arch-delta v0.1.4 §3.1.1 (3 role profiles READ/WRITE/TRIGGER per Q10; v0.8 narrow-first = Reader)
-# Validate: rudof shacl-validate -s evo-ambient-agent-policy.shapes.ttl fixtures/evo-ambient-agent-policy/<happy-path|failure>.ttl
-# Quinn gates in CI; E7 ambient-agent stories blocked-by-Q10 partial (Reader role acceptable at v0.8, WRITE/TRIGGER v0.9).
-#
-# Count: 1 of the 22-canon shape catalogue (Nael Q-β 2026-04-17). Distinct file per §3.1.1 policy-profile independence.
+# Three role profiles: Reader / Writer / Trigger.
 #
 
 <> dcterms:license <https://creativecommons.org/licenses/by-sa/4.0/> .
 
 #######################################################################
 # evo:AmbientAgentPolicyShape
-# Target: odrl:Policy carrying an evo:role profile triple (Reader/Writer/Trigger)
-# Validates ODRL policy compliance with bra0 ambient-agent profile per §3.1.1.
+# Target: odrl:Policy carrying an evo:agentRoleProfile triple (Reader/Writer/Trigger)
+# Validates ODRL policy compliance with the ambient-agent profile.
 #######################################################################
 
 evo:AmbientAgentPolicyShape
     a sh:NodeShape ;
-    # P0-4 fix (ontology quality audit 2026-04-18): replaced sh:targetClass odrl:Policy
-    # with SPARQL target filtering to policies carrying evo:agentRoleProfile.
-    # This prevents over-matching on asc: governance policies that are NOT
-    # ambient-agent policies.
+    # SPARQL target filtering to policies carrying evo:agentRoleProfile,
+    # so the shape does not over-match on asc: governance policies that
+    # are not ambient-agent policies.
     sh:target [
         a sh:SPARQLTarget ;
         sh:select """
@@ -38,7 +33,7 @@ evo:AmbientAgentPolicyShape
         """ ;
     ] ;
     rdfs:label "Ambient-agent ODRL policy shape"@en ;
-    rdfs:comment "Validates odrl:Policy instances intended for bra0 ambient agents per arch-delta §3.1.1. Only targets policies carrying evo:agentRoleProfile (P0-4 fix: SPARQL target replaces sh:targetClass to avoid over-matching on non-ambient policies). Every ambient policy MUST declare a role profile (Reader/Writer/Trigger) and an enforceable bounded context. Q10 resolves at W06; shape works with partial resolution (Reader role only) for v0.8 narrow-first E7 ship."@en ;
+    rdfs:comment "Validates odrl:Policy instances intended for ambient agents. Only targets policies carrying evo:agentRoleProfile (SPARQL target avoids over-matching on non-ambient policies). Every ambient policy MUST declare a role profile (Reader/Writer/Trigger) and an enforceable bounded context."@en ;
     sh:property [
         sh:path dcterms:identifier ;
         sh:datatype xsd:string ;
@@ -46,18 +41,17 @@ evo:AmbientAgentPolicyShape
         sh:message "odrl:Policy MUST carry dcterms:identifier (policy IRI slug)."@en ;
     ] ,
     [
-        # P0-5 fix: renamed from evo:role to evo:agentRoleProfile
         sh:path evo:agentRoleProfile ;
         sh:datatype xsd:string ;
         sh:in ( "Reader" "Writer" "Trigger" ) ;
         sh:minCount 1 ; sh:maxCount 1 ;
-        sh:message "odrl:Policy for an ambient agent MUST declare evo:agentRoleProfile ∈ {Reader, Writer, Trigger} per arch-delta §3.1.1 (v0.8 narrow-first allows Reader only; WRITE/TRIGGER accept at v0.9 post-Q10)."@en ;
+        sh:message "odrl:Policy for an ambient agent MUST declare evo:agentRoleProfile ∈ {Reader, Writer, Trigger}."@en ;
     ] ,
     [
         sh:path evo:declaredContext ;
         sh:nodeKind sh:IRI ;
         sh:minCount 1 ;
-        sh:message "odrl:Policy MUST declare evo:declaredContext pointing at a named-graph IRI (bounded context — arch-delta v0.1.4 §3.2.2 predicate)."@en ;
+        sh:message "odrl:Policy MUST declare evo:declaredContext pointing at a named-graph IRI (bounded context)."@en ;
     ] ,
     [
         sh:path odrl:permission ;

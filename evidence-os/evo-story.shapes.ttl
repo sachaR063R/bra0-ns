@@ -7,18 +7,12 @@
 @prefix evo:     <https://schema.bra0.org/evidence-os#> .
 
 #
-# SHACL shapes — Requirement instance validator (post-ADR-053 v0.2.0)
-# Scope: ADR-053 §D6 — evo:UserStoryShape and evo:AcceptanceCriterionShape
-# retired in favour of a single RequirementInstanceShape targeting
-# prov:Entity instances that declare ess:advancesAlpha ess:Requirements.
+# SHACL shapes — Requirement instance validator
+# Single RequirementInstanceShape targeting prov:Entity instances that
+# declare ess:advancesAlpha ess:Requirements. Acceptance semantics are
+# carried by OMG Essence alpha-state transitions on the requirement entity.
 # Target selector: SPARQL (W3C SHACL §5.3) — SHACL Core does not combine
 # sh:targetClass with additional triple constraints natively.
-# Validate: rudof shacl-validate -s evo-story.shapes.ttl fixtures/evo-story/<happy-path|failure>.ttl
-# Quinn gates in CI (W04 PRD lock blocker-1); Nael owns ontology quality audit publication gate.
-#
-# Dropped v0.2.0 (ADR-053):
-#   evo:UserStoryShape            (sh:targetClass evo:UserStory — class retired)
-#   evo:AcceptanceCriterionShape  (sh:targetClass evo:AcceptanceCriterion — class retired; AC semantics carried by Essence alpha-state transitions)
 #
 
 <> dcterms:license <https://creativecommons.org/licenses/by-sa/4.0/> .
@@ -33,8 +27,8 @@
 
 evo:RequirementInstanceShape
     a sh:NodeShape ;
-    rdfs:label "Requirement-instance shape (post-ADR-053)"@en ;
-    rdfs:comment "Validates structural integrity of requirement instances per ADR-053 §D6. A requirement is any node carrying ess:advancesAlpha ess:Requirements (OMG Essence 2.0 alpha; the parent type prov:Entity is entailed by the ess:advancesAlpha range once the kernel is loaded, so the shape targets the predicate use directly). Every requirement MUST carry a human-readable label, a stable identifier for cross-connector traceability, advance the Requirements alpha, and carry a provenance attribution. Acceptance semantics are expressed as alpha-state transitions on this entity, not as a separate shape."@en ;
+    rdfs:label "Requirement-instance shape"@en ;
+    rdfs:comment "Validates structural integrity of requirement instances. A requirement is any node carrying ess:advancesAlpha ess:Requirements (OMG Essence 2.0 alpha; the parent type prov:Entity is entailed by the ess:advancesAlpha range once the kernel is loaded, so the shape targets the predicate use directly). Every requirement MUST carry a human-readable label, a stable identifier for cross-connector traceability, advance the Requirements alpha, and carry a provenance attribution. Acceptance semantics are expressed as alpha-state transitions on this entity, not as a separate shape."@en ;
     sh:targetSubjectsOf ess:advancesAlpha ;
     sh:property [
         sh:path rdfs:label ;

@@ -12,8 +12,7 @@
 
 # ══════════════════════════════════════════════════════════════
 # Integrative Neurology Care Coordination — Synthetic KG
-# For demo: Magali Seassau + Adrien Ugon + Akram Redjdal
-# April 2026
+# Demo dataset, April 2026
 #
 # Layers:
 #   1. BFO upper ontology alignment

@@ -15,75 +15,30 @@
 
 # ══════════════════════════════════════════════════════════════
 # Agent Service Contract Ontology (asc:)
-# ADR-020 — SPARQL-First, Agent Contracts, SHACL 1.2
-# Version: 0.5.0 — 2026-04-23
-#
-# v0.5.0: Deholonize + work-unit on EDGY — per ADR-052 (Defer
-# Holonic OWL Apparatus, 2026-04-23) the holonic OWL layer
-# (Holon, HolonicMembrane, Holarchy, Portal, HolonicAspect +
-# associated properties and disjointness pair) is removed. Per
-# ADR-053 the bra0-internal asc:Story class is also removed and
-# the work-unit concept is delegated to edgy:Task (Sacha's OWL
-# formalization of the EDGY methodology, pillar ontology). The
-# four compute/token tracking predicates (asc:status,
-# asc:computeTier, asc:storyPoints, asc:tokensConsumed) are
-# re-domained on edgy:Task. asc: grounds on PROV-O (agent
-# provenance), DCAT (service description), ODRL (policies /
-# mandates), and EDGY (work unit). P5/P9 doctrine retained at
-# narrative level in bra0-principles.md. Breaking from v0.4.0.
-#
-# v0.4.0: Holonic Architecture — [SUPERSEDED BY v0.5.0 / ADR-052]
-#
-# v0.3.0: Governance Hardening — adds Mandate (ex-ConstitutionalContract),
-# OntologyScope, BreakingChangeType, governance ODRL actions
-# (ModifyOwnContract, EscalateAutonomy, ModifyAgentContract),
-# formal property declarations for governedBy, autonomyLevel,
-# agentType, ontologyScope, trigger. Non-breaking from v0.2.0.
-#
-# v0.2.0: Agent Runtime Extension — adds Skill, Plugin,
-# GatingRequirements, BootstrapIdentity, ToolPolicy,
-# SubagentPolicy, PluginHook, ExecApproval. Mapped 1:1 to
-# OpenClaw runtime model. No breaking changes from v0.1.0.
+# Version 0.6.0 — 2026-04-27
+# Formal contracts for governed AI agents in a Knowledge Space:
+# agent provenance, service surface, mandates, policies, runtime
+# extensions, input-defence configuration, model-selection mode.
 # ══════════════════════════════════════════════════════════════
 
 <https://schema.bra0.org/agent-service-contract#> a owl:Ontology ;
   rdfs:label "Agent Service Contract Ontology"@en ;
-  rdfs:comment "Formal contracts for governed AI agents in a Knowledge Space. Grounded on PROV-O (agent provenance, attribution), DCAT (service description, discovery), ODRL (policies, mandates), and SHACL (I/O validation). v0.5 removes the holonic OWL apparatus (ADR-052); doctrine retained at narrative level in bra0-principles.md."@en ;
+  rdfs:comment "Formal contracts for governed AI agents in a Knowledge Space. Grounded on PROV-O (agent provenance, attribution), DCAT (service description, discovery), ODRL (policies, mandates), and SHACL (I/O validation)."@en ;
   dct:license "https://creativecommons.org/licenses/by-sa/4.0/" ;
   dct:created "2026-03-25"^^xsd:date ;
   dct:creator <did:ng:o:sacha> ;
-  owl:versionInfo "0.5.0" ;
-  owl:versionIRI <https://schema.bra0.org/agent-service-contract/0.5.0> ;
+  owl:versionInfo "0.6.0" ;
+  owl:versionIRI <https://schema.bra0.org/agent-service-contract/0.6.0> ;
   vann:preferredNamespacePrefix "asc" ;
   vann:preferredNamespaceUri "https://schema.bra0.org/agent-service-contract#" ;
   owl:imports <https://schema.bra0.org/cross-domain/edgy#> .
 
 # ══════════════════════════════════════════════════════════════
-# v0.5.0 GROUNDING — PROV-O + DCAT + ODRL (ADR-052, 2026-04-23)
-#
-# The holonic OWL apparatus (Holon, HolonicMembrane, Holarchy,
-# Portal, HolonicAspect + associated properties and disjointness
-# pair) is removed. Rationale: it carried no SHACL closure shape,
-# no testable axiom beyond one owl:disjointWith pair, and no
-# inference target exercised by any consuming query (ontology quality audit
-# 2026-04-22, CONDITIONAL PASS). It adds zero protocol overhead
-# because it does zero protocol work.
-#
-# What survives without the holonic layer:
+# Grounding stack
 #   - Agent provenance   → PROV-O (prov:SoftwareAgent, prov:actedOnBehalfOf)
 #   - Service surface    → DCAT   (dcat:DataService, dcat:endpointURL)
 #   - Mandates / policy  → ODRL   (odrl:Policy, odrl:prohibition, odrl:duty)
 #   - Cross-framework    → SKOS   (skos:exactMatch, skos:closeMatch, ...)
-#
-# P5 (Membrane) and P9 (Delegation) are realized in OWL via
-# odrl:Policy and prov:actedOnBehalfOf. The holonic and Markov-
-# blanket framings remain valid scientific anchors and bra0
-# commercial discourse, with no OWL counterpart.
-#
-# Reversibility (ADR-052 §3.3): a future ADR may reintroduce a
-# holonic OWL layer iff (a) at least three SHACL closure shapes
-# that exercise inference, (b) a peer-reviewed external authority
-# it aligns with, and (c) a external reviewer co-sign.
 # ══════════════════════════════════════════════════════════════
 
 # ── Classes ────────────────────────────────────────────────────
@@ -91,16 +46,16 @@
 asc:AgentService a owl:Class ;
   rdfs:subClassOf prov:SoftwareAgent, dcat:DataService ;
   rdfs:label "Agent Service"@en, "Service d'agent"@fr ;
-  rdfs:comment "A governed agent with a formal service contract. Grounded on PROV-O (software agent provenance) and DCAT (service description) per ADR-052 v0.5.0. Governance (mandate, autonomy level, policies) is expressed via ODRL and attached to each agent instance."@en .
+  rdfs:comment "A governed agent with a formal service contract. Grounded on PROV-O (software agent provenance) and DCAT (service description). Governance (mandate, autonomy level, policies) is expressed via ODRL and attached to each agent instance."@en .
 
 asc:Capability a owl:Class ;
   rdfs:label "Capability"@en, "Capacité"@fr ;
-  rdfs:comment "A capability exercised by an agent, linked to the Capability Map (C1-C8)."@en .
+  rdfs:comment "A capability exercised by an agent, linked to the Capability Map."@en .
 
 asc:GraphInterface a owl:Class ;
   rdfs:subClassOf dcat:DataService ;
   rdfs:label "Graph Interface"@en, "Interface de graphe"@fr ;
-  rdfs:comment "A service interface between an agent and a named graph. Typed as a dcat:DataService per ADR-052 v0.5.0. Carries the property scope and SPARQL pattern that define read/write access."@en .
+  rdfs:comment "A service interface between an agent and a named graph. Typed as a dcat:DataService. Carries the property scope and SPARQL pattern that define read/write access."@en .
 
 asc:ServiceLevelAgreement a owl:Class ;
   rdfs:label "Service Level Agreement"@en ;
@@ -119,27 +74,25 @@ asc:EfficiencyObservation a owl:Class ;
   rdfs:label "Efficiency Observation"@en, "Observation d'efficience"@fr ;
   rdfs:comment "A measured gain from an anti-pattern correction or process improvement. Proof of value."@en .
 
-# asc:Story removed v0.5.0 (ADR-053). The work-unit concept is carried
-# by edgy:Task (subClassOf edgy:Outcome) — Sacha's OWL formalization of
-# the EDGY methodology, imported via owl:imports at the ontology header.
-# Sprint compute/token tracking predicates (asc:status, asc:computeTier,
-# asc:storyPoints, asc:tokensConsumed) are re-domained on edgy:Task
-# below. The 3-Story collision (asc:Story / evo:UserStory / edgy:Story)
-# is resolved per ADR-053 §D1: edgy:Story = narrative artefact,
-# edgy:Task = work unit, requirement instances = prov:Entity carrying
-# ess:advancesAlpha ess:Requirements.
+# Work-unit concept is carried by edgy:Task (subClassOf edgy:Outcome),
+# imported via owl:imports at the ontology header. Sprint compute/token
+# tracking predicates (asc:status, asc:computeTier, asc:storyPoints,
+# asc:tokensConsumed) are re-domained on edgy:Task below.
+# edgy:Story = narrative artefact; edgy:Task = work unit;
+# requirement instances = prov:Entity carrying ess:advancesAlpha
+# ess:Requirements.
 
 # ── Agent Type Classes (v0.2) ───────────────────────────────
 
 asc:Skill a owl:Class ;
   rdfs:subClassOf asc:AgentService ;
   rdfs:label "Skill"@en, "Compétence"@fr ;
-  rdfs:comment "A prompt-based agent (e.g. OpenClaw SKILL.md). Session-scoped, injected into context at session start. Gated by env/bins/config/OS requirements."@en .
+  rdfs:comment "A prompt-based agent. Session-scoped, injected into context at session start. Gated by env/bins/config/OS requirements."@en .
 
 asc:Plugin a owl:Class ;
   rdfs:subClassOf asc:AgentService ;
   rdfs:label "Plugin"@en, "Extension"@fr ;
-  rdfs:comment "A code-based agent extension (e.g. OpenClaw plugin with TypeScript handler). Process-scoped, full SDK access, can register tools/hooks/channels."@en .
+  rdfs:comment "A code-based agent extension with a TypeScript handler. Process-scoped, full SDK access, can register tools/hooks/channels."@en .
 
 # ── Governance Structure Classes (v0.2) ─────────────────────
 
@@ -171,27 +124,19 @@ asc:ExecApproval a owl:Class ;
 asc:Mandate a owl:Class ;
   rdfs:subClassOf odrl:Policy ;
   rdfs:label "Mandate"@en, "Mandat"@fr ;
-  rdfs:comment "The formal delegation from the human controller (mandant) to an agent (mandataire). Typed as an odrl:Policy per ADR-052 v0.5.0: it carries the permissions, prohibitions, and duties that bound the agent's reads, writes, and actions, plus temporal validity. Machine-validatable, SHACL-enforced. Only the mandant may create or modify a Mandate."@en .
+  rdfs:comment "The formal delegation from the human controller (mandant) to an agent (mandataire). Typed as an odrl:Policy: it carries the permissions, prohibitions, and duties that bound the agent's reads, writes, and actions, plus temporal validity. Machine-validatable, SHACL-enforced. Only the mandant may create or modify a Mandate."@en .
 
 asc:OntologyScope a owl:Class ;
   rdfs:label "Ontology Scope"@en, "Périmètre ontologique"@fr ;
   rdfs:comment "The set of OWL/SHACL classes an agent is authorized to define, instantiate, or modify. Used with sh:targetClass to enumerate writable types."@en .
 
-# ── Disjointness axioms (P0-6; v0.5.0 adjusted per ADR-052) ──
-# Rationale: strengthen external-review-grade rigor by asserting mutually exclusive
-# class memberships where intrinsic semantics require it.
-# v0.5.0: the Holon ⊥ HolonicMembrane pair is dropped as a consequence
-# of ADR-052 (holonic OWL apparatus removed). The four remaining pairs
-# stand independently.
+# ── Disjointness axioms ───────────────────────────────────────
+# Mutually exclusive class memberships where intrinsic semantics
+# require it.
 
 asc:Mandate owl:disjointWith asc:AgentService .
 asc:Capability owl:disjointWith asc:AntiPattern .
 asc:ToolPolicy owl:disjointWith asc:SubagentPolicy .
-# v0.5.0: asc:Story owl:disjointWith asc:AgentService retired (asc:Story
-# removed per ADR-053; edgy:Task carries work-unit semantics). An
-# edgy:Task owl:disjointWith asc:AgentService pair is not asserted here
-# to avoid cross-ontology disjointness that EDGY consumers cannot
-# cross-check.
 
 # ── Governance Properties ──────────────────────────────────────
 
@@ -205,7 +150,7 @@ asc:autonomyLevel a owl:ObjectProperty ;
   rdfs:domain asc:AgentService ;
   rdfs:range rdfs:Resource ;
   rdfs:label "autonomy level"@en ;
-  rdfs:comment "The BFO-grounded disposition (L0-L2) that determines what the agent may do without human gate. Range intentionally broad — disposition levels not yet formalized as a class."@en .
+  rdfs:comment "The BFO-grounded disposition (L0-L2) that determines what the agent may do without human gate."@en .
 
 asc:ontologyScope a owl:ObjectProperty ;
   rdfs:domain asc:AgentService ;
@@ -313,7 +258,7 @@ asc:HookAgentEnd a asc:PluginHook ;
   rdfs:comment "Fires when agent run completes. Used for cleanup and final provenance."@en .
 
 # ══════════════════════════════════════════════════════════════
-# v0.3 Classes — SI Urbanization & Governance Hardening
+# SI Urbanization & Governance Hardening
 # ══════════════════════════════════════════════════════════════
 
 # ── SI Urbanization ───────────────────────────────────────────
@@ -322,24 +267,21 @@ asc:HookAgentEnd a asc:PluginHook ;
 #
 # Zone → Quartier → Bloc → Capability → Agent(s)
 #
-# The urbanization authority (architect agent) maintains the
-# canonical map. All agents must map their capabilities to
-# this structure. New capabilities require urbanization review.
+# The urbanization authority maintains the canonical map. All
+# agents must map their capabilities to this structure. New
+# capabilities require urbanization review.
 
 # ── Cartographic Projections (Z/Q/B) ──────────────────────────
 # Zone / Quartier / Bloc is the SI urbanization projection
 # (Longépé 2006, Sassoon 1998): a depth-3, single-parent tree
 # used for communication, reporting, and redundancy detection.
-# It is a canonical view of the bra0 platform capability map,
-# usable on its own — v0.5.0 drops the holarchic source-of-truth
-# framing per ADR-052 (no holonic OWL layer above).
 #
 # Linkage to capabilities: asc:mapsToBloc (below, §Urbanization
 # Properties) attaches each asc:Capability to its canonical bloc.
 
 asc:FunctionalZone a owl:Class ;
   rdfs:label "Functional Zone"@en, "Zone fonctionnelle"@fr ;
-  rdfs:comment "Top-level SI urbanization zone (depth 1 of 3). bra0's canonical zones: Control Plane, Semantic Layer, Data Plane, Bus Neural. Zones group quartiers that share cross-cutting concerns."@en .
+  rdfs:comment "Top-level SI urbanization zone (depth 1 of 3). Canonical zones: Control Plane, Semantic Layer, Data Plane, Bus Neural. Zones group quartiers that share cross-cutting concerns."@en .
 
 asc:FunctionalQuartier a owl:Class ;
   rdfs:label "Functional Quartier"@en, "Quartier fonctionnel"@fr ;
@@ -474,7 +416,7 @@ asc:role a owl:DatatypeProperty ;
   rdfs:domain asc:AgentService ;
   rdfs:range rdf:langString ;
   rdfs:label "role"@en ;
-  rdfs:comment "The functional role fulfilled by this agent within the team (e.g. architect, dev, qa, pm). Range is rdf:langString to support language-tagged descriptions (P0-3 ontology quality audit fix 2026-04-18)."@en .
+  rdfs:comment "The functional role fulfilled by this agent within the team (e.g. architect, dev, qa, pm). Range is rdf:langString to support language-tagged descriptions."@en .
 
 asc:capability a owl:ObjectProperty ;
   rdfs:domain asc:AgentService ;
@@ -560,35 +502,35 @@ asc:alternative a owl:DatatypeProperty ;
   rdfs:label "alternative"@en ;
   rdfs:comment "Recommended alternative to the anti-pattern."@en .
 
-# ── Task Properties (v0.5.0: re-domained on edgy:Task per ADR-053) ────
-# asc:Story removed; work-unit concept delegated to edgy:Task. The four
-# compute/token-tracking predicates below retain their asc: IRI (stable
-# identity for existing consumers and for ABox data referencing them)
-# and move their rdfs:domain to edgy:Task.
+# ── Task Properties ───────────────────────────────────────────
+# Work-unit concept delegated to edgy:Task. The four compute/token-
+# tracking predicates below retain their asc: IRI (stable identity
+# for existing consumers and for ABox data referencing them) and
+# carry rdfs:domain edgy:Task.
 
 asc:status a owl:DatatypeProperty ;
   rdfs:domain edgy:Task ;
   rdfs:range xsd:string ;
   rdfs:label "status"@en ;
-  rdfs:comment "The current status of this task (e.g. todo, in-progress, done, blocked). Post-ADR-053: domain re-pointed from asc:Story (retired) to edgy:Task."@en .
+  rdfs:comment "The current status of this task (e.g. todo, in-progress, done, blocked)."@en .
 
 asc:computeTier a owl:ObjectProperty ;
   rdfs:domain edgy:Task ;
   rdfs:range asc:ComputeTier ;
   rdfs:label "compute tier"@en ;
-  rdfs:comment "The compute tier (T0-T5) assigned to this task for resource allocation. Post-ADR-053: domain re-pointed from asc:Story (retired) to edgy:Task."@en .
+  rdfs:comment "The compute tier (T0-T5) assigned to this task for resource allocation."@en .
 
 asc:storyPoints a owl:DatatypeProperty ;
   rdfs:domain edgy:Task ;
   rdfs:range xsd:integer ;
   rdfs:label "story points"@en ;
-  rdfs:comment "Fibonacci estimate (1,2,3,5,8,13) for task sizing. Label retained for continuity with sprint-accounting conventions; domain is now edgy:Task."@en .
+  rdfs:comment "Fibonacci estimate (1,2,3,5,8,13) for task sizing. Label retained for continuity with sprint-accounting conventions."@en .
 
 asc:tokensConsumed a owl:DatatypeProperty ;
   rdfs:domain edgy:Task ;
   rdfs:range xsd:integer ;
   rdfs:label "tokens consumed"@en ;
-  rdfs:comment "Actual tokens consumed by the task execution (all tiers combined). Post-ADR-053: domain re-pointed from asc:Story (retired) to edgy:Task."@en .
+  rdfs:comment "Actual tokens consumed by the task execution (all tiers combined)."@en .
 
 # ── Efficiency Observation Properties ─────────────────────────
 
@@ -837,3 +779,85 @@ asc:safeBin a owl:DatatypeProperty ;
   rdfs:domain asc:ExecApproval ; rdfs:range xsd:string ;
   rdfs:label "safe bin"@en ;
   rdfs:comment "Auto-allowed stdin-only binary (jq, cut, head, etc.)."@en .
+
+# ══════════════════════════════════════════════════════════════
+# META portal, Input defence, Selection-by-fingerprint
+# ══════════════════════════════════════════════════════════════
+
+# ── META portal ───────────────────────────────────────────────
+# Capability-level operational mode. When asc:opMode = "META",
+# a controller-signed frontmatter MUST be present (enforced by
+# asc:MetaCapabilityGateShape). META capabilities can modify
+# the rules other capabilities follow; they are the single-
+# controller surface and must never be writable by an agent.
+
+asc:opMode a owl:DatatypeProperty ;
+  rdfs:domain asc:Capability ;
+  rdfs:range xsd:string ;
+  rdfs:label "operational mode"@en, "mode opérationnel"@fr ;
+  rdfs:comment "Operational mode of a capability: 'META' (modifies governance rules — controller-only edit gate), 'DEV' (development capability), 'OPS' (runtime capability). Default when absent: 'OPS'. SHACL gate: META requires asc:sachaSignedFrontmatter."@en .
+
+asc:sachaSignedFrontmatter a owl:DatatypeProperty ;
+  rdfs:domain asc:Capability ;
+  rdfs:range xsd:string ;
+  rdfs:label "controller-signed frontmatter"@en ;
+  rdfs:comment "Signature literal carried in the frontmatter of any capability declaring asc:opMode = 'META'. Format: ISO-8601 date + signer DID + commit hash of the signing context. The literal is the audit anchor; the signature itself is verified by pre-commit hook."@en .
+
+# ── Input defence (L1-L3 + L5 MANDATORY) ──────────────────────
+# Multi-layer defence against prompt injection on agents that
+# read external (untrusted) content. L1-L3 (deterministic content
+# sanitisation + envelope wrapping + ARIA regex) and L5 (canary
+# token to detect leakage) are MANDATORY when asc:readsExternalContent
+# is true. L4 (ML detector), L4b (witness model), L6 (ensemble
+# combiner) are declared-future-extension only, never implemented
+# in this version.
+
+asc:InputDefence a owl:Class ;
+  rdfs:subClassOf prov:Plan ;
+  rdfs:label "Input Defence"@en, "Défense en entrée"@fr ;
+  rdfs:comment "Multi-layer defence configuration for an agent that reads external content. Carries the deterministic sanitiser reference (L1-L3) and the canary token configuration (L5). SHACL completeness shape requires both. Typed as prov:Plan: an InputDefence is a specification for how an agent is to handle untrusted input (a plan, not the activity that executes it). Via PROV-O subsumption: prov:Plan ⊏ prov:Entity ⊏ bfo:0000031 (generically dependent continuant) — BFO 2020 grounding."@en .
+
+asc:inputDefence a owl:ObjectProperty ;
+  rdfs:domain asc:AgentService ;
+  rdfs:range asc:InputDefence ;
+  rdfs:label "input defence"@en ;
+  rdfs:comment "Links an agent to its input-defence configuration. MANDATORY for any agent with asc:readsExternalContent = true (enforced by asc:InputDefenceMandatoryShape)."@en .
+
+asc:readsExternalContent a owl:DatatypeProperty ;
+  rdfs:domain asc:AgentService ;
+  rdfs:range xsd:boolean ;
+  rdfs:label "reads external content"@en ;
+  rdfs:comment "Declares whether the agent reads content originating outside the controlled boundary (web pages, external APIs, untrusted user input, third-party tool outputs). Default when absent: false. When true, asc:inputDefence becomes mandatory."@en .
+
+asc:hasContentSanitiser a owl:DatatypeProperty ;
+  rdfs:domain asc:InputDefence ;
+  rdfs:range xsd:string ;
+  rdfs:label "content sanitiser"@en ;
+  rdfs:comment "Identifier (IRI or token) of the deterministic sanitiser to apply to external content before agent ingestion. Implements L1-L3: deterministic strip of control sequences + envelope wrapping + ARIA-regex filtering. The sanitiser implementation is non-LLM — pure rule-based, fail-closed."@en .
+
+asc:hasCanaryToken a owl:DatatypeProperty ;
+  rdfs:domain asc:InputDefence ;
+  rdfs:range xsd:string ;
+  rdfs:label "canary token"@en ;
+  rdfs:comment "Canary-token configuration for L5 leakage detection. The token is injected into agent context at session start and any sub-agent emission that includes the token literal triggers a containment alert. Format: opaque random string ≥32 bytes, regenerated per session."@en .
+
+# Defence layers L4 (ML detector), L4b (witness model), L6
+# (ensemble combiner) are intentionally NOT modelled as TBox
+# predicates in this version — adding a TBox marker for
+# unimplemented layers would be speculative. Re-introduce the
+# relevant predicates only when a real untrusted-content surface
+# lands.
+
+# ── Selection by capability fingerprint ───────────────────────
+# Sub-agent / witness model selection MUST be by capability
+# fingerprint or SHACL profile, never by named provider.
+# Provider-name selection is a portability violation and a
+# CI-failable contract breach. asc:subagentModel (existing,
+# v0.2 string range) is retained for backward compatibility but
+# becomes forbidden when asc:modelSelection is set.
+
+asc:modelSelection a owl:DatatypeProperty ;
+  rdfs:domain asc:SubagentPolicy ;
+  rdfs:range xsd:string ;
+  rdfs:label "model selection mode"@en, "mode de sélection de modèle"@fr ;
+  rdfs:comment "Selection mode for sub-agent / witness model. Allowed values: 'capability-hash' (model selected by SHACL capability hash matching required tool support / token budget / latency profile), 'shacl-profile' (model selected by named SHACL profile that resolves at runtime through llmGateway). Provider-name selection is forbidden — when asc:modelSelection is set, asc:subagentModel MUST be empty (enforced by asc:ProviderNameForbiddenShape)."@en .

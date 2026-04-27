@@ -7,19 +7,15 @@
 @prefix evo:     <https://schema.bra0.org/evidence-os#> .
 
 #
-# SHACL shapes — OntoEDGY product-cycle sub-classes: Commit + MergeRequest + Deployment
-# Scope: arch-delta v0.1.4 §3.2.1 (operational events in the delivery pipeline)
-# Validate: rudof shacl-validate -s evo-change-pipeline.shapes.ttl fixtures/evo-change-pipeline/<happy-path|failure>.ttl
-# Quinn gates in CI; feeds the D08 v0.7 auto-link dogfood story (evoQ:ChangeLinkRatioShape ≥80%).
-#
-# Count: 3 of the 22-canon shape catalogue (Nael Q-β 2026-04-17).
+# SHACL shapes — Product-cycle sub-classes: Commit + MergeRequest + Deployment
+# Operational events in the delivery pipeline.
 #
 
 <> dcterms:license <https://creativecommons.org/licenses/by-sa/4.0/> .
 
 #######################################################################
 # evo:CommitShape
-# Target: evo:Commit (arch-delta §3.2.1 row 3 — prov:Activity subclass)
+# Target: evo:Commit (prov:Activity subclass)
 # A single commit event; anchor for auto-link + rogue-commit detection + dogfood rate.
 #######################################################################
 
@@ -27,7 +23,7 @@ evo:CommitShape
     a sh:NodeShape ;
     sh:targetClass evo:Commit ;
     rdfs:label "Commit shape"@en ;
-    rdfs:comment "Validates evo:Commit instances. Anchors auto-link (E2 v0.7 MUST), rogue-commit detection (E4 Wave 2 per Nael-6 relocation), and dogfood rate (D08 v0.7 / evoQ:ChangeLinkRatioShape ≥ 0.80)."@en ;
+    rdfs:comment "Validates evo:Commit instances. Anchors auto-link, rogue-commit detection, and dogfood rate (evoQ:ChangeLinkRatioShape ≥ 0.80)."@en ;
     sh:property [
         sh:path dcterms:identifier ;
         sh:datatype xsd:string ;
@@ -56,12 +52,12 @@ evo:CommitShape
         sh:path prov:wasInformedBy ;
         sh:nodeKind sh:IRI ;
         sh:minCount 0 ;
-        sh:message "evo:Commit SHOULD carry prov:wasInformedBy pointing at a decision-activity (prov:Activity, typically the ADR authoring activity) or a requirement instance — absence triggers rogue-commit detection (E4 §3.3). Post-ADR-053: evo:Decision retired; consumers type decision-activities as prov:Activity directly."@en ;
+        sh:message "evo:Commit SHOULD carry prov:wasInformedBy pointing at a decision-activity (prov:Activity, typically the decision-authoring activity) or a requirement instance — absence triggers rogue-commit detection. Decision-activities are typed as prov:Activity directly."@en ;
     ] .
 
 #######################################################################
 # evo:MergeRequestShape
-# Target: evo:MergeRequest (arch-delta §3.2.1 row 4 — prov:Activity subclass)
+# Target: evo:MergeRequest (prov:Activity subclass)
 # Merge proposal event; aggregates commits + review trail.
 #######################################################################
 
@@ -97,7 +93,7 @@ evo:MergeRequestShape
 
 #######################################################################
 # evo:DeploymentShape
-# Target: evo:Deployment (arch-delta §3.2.1 row 5 — prov:Activity subclass)
+# Target: evo:Deployment (prov:Activity subclass)
 # Runtime-level deploy event; binds to a target environment (DCAT DataService).
 #######################################################################
 
@@ -105,7 +101,7 @@ evo:DeploymentShape
     a sh:NodeShape ;
     sh:targetClass evo:Deployment ;
     rdfs:label "Deployment shape"@en ;
-    rdfs:comment "Validates evo:Deployment instances. Binds a deploy event to its target environment per arch-delta §3.2.1 evo:targetEnvironment predicate (DCAT DataService reuse)."@en ;
+    rdfs:comment "Validates evo:Deployment instances. Binds a deploy event to its target environment via the evo:targetEnvironment predicate (DCAT DataService reuse)."@en ;
     sh:property [
         sh:path dcterms:identifier ;
         sh:datatype xsd:string ;
@@ -122,7 +118,7 @@ evo:DeploymentShape
         sh:path evo:targetEnvironment ;
         sh:class dcat:DataService ;
         sh:minCount 1 ; sh:maxCount 1 ;
-        sh:message "evo:Deployment MUST bind evo:targetEnvironment to a dcat:DataService (target environment per arch-delta §3.2.1 cross-cutting predicate)."@en ;
+        sh:message "evo:Deployment MUST bind evo:targetEnvironment to a dcat:DataService (target environment cross-cutting predicate)."@en ;
     ] ,
     [
         sh:path prov:used ;

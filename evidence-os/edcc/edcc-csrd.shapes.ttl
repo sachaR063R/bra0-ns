@@ -8,15 +8,14 @@
 @prefix edccQ:   <https://schema.bra0.org/evidence-os/edcc/query#> .
 
 #
-# SHACL shapes — EDCC Construction Domain: CSRD Reporting (CU5)
-# Scope: Multi-level reporting validation for EDCC demo
-# Validate: rudof shacl-validate -s edcc-csrd.shapes.ttl fixtures/edcc-csrd/<happy-path|failure>.ttl
+# SHACL shapes — EDCC Construction Domain: CSRD Reporting
+# Scope: multi-level reporting validation
 #
 
 <> dcterms:license <https://creativecommons.org/licenses/by-sa/4.0/> .
 
 #######################################################################
-# edcc:ImpactReportShape (S4)
+# edcc:ImpactReportShape
 # Target: edcc:ImpactReport
 # Validates CSRD E1/E2 + REP + ACV reporting data completeness
 #######################################################################
@@ -25,7 +24,7 @@ edcc:ImpactReportShape
     a sh:NodeShape ;
     sh:targetClass edcc:ImpactReport ;
     rdfs:label "Impact report shape"@en ;
-    rdfs:comment "Validates a circular impact report (CU5). Every report MUST declare scope (project/territory/national), reporting period, NACE code, and link to regulatory controls it evidences (CSRD E1, CSRD E2, REP). Counterfactual metrics (CO2 avoided) are validated structurally."@en ;
+    rdfs:comment "Validates a circular impact report. Every report MUST declare scope (project/territory/national), reporting period, NACE code, and link to regulatory controls it evidences (CSRD E1, CSRD E2, REP). Counterfactual metrics (CO2 avoided) are validated structurally."@en ;
     sh:property [
         sh:path rdfs:label ;
         sh:datatype xsd:string ;

@@ -13,20 +13,17 @@
 # EDCC Domain Holon — Dashboard Configuration (ABox)
 # =============================================================================
 #
-# Per ADR-043 D2/D3: Domain holon as asc:Holon with dashboard predicates.
+# Domain holon as asc:Holon with dashboard predicates.
 # Dashboard-layout predicates live in the bra0m: (Core module registry)
-# namespace — K2 leak remediation 2026-04-20 moved them out of evo: which
-# is reserved for product-layer Evidence OS artefacts (decisions, evidence,
-# controls). Node rendering queries (nodeLabel, nodeBadge) kept on evo: as
-# demo content pending broader rendering primitive refactor.
-# This file travels with the user's wallet. It IS the dashboard config.
+# namespace; the evo: namespace is reserved for product-layer Evidence OS
+# artefacts (decisions, evidence, controls). Node rendering queries
+# (nodeLabel, nodeBadge) are kept on evo: as demo content pending a broader
+# rendering-primitive refactor. This file travels with the user's wallet —
+# it IS the dashboard config.
 #
 # BFO grounding: asc:Holon → BFO:object (independent continuant)
 # OntoEDGY: scenarios = edgy:Experience specializations (Task, Journey, Channel)
 #
-# Owner:    bra0 ontology team
-# Date:     2026-04-17
-# Story:    DHD-07
 # License:  MIT OR Apache-2.0
 # =============================================================================
 
