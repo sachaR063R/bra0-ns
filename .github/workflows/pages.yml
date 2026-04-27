@@ -70,21 +70,36 @@ jobs:
           echo "==> Site staged:"
           find _site -type f | sort
 
-      - name: BMAD-leak grep gate (portability-checklist v1.1)
+      - name: BMAD-leak grep gate C1 (portability-checklist v1.2 — roster + session vocab)
         run: |
           set -euo pipefail
-          # ADR-058 §4 + portability-checklist v1.1 — fail if internal vocabulary
+          # portability-checklist v1.2 §C1 — fail if internal vocabulary
           # leaks to public surface. Patterns are word-bounded so legitimate
           # ontology terms like "Adapts" or "Adaptive" do not collide with
           # agent handle "Ada".
           # Two pattern groups:
           #   (a) unique BMAD/internal vocabulary that is unambiguous
           #   (b) agent handles (Title-cased) — matched only when not part of a longer word
-          if grep -REn -P '\b(BMAD|Co-STORM|costorm|bmad-master|Devon|Kokoro|SandrAI|Co-Authored-By: Claude|Generated with Claude)\b|\b(Nael|Sarah|Ada|Quinn|Jake|Noam|Athena|Diana)\b(?![A-Za-z])' _site/ ; then
-            echo "::error::BMAD vocabulary leaked into public _site/ — see matches above."
+          if grep -REn -P '\b(BMAD|Co-STORM|costorm|bmad-master|Devon|Kokoro|SandrAI|Co-Authored-By: Claude|Generated with Claude)\b|\b(Nael|Sarah|Ada|Quinn|Jake|Noam|Athena|Diana|Calliope)\b(?![A-Za-z])' _site/ ; then
+            echo "::error::BMAD roster/session vocabulary leaked into public _site/ — see matches above (C1)."
             exit 1
           fi
-          echo "✓ Public surface clean of BMAD vocabulary."
+          echo "✓ Public surface clean of BMAD roster + session vocabulary (C1)."
+
+      - name: BMAD-leak grep gate C2 (portability-checklist v1.2 — internal-governance trail)
+        run: |
+          set -euo pipefail
+          # portability-checklist v1.2 §C2 — fail if internal-governance trail
+          # jargon leaks into TTL headers, rdfs:comment / dcterms:description
+          # literals, static landings, or apex index.html.
+          # Catches: ADR-NNN refs, Q-α/β arbitration markers, W-cycle / D-code
+          # milestones, personal collaborator names, internal doctrine codes.
+          # Reference: 2026-04-27 cleanup cycle (bra0_meta b4a8c95, bra0-ns 6625461).
+          if grep -REn -P '\bADR-[0-9]+\b|Q-[αβγ]|\bW0[1-9]\b|\bW1[0-3]\b|\bD[0-9]+(\.[0-9]+)?\b|\b(Magali|Adrien|Akram|Didier|OpenClaw)\b|\bP[0-9]/P[0-9]+\b' _site/ ; then
+            echo "::error::Internal-governance trail leaked into public _site/ — see matches above (C2)."
+            exit 1
+          fi
+          echo "✓ Public surface clean of internal-governance trail (C2)."
 
       - name: omyn.ai/schema rupture-sèche gate (ADR-060)
         run: |
