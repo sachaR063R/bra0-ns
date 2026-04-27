@@ -10,7 +10,7 @@
 @prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
 @prefix edccQ:   <https://schema.bra0.org/evidence-os/edcc/query#> .
-@prefix edgy:    <http://www.omyn.ai/schema/edgy#> .
+@prefix edgy:    <https://schema.bra0.org/cross-domain/edgy#> .
 @prefix geo:     <http://www.w3.org/2003/01/geo/wgs84_pos#> .
 @prefix qudt:    <http://qudt.org/schema/qudt/> .
 

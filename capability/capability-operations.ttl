@@ -8,7 +8,7 @@
 @prefix prov:  <http://www.w3.org/ns/prov#> .
 @prefix cap:   <https://schema.bra0.org/capability#> .
 @prefix obo:   <http://purl.obolibrary.org/obo/> .
-@prefix edgy:  <http://www.omyn.ai/schema/edgy#> .
+@prefix edgy:  <https://schema.bra0.org/cross-domain/edgy#> .
 
 #
 # Capability Operations Registry — operational triples per capability

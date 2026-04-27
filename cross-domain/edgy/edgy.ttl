@@ -10,7 +10,7 @@
 # Source: ontoledgy_v0.95.ttl + EDGY wiki fidelity audit
 # Layer: DOMAIN
 # Compliance: W3C OWL 2 DL
-# Named Graph: http://www.omyn.ai/schema/edgy#
+# Named Graph: https://schema.bra0.org/cross-domain/edgy#
 # Audit tool: bra0 topo + Oxigraph (dogfooding)
 # Reference: https://enterprise.design/wiki/EDGY
 #
@@ -49,7 +49,7 @@
 # - Fixed UTF-8 encoding artifacts in comments
 # - Removed erroneous owl:Thing redeclaration
 
-@prefix edgy: <http://www.omyn.ai/schema/edgy#> .
+@prefix edgy: <https://schema.bra0.org/cross-domain/edgy#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -57,13 +57,13 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 
-@base <http://www.omyn.ai/schema/edgy#> .
+@base <https://schema.bra0.org/cross-domain/edgy#> .
 
 #################################################################
 #    ONTOLOGY DECLARATION
 #################################################################
 
-<http://www.omyn.ai/schema/edgy#> rdf:type owl:Ontology ;
+<https://schema.bra0.org/cross-domain/edgy#> rdf:type owl:Ontology ;
     dcterms:title "OntolEDGY: Enterprise Design Graph InterplaY Ontology - v1.0-draft"@en ;
     dcterms:description "OntolEDGY v1.0-draft — EDGY wiki fidelity audit (24 named links verified by SPARQL) + ontology quality methodology. 6 corrections applied, 1 deliberate departure documented (Organisation as CAS)."@en ;
     dcterms:creator "Intersection Group" ;
@@ -73,7 +73,7 @@
     dcterms:modified "2026-04-01" ;
     dcterms:validatedBy "Sacha Roger, Ontologist - 2026-04-01" ;
     owl:versionInfo "v1.0-draft — EDGY fidelity audit + ontology quality pass" ;
-    owl:priorVersion <http://www.omyn.ai/schema/edgy/0.95> ;
+    owl:priorVersion <https://schema.bra0.org/cross-domain/edgy/0.95> ;
     dcterms:license "https://creativecommons.org/licenses/by-sa/4.0/" .
 
 #################################################################
@@ -81,7 +81,7 @@
 #################################################################
 
 edgy:Element rdf:type owl:Class ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "Element"@en ;
     rdfs:comment "Abstract base class for all EDGY elements."@en .
 
@@ -95,13 +95,13 @@ edgy:People rdf:type owl:Class ;
             owl:onProperty edgy:uses ;
             owl:someValuesFrom edgy:Object
         ] ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "People"@en ;
     rdfs:comment """The individuals co-creating the enterprise or using products. People are individuals with an identity, motivation and intent, skills and expertise, background, story and personality. They have the unique ability to have ambitions, find meaning and purpose in the world, and share those with other people. The roles people play in an enterprise (for example customer, partner or owner) relate to the activities they are expected to be involved in. A weakness of people is their unpredictability. A strength is their resilience, especially in unexpected situations. These human characteristics enable people to recover gracefully from disruptive situations, learn from mistakes and produce new enterprise value, where automated systems tend to fail and stay broken."""@en .
 
 edgy:Outcome rdf:type owl:Class ;
     rdfs:subClassOf edgy:Element ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "Outcome"@en ;
     rdfs:comment """A result or change that occurs within our enterprise or its ecosystem. Outcomes are the results of activities. These can be intended results such as goals, objectives or more generally the purpose an enterprise strives to achieve. Outcomes can also be unintended, when events unfold unexpectedly and results can only be seen after they appear. Outcomes can be direct outcomes of our activity, or an impact further down the chain of outcomes outside of our direct control or influence. As such, any outcome is a state change we can observe in our own organisation, with our customers or co-creators, in our markets or ecosystem. An outcome represents a state change in or around our enterprise, to be pursued in advance or measured after it can be observed."""@en .
 
@@ -111,7 +111,7 @@ edgy:Activity rdf:type owl:Class ;
             owl:onProperty edgy:uses ;
             owl:someValuesFrom edgy:Object
         ] ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "Activity"@en ;
     rdfs:comment """What is being done or going on in our enterprise or its ecosystem. An activity represents something happening that is relevant to our enterprise. It can be something done by people individually or collectively, such as work, sports, or performances. An activity can also be used to refer to something that simply happens, without specifying who is doing what. Activities capture the behaviours and movements of our enterprise. This enables us to model and map the dynamic nature of our enterprise and its organisation(s)."""@en .
 
@@ -121,7 +121,7 @@ edgy:Object rdf:type owl:Class ;
             owl:onProperty edgy:supports ;
             owl:someValuesFrom edgy:Outcome
         ] ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "Object"@en ;
     rdfs:comment """A structure that is relevant to the enterprise. An object is a tangible or intangible multi-part structure such as a machine, building, application or data. Objects can have behaviour, such as performing automated activities, or support people that are doing activities. Objects consist of parts: objects that combine to form an object of a higher complexity and function. For the purpose of enterprise design it is important to understand that not every object can be engineered and predictably (re-)produced. Some objects like machines or software applications are complicated and deterministic and can be engineered to exact specifications. Other objects like plants or social structures are complex and unpredictable and may be influenced to a certain degree only."""@en .
 
@@ -130,25 +130,25 @@ edgy:Object rdf:type owl:Class ;
 #################################################################
 
 edgy:Facet rdf:type owl:Class ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "Facet"@en ;
     rdfs:comment "A perspective or point of view through the prism of which a concept is interpreted. Fundamental perspectives that relate to any enterprise."@en .
 
 edgy:IdentityFacet rdf:type owl:Class ;
     rdfs:subClassOf edgy:Facet ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "Identity Facet"@en ;
     rdfs:comment "Our enterprise establishes shared stories communicated through content to live up to and achieve given purposes. This identity is pursued by its organisation and evoked by the perception of its brands."@en .
 
 edgy:ArchitectureFacet rdf:type owl:Class ;
     rdfs:subClassOf edgy:Facet ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "Architecture Facet"@en ;
     rdfs:comment "Employees and other people, together with assets, perform processes to enable capabilities. They are developed by its organisation and are required to make and deliver the products it offers."@en .
 
 edgy:ExperienceFacet rdf:type owl:Class ;
     rdfs:subClassOf edgy:Facet ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "Experience Facet"@en ;
     rdfs:comment "People interact with the enterprise via channels along their journeys to complete their tasks. Enterprises reach out to people through their brands, and make products to be offered to them."@en .
 
@@ -157,7 +157,7 @@ edgy:ExperienceFacet rdf:type owl:Class ;
 #################################################################
 
 edgy:Intersection rdf:type owl:Class ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "Intersection"@en ;
     rdfs:comment "Abstract class for EDGY elements that span multiple facets. Intersection elements (Organization, Product, Brand) bridge two facets and embody the connections between different enterprise perspectives."@en .
 
@@ -172,7 +172,7 @@ edgy:Purpose rdf:type owl:Class , skos:Concept ;
             owl:someValuesFrom edgy:IdentityFacet
         ] ;
     edgy:belongsToFacet edgy:IdentityFacet ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "Purpose"@en ;
     skos:prefLabel "Purpose"@en ;
     rdfs:comment """An enterprise's purpose expresses what its people believe in, consider valuable, and are striving for, usually expressed as outcomes/goals the enterprise aspires to achieve. These ambitions can range from local success to far-reaching outcomes that impact society, humanity or the planet. The purpose acts as a shared north star people can use to find inspiration and motivation in, and align their activities with. People outside the enterprise use information about its purpose to decide if and how to interact with it. The purpose of an enterprise can be expressed as content that explains what the enterprise wants to achieve."""@en ;
@@ -185,7 +185,7 @@ edgy:Story rdf:type owl:Class ;
             owl:someValuesFrom edgy:IdentityFacet
         ] ;
     edgy:belongsToFacet edgy:IdentityFacet ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "Story"@en ;
     rdfs:comment """The way we make sense of our enterprise and communicate to people what it does. An enterprise story is a narrative with our co-creators as protagonists, the enterprise as the setting, the ecosystem as context, and the co-creators' activities as actions. Stories help us make sense of complex ideas, concepts and situations and share that sense with other people. Stories about past or future events can illustrate shared values, assumptions and beliefs and what people can expect when interacting with an enterprise. People actively construct their own mental imagery and meaning when listening to stories. Creating a story is a co-creative process, bringing together a group of stakeholders and helping them tell the story from their own perspectives."""@en .
 
@@ -196,7 +196,7 @@ edgy:Content rdf:type owl:Class ;
             owl:someValuesFrom edgy:IdentityFacet
         ] ;
     edgy:belongsToFacet edgy:IdentityFacet ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "Content"@en ;
     rdfs:comment """What is being communicated to people. Content refers to the information and data that is being communicated between and to people. Content always conveys messages and clues, both explicit and implicit, that people use to construct their perception of the enterprise's identity. It requires a medium to convey those underlying messages and clues to its audiences, such as audiovisual media like text, images, video or accessible alternatives. In an enterprise, various forms of content are being produced and maintained, exchanged and promoted. For an enterprise, content is a valuable asset, vital for its success, both when running processes and when communicating within the enterprise and its ecosystem. The increasing amount and importance of content requires enterprises to develop sophisticated content strategy, inventory and lifecycle management practices supported by information systems."""@en .
 
@@ -215,7 +215,7 @@ edgy:Capability rdf:type owl:Class ;
             owl:someValuesFrom edgy:ArchitectureFacet
         ] ;
     edgy:belongsToFacet edgy:ArchitectureFacet ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "Capability"@en ;
     rdfs:comment """What we are able to do by orchestrating people and assets. Enterprises strive to achieve their purpose by creating products that feature in people's experiences. To do so, they must design and realise their capabilities by orchestrating meaningful combinations of people and assets. Each capability produces well-defined outputs for internal or external business use and contributes directly or indirectly to product creation. Capabilities guide the modularisation of our enterprise by defining boundaries around what belongs together and what is distinct from other capabilities. Capabilities can be decomposed into sub-capabilities, usually levels 1 to 3, to create a hierarchy. Each capability must have a clearly assigned business owner to ensure its strategic development and the effective creation of intended outputs."""@en .
 
@@ -230,7 +230,7 @@ edgy:Process rdf:type owl:Class ;
             owl:someValuesFrom edgy:ArchitectureFacet
         ] ;
     edgy:belongsToFacet edgy:ArchitectureFacet ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "Process"@en ;
     rdfs:comment """A set of related activities our enterprise carries out. Processes are the flows of activities needed for product creation (either directly or indirectly). They transform a set of inputs into a set of products or intermediary outputs and consist of a set of activities that are performed in coordination in an organisational or technical environment. A process is composed of activities connected by flow relationships. It can be strictly structured or less structured. Processes can run across several organisational units or can be performed within one organisational unit only. Well-designed processes lead to enterprises that operate efficiently and effectively across all required organisational units."""@en .
 
@@ -241,7 +241,7 @@ edgy:Asset rdf:type owl:Class ;
             owl:someValuesFrom edgy:ArchitectureFacet
         ] ;
     edgy:belongsToFacet edgy:ArchitectureFacet ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "Asset"@en ;
     rdfs:comment """An object we need and use to perform our capabilities. Enterprises need to develop, buy and manage a broad range of tangible or intangible assets (such as buildings, machines, raw materials, software applications, financial assets and know-how) to perform the capabilities needed to run their business. Assets as a concept are rooted in economics, strategic management and finance. Buying assets from suppliers connects the enterprise to its supply chain."""@en .
 
@@ -260,7 +260,7 @@ edgy:Task rdf:type owl:Class ;
             owl:someValuesFrom edgy:ExperienceFacet
         ] ;
     edgy:belongsToFacet edgy:ExperienceFacet ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "Task"@en ;
     rdfs:comment """What people want to achieve and get done. People have numerous tasks they want to accomplish every day. Those tasks are about the outcomes people want to achieve, not the means to get there. Tasks can be seen as a stable expression of people's needs, motivations and intent. Enterprises appear in people's experiences as brands offering products to help them accomplish their tasks as they go through their journeys. Achieving clarity on people's tasks, ideally backed by evidence through research, offers our enterprise a chance to focus on people's most important needs and motivations. This helps our enterprise improve the role it plays in people's lives."""@en .
 
@@ -271,7 +271,7 @@ edgy:Journey rdf:type owl:Class ;
             owl:someValuesFrom edgy:ExperienceFacet
         ] ;
     edgy:belongsToFacet edgy:ExperienceFacet ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "Journey"@en ;
     rdfs:comment """The events and activities people experience in their lives. A journey describes what a person does, feels, thinks, or otherwise experiences over time as they live a specific portion of their life, in particular when interacting with our enterprise. It is captured as a simplified sequential and chronological representation of activities and events people experience, and tasks they want to accomplish. Journeys are commonly documented using a storytelling format, describing a slice of life of an exemplary person or persona. Aspects that are typically captured are motivation, activities, tasks, channels of interaction, physical or digital environments, emotional states, first-hand observations and analytics data related to the journey."""@en .
 
@@ -282,7 +282,7 @@ edgy:Channel rdf:type owl:Class ;
             owl:someValuesFrom edgy:ExperienceFacet
         ] ;
     edgy:belongsToFacet edgy:ExperienceFacet ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "Channel"@en ;
     rdfs:comment """The means people use to engage and interact with us. Channels are the means of communication between people and the enterprise. They are where moments of interaction between people and the enterprise take place. They include media, devices, communication systems, or physical environments used to facilitate interactions."""@en .
 
@@ -306,7 +306,7 @@ edgy:Organization rdf:type owl:Class ;
             owl:someValuesFrom edgy:IdentityFacet
         ] ;
     edgy:intersectsWith edgy:IdentityFacet , edgy:ArchitectureFacet ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "Organization"@en ;
     rdfs:comment """A group of people working together. An organisation is a complex social structure. People form organisations to collaborate and co-create outcomes they cannot achieve alone without explicit agreements about membership, responsibilities and behavioural rules. Organisations are fractal: they are made up of nested structures (e.g. business unit-department-team) that have similar attributes on each level, such as purpose, goals, capabilities and hierarchy. Organisations are complex adaptive systems. This means they display attributes and behaviours that are designed and managed, as well as emergent attributes and behaviours that arise more or less unplanned out of people's complex behaviour. This emergence means organisations are never fully predictable and deterministic, making organisational design always a mix of design and influence."""@en .
 
@@ -326,7 +326,7 @@ edgy:Product rdf:type owl:Class ;
             owl:someValuesFrom edgy:ExperienceFacet
         ] ;
     edgy:intersectsWith edgy:ArchitectureFacet , edgy:ExperienceFacet ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "Product"@en ;
     rdfs:comment """What we make, offer and deliver for people's benefit. Products are the result of our enterprise activity and encompass physical things manufactured and delivered, or services rendered to people. A product can be composed of any combination of physical goods and other tangible and intangible objects. It also includes the activities performed that lead to the production of outputs, and ultimately outcomes desired by the customer or user. A product helps people complete a task, and thereby adds value to their lives when used in the right context. It can be physical, digital, and deliver practical, emotional or monetary value. Creating products requires product planning, management, design, engineering and provision."""@en .
 
@@ -346,7 +346,7 @@ edgy:Brand rdf:type owl:Class ;
             owl:someValuesFrom edgy:IdentityFacet
         ] ;
     edgy:intersectsWith edgy:IdentityFacet , edgy:ExperienceFacet ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "Brand"@en ;
     rdfs:comment """Our name and what it stands for. A brand is a symbolic representation that stands for our enterprise and its products. It is designed to communicate our identity, especially how we are different from others. It invokes a set of expectations in people about our enterprise and our products, particularly in relation to people's own needs and desires. People have intentionally designed brand experiences through ads, public communications and their direct experiences with our products. In addition, people's perceptions of our brand is influenced by many other factors: any interaction they have with our products, processes and people; any public communication about our brand; any stories going around. Positive expectations about a brand pull people towards the products an enterprise offers, negative expectations push them away. That's why a brand is also a financial asset we invest in and obtain benefits from. Brand names are often protected as a registered trademark expressed in words, visual signs or other media representations."""@en .
 
@@ -357,7 +357,7 @@ edgy:Brand rdf:type owl:Class ;
 edgy:link rdf:type owl:ObjectProperty ;
     rdfs:domain edgy:Element ;
     rdfs:range edgy:Element ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "link"@en ;
     rdfs:comment """A meaningful structural association between two elements. A link expresses a structural relationship between two elements in terms that explain or illustrate the relevance of that relationship to the enterprise."""@en .
 
@@ -365,7 +365,7 @@ edgy:flow rdf:type owl:ObjectProperty ;
     rdfs:subPropertyOf edgy:link ;
     rdfs:domain edgy:Element ;
     rdfs:range edgy:Element ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "flow"@en ;
     rdfs:comment """An element influences another by passing objects. An enterprise functions through the way its parts influence each other to produce an aggregated result no single part can produce alone. Understanding and improving the effectiveness and ease with which things flow through the enterprise and its elements helps it function efficiently and effectively."""@en .
 
@@ -373,7 +373,7 @@ edgy:tree rdf:type owl:ObjectProperty ;
     rdfs:subPropertyOf edgy:link ;
     rdfs:domain edgy:Element ;
     rdfs:range edgy:Element ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "tree"@en ;
     rdfs:comment "Hierarchical relationship between EDGY elements, representing decomposition or containment structures."@en .
 
@@ -385,7 +385,7 @@ edgy:achieves rdf:type owl:ObjectProperty ;
     rdfs:subPropertyOf edgy:link ;
     rdfs:domain edgy:People ;
     rdfs:range edgy:Outcome ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "achieves"@en ;
     rdfs:comment "People achieve outcomes through their activities and collaborations."@en .
 
@@ -393,7 +393,7 @@ edgy:co-creates rdf:type owl:ObjectProperty ;
     rdfs:subPropertyOf edgy:link ;
     rdfs:domain edgy:People ;
     rdfs:range edgy:Capability ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "co-creates"@en ;
     rdfs:comment "People co-create capabilities through collaborative effort."@en .
 
@@ -401,7 +401,7 @@ edgy:performs rdf:type owl:ObjectProperty ;
     rdfs:subPropertyOf edgy:link ;
     rdfs:domain edgy:People ;
     rdfs:range edgy:Activity ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "performs"@en ;
     rdfs:comment "People perform activities as part of their roles in the enterprise."@en .
 
@@ -409,7 +409,7 @@ edgy:pursues rdf:type owl:ObjectProperty ;
     rdfs:subPropertyOf edgy:link ;
     rdfs:domain edgy:Organization ;
     rdfs:range edgy:Purpose ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "pursues"@en ;
     rdfs:comment "An organisation pursues purposes. EDGY wiki: 'organisation pursues purpose'. People achieve Outcomes (via edgy:achieves); Organisations pursue Purpose as a deliberate strategic act."@en .
 
@@ -421,7 +421,7 @@ edgy:contextualizes rdf:type owl:ObjectProperty ;
     rdfs:subPropertyOf edgy:link ;
     rdfs:domain edgy:Story ;
     rdfs:range edgy:Purpose ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "contextualizes"@en ;
     rdfs:comment "A story contextualizes purpose by providing narrative meaning."@en .
 
@@ -429,7 +429,7 @@ edgy:conveys rdf:type owl:ObjectProperty ;
     rdfs:subPropertyOf edgy:link ;
     rdfs:domain edgy:Content ;
     rdfs:range edgy:Story ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "conveys"@en ;
     rdfs:comment "Content conveys stories through various media and formats."@en .
 
@@ -437,7 +437,7 @@ edgy:expresses rdf:type owl:ObjectProperty ;
     rdfs:subPropertyOf edgy:link ;
     rdfs:domain edgy:Content ;
     rdfs:range edgy:Purpose ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "expresses"@en ;
     rdfs:comment "Content expresses purpose through meaningful communication."@en .
 
@@ -445,7 +445,7 @@ edgy:authors rdf:type owl:ObjectProperty ;
     rdfs:subPropertyOf edgy:link ;
     rdfs:domain edgy:Organization ;
     rdfs:range edgy:Story ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "authors"@en ;
     rdfs:comment "An organisation authors stories as part of its identity narrative. EDGY wiki: 'organisation authors story'."@en .
 
@@ -457,7 +457,7 @@ edgy:realizes rdf:type owl:ObjectProperty ;
     rdfs:subPropertyOf edgy:link ;
     rdfs:domain edgy:Process ;
     rdfs:range edgy:Capability ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "realises"@en ;
     rdfs:comment "A process realises a capability by orchestrating activities and assets."@en .
 
@@ -479,7 +479,7 @@ edgy:requires rdf:type owl:ObjectProperty ;
             edgy:Asset
         )
     ] ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "requires"@en ;
     rdfs:comment "An element requires capabilities or assets to function. Applies to processes, products and capabilities."@en .
 
@@ -487,7 +487,7 @@ edgy:has rdf:type owl:ObjectProperty ;
     rdfs:subPropertyOf edgy:link ;
     rdfs:domain edgy:Organization ;
     rdfs:range edgy:Capability ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "has"@en ;
     rdfs:comment "An organisation has capabilities. EDGY wiki: 'organisation has capability'. Renamed from 'possesses' for fidelity to the original EDGY language."@en .
 
@@ -499,7 +499,7 @@ edgy:traverses rdf:type owl:ObjectProperty ;
     rdfs:subPropertyOf edgy:link ;
     rdfs:domain edgy:Journey ;
     rdfs:range edgy:Channel ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "traverses"@en ;
     rdfs:comment "A journey traverses channels as people interact with the enterprise."@en .
 
@@ -507,7 +507,7 @@ edgy:isPartOf rdf:type owl:ObjectProperty ;
     rdfs:subPropertyOf edgy:link ;
     rdfs:domain edgy:Task ;
     rdfs:range edgy:Journey ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "is part of"@en ;
     rdfs:comment "A task is part of a journey. EDGY wiki: 'task is part of journey'. Renamed from 'marksA' for fidelity to original EDGY language."@en .
 
@@ -515,7 +515,7 @@ edgy:serves rdf:type owl:ObjectProperty ;
     rdfs:subPropertyOf edgy:link ;
     rdfs:domain edgy:Product ;
     rdfs:range edgy:Task ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "serves"@en ;
     rdfs:comment "A product serves tasks by helping people accomplish what they need."@en .
 
@@ -523,7 +523,7 @@ edgy:appearsIn rdf:type owl:ObjectProperty ;
     rdfs:subPropertyOf edgy:link ;
     rdfs:domain edgy:Brand ;
     rdfs:range edgy:Journey ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "appears in"@en ;
     rdfs:comment "A brand appears in people's journeys through touchpoints and interactions."@en .
 
@@ -531,7 +531,7 @@ edgy:featuresIn rdf:type owl:ObjectProperty ;
     rdfs:subPropertyOf edgy:link ;
     rdfs:domain edgy:Product ;
     rdfs:range edgy:Journey ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "features in"@en ;
     rdfs:comment "A product features in people's journeys as a means to accomplish tasks."@en .
 
@@ -543,7 +543,7 @@ edgy:builds rdf:type owl:ObjectProperty ;
     rdfs:subPropertyOf edgy:link ;
     rdfs:domain edgy:Organization ;
     rdfs:range edgy:Brand ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "builds"@en ;
     rdfs:comment "An organization builds and cultivates its brands."@en .
 
@@ -551,7 +551,7 @@ edgy:makes rdf:type owl:ObjectProperty ;
     rdfs:subPropertyOf edgy:link ;
     rdfs:domain edgy:Organization ;
     rdfs:range edgy:Product ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "makes"@en ;
     rdfs:comment "An organization makes products through its capabilities and processes."@en .
 
@@ -559,7 +559,7 @@ edgy:performsProcess rdf:type owl:ObjectProperty ;
     rdfs:subPropertyOf edgy:link ;
     rdfs:domain edgy:Organization ;
     rdfs:range edgy:Process ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "performs"@en ;
     rdfs:comment "An organisation performs processes. EDGY wiki: 'organisation performs process'. Distinct from edgy:performs (People→Activity) — this is the Organisation-specific specialization for Process."@en .
 
@@ -567,7 +567,7 @@ edgy:embodies rdf:type owl:ObjectProperty ;
     rdfs:subPropertyOf edgy:link ;
     rdfs:domain edgy:Product ;
     rdfs:range edgy:Brand ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "embodies"@en ;
     rdfs:comment "A product embodies a brand through its design and experience."@en .
 
@@ -575,7 +575,7 @@ edgy:evokes rdf:type owl:ObjectProperty ;
     rdfs:subPropertyOf edgy:link ;
     rdfs:domain edgy:Brand ;
     rdfs:range edgy:Story ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "evokes"@en ;
     rdfs:comment "A brand evokes stories in people's minds through associations and perceptions."@en .
 
@@ -583,7 +583,7 @@ edgy:represents rdf:type owl:ObjectProperty ;
     rdfs:subPropertyOf edgy:link ;
     rdfs:domain edgy:Brand ;
     rdfs:range edgy:Purpose ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "represents"@en ;
     rdfs:comment "A brand represents purpose by communicating what the enterprise stands for."@en .
 
@@ -595,7 +595,7 @@ edgy:creates rdf:type owl:ObjectProperty ;
     rdfs:subPropertyOf edgy:link ;
     rdfs:domain edgy:Process ;
     rdfs:range edgy:Product ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "creates"@en ;
     rdfs:comment "A process creates products. EDGY wiki: 'process creates product'. Narrowed from Activity→Object to match the specific EDGY named link."@en .
 
@@ -614,7 +614,7 @@ edgy:uses rdf:type owl:ObjectProperty ;
             edgy:Channel
         )
     ] ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "uses"@en ;
     rdfs:comment "People/Activity use Objects; Task uses Channel. EDGY wiki: 'task uses channel' + base element pattern 'people use objects'."@en .
 
@@ -622,7 +622,7 @@ edgy:supports rdf:type owl:ObjectProperty ;
     rdfs:subPropertyOf edgy:link ;
     rdfs:domain edgy:Brand ;
     rdfs:range edgy:Task ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "supports"@en ;
     rdfs:comment "A brand supports tasks. EDGY wiki: 'brand supports task'. Note: the generic Object→Outcome restriction remains as an OWL someValuesFrom on Object class."@en .
 
@@ -634,21 +634,21 @@ edgy:viewedThrough rdf:type owl:ObjectProperty ;
     rdfs:subPropertyOf edgy:link ;
     rdfs:domain edgy:Element ;
     rdfs:range edgy:Facet ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "viewed through"@en ;
     rdfs:comment "Associates an EDGY element with the facet perspective(s) through which it is interpreted. Used in OWL restrictions to formally bind elements to their facet(s)."@en .
 
 edgy:belongsToFacet rdf:type owl:ObjectProperty ;
     rdfs:domain edgy:Element ;
     rdfs:range edgy:Facet ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "belongs to facet"@en ;
     rdfs:comment "Associates an EDGY element with its primary facet perspective. Used as class-level annotation for querying."@en .
 
 edgy:intersectsWith rdf:type owl:ObjectProperty ;
     rdfs:domain edgy:Element ;
     rdfs:range edgy:Facet ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "intersects with"@en ;
     rdfs:comment "Indicates an intersection element spans multiple facet perspectives."@en .
 
@@ -658,13 +658,13 @@ edgy:intersectsWith rdf:type owl:ObjectProperty ;
 
 edgy:alignsWithGist rdf:type owl:ObjectProperty ;
     rdfs:domain edgy:Element ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "aligns with Gist"@en ;
     rdfs:comment "Maps EDGY element to corresponding Gist enterprise ontology concept."@en .
 
 edgy:groundedInBFO rdf:type owl:ObjectProperty ;
     rdfs:domain edgy:Element ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "grounded in BFO"@en ;
     rdfs:comment "Maps EDGY element to foundational BFO category."@en .
 
@@ -675,28 +675,28 @@ edgy:groundedInBFO rdf:type owl:ObjectProperty ;
 edgy:hasPriority rdf:type owl:DatatypeProperty ;
     rdfs:domain edgy:Element ;
     rdfs:range xsd:decimal ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "has priority"@en ;
     rdfs:comment "Priority level of an EDGY element (1-5 scale)."@en .
 
 edgy:hasBusinessValue rdf:type owl:DatatypeProperty ;
     rdfs:domain edgy:Element ;
     rdfs:range xsd:decimal ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "has business value"@en ;
     rdfs:comment "Business value score of an EDGY element."@en .
 
 edgy:hasComplexity rdf:type owl:DatatypeProperty ;
     rdfs:domain edgy:Element ;
     rdfs:range xsd:decimal ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "has complexity"@en ;
     rdfs:comment "Implementation complexity score of an EDGY element."@en .
 
 edgy:hasTag rdf:type owl:DatatypeProperty ;
     rdfs:domain edgy:Element ;
     rdfs:range xsd:string ;
-    rdfs:isDefinedBy <http://www.omyn.ai/schema/edgy#> ;
+    rdfs:isDefinedBy <https://schema.bra0.org/cross-domain/edgy#> ;
     rdfs:label "has tag"@en ;
     rdfs:comment "Categorical tag for EDGY element classification."@en .
 

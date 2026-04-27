@@ -29,19 +29,23 @@ WHITELIST = ROOT / "docs-published.txt"
 # ADR-058 §2.2 (Voie A) — canonical TTL per namespace directory rendered via pyLODE.
 # `evidence-os/query/` is intentionally absent: it carries SHACL-only shapes
 # and is served by a hand-written static landing per §2.11.
+# `cross-domain/edgy/` joins the canonical set per ADR-060 (edgy migrated from
+# omyn.ai/schema/edgy# to schema.bra0.org/cross-domain/edgy#, rupture sèche).
 CANONICAL_TTL: dict[str, str] = {
     "agent-service-contract": "agent-service-contract.ttl",
     "essence-kernel": "essence-kernel.ttl",
     "capability": "capability-operations.ttl",
     "evidence-os": "evidence-os.ttl",
     "evidence-os/edcc": "edcc-bridge.ttl",
+    "cross-domain/edgy": "edgy.ttl",
 }
 
-# ADR-058 §2.4 — known foreign-namespace mirrors.
-# Adding a new mirror requires Sacha-only edit, similar to whitelist discipline.
+# ADR-058 §2.4 + ADR-060 §3 — foreign-namespace mirrors.
+# Only neuro-upper remains: edgy migrated to canonical, retroeng unpublished
+# (kept private pending Sacha's deep review). Adding a new mirror requires
+# Sacha-only edit, similar to whitelist discipline. No omyn.ai/schema/* IRI
+# may appear here — see test_mirrors_carries_no_omyn_ai_iri.
 MIRRORS: dict[str, str] = {
-    "capability/edgy.ttl": "http://www.omyn.ai/schema/edgy#",
-    "capability/retroeng.ttl": "https://omyn.ai/schema/retroeng#",
     "capability/neuro-upper.ttl": "urn:omyn:neuro:",
 }
 
@@ -60,10 +64,14 @@ SHAPES_SKIP: set[str] = {
     "evidence-os/edcc/edcc-csrd.shapes.ttl",
 }
 
-# ADR-058 §2.11 (Voie A) — directories served by a hand-written static landing
-# rather than a pyLODE-rendered canonical TTL.
+# ADR-058 §2.11 + ADR-060 §3 — directories served by a hand-written static
+# landing rather than a pyLODE-rendered canonical TTL.
+#  - evidence-os/query/ — SHACL-only result-structure shapes.
+#  - cross-domain/ — parent grouping (no cross-domain.ttl exists; only
+#    edgy is currently published as a child canonical).
 STATIC_LANDINGS: dict[str, str] = {
     "evidence-os/query": "_layouts/evidence-os-query-landing.html",
+    "cross-domain": "_layouts/cross-domain-landing.html",
 }
 
 

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>cross-domain — bra0 mid-level vocabularies</title>
+<meta name="description" content="Cross-domain vocabularies: mid-level ontologies between BFO upper and bra0 KS. Domain-agnostic patterns reused across capability, evidence-os, and demos.">
+<style>
+  body { font-family: -apple-system, system-ui, sans-serif; max-width: 60em; margin: 2em auto; padding: 0 1em; color: #222; line-height: 1.5; }
+  h1 { font-size: 1.5em; margin-bottom: 0.2em; }
+  h2 { font-size: 1.1em; margin-top: 1.8em; border-bottom: 1px solid #ddd; padding-bottom: 0.3em; }
+  code { background: #f5f5f5; padding: 0.1em 0.3em; border-radius: 3px; font-size: 0.92em; }
+  ul.children { list-style: none; padding-left: 0; }
+  ul.children li { padding: 0.5em 0; border-bottom: 1px solid #eee; }
+  ul.children li code { font-weight: 600; }
+  .ns-static-note { background:#f5f5f5; border-left:4px solid #888; padding:0.7em 1em; margin:1em 0; font-size:0.9em; }
+  a { color: #0066cc; }
+  footer { margin-top: 3em; font-size: 0.85em; color: #666; border-top: 1px solid #ddd; padding-top: 1em; }
+  table { border-collapse: collapse; margin-top: 0.5em; }
+  th, td { text-align: left; padding: 0.4em 1em 0.4em 0; border-bottom: 1px solid #eee; vertical-align: top; }
+  th { font-weight: 600; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>cross-domain</h1>
+  <p>Path: <code>https://schema.bra0.org/cross-domain/</code></p>
+
+  <aside class="ns-static-note">
+    Hand-written parent landing per ADR-058 §2.11. The <code>cross-domain/</code> path itself has no ontology of its own — it groups mid-level vocabularies hosted under <code>schema.bra0.org/cross-domain/&lt;name&gt;#</code>.
+  </aside>
+</header>
+
+<main>
+
+<section>
+  <h2>Scope</h2>
+  <p>Cross-domain ontologies sit between the foundational upper layer (BFO 2020) and the bra0 Knowledge-Space domain layer. They capture domain-agnostic patterns reused across multiple bra0 vocabularies (capability, evidence-os) and demos.</p>
+  <p>Layer rank in the bra0 namespace canon (see <code>bra0_meta/_bmad/docs/namespace-canon.md</code>):</p>
+  <table>
+    <tr><th>Rank</th><th>Vocabulary</th><th>Role</th></tr>
+    <tr><td>L0 Foundational</td><td><code>bfo:</code></td><td>Upper-level (external, BFO 2020)</td></tr>
+    <tr><td><strong>L0.5 Cross-domain</strong></td><td><strong><code>edgy:</code> · <code>re:</code></strong></td><td><strong>Mid-level, domain-agnostic — this directory</strong></td></tr>
+    <tr><td>L1 Core</td><td><code>asc:</code> · <code>ess:</code> · <code>bra0m:</code></td><td>Platform infrastructure</td></tr>
+    <tr><td>L2 KS</td><td><code>cap:</code></td><td>Knowledge-Space primitives</td></tr>
+    <tr><td>L3 Product</td><td><code>evo:</code> · <code>evoQ:</code> · <code>edcc:</code></td><td>Buyer-facing vocabulary</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>Published children</h2>
+  <ul class="children">
+    <li>
+      <a href="edgy/"><code>edgy/</code></a> —
+      OntolEDGY v1.0-draft. Enterprise Design Graph InterplaY ontology: 16 classes, 22 properties, 5 facets.
+      Canonical IRI <code>https://schema.bra0.org/cross-domain/edgy#</code>.
+    </li>
+  </ul>
+</section>
+
+<section>
+  <h2>Migration provenance</h2>
+  <p><code>edgy:</code> was reissued under <code>schema.bra0.org/cross-domain/edgy#</code> on 2026-04-26 (ADR-060). Rupture sèche policy: no <code>owl:sameAs</code>, no <code>owl:deprecated</code>, no legacy IRI on the public surface. The only canonical resolver for OntolEDGY is the bra0 path published here. Provenance of the previous IRI host is documented in ADR-060 and stays out of the public surface.</p>
+</section>
+
+</main>
+
+<footer>
+  <p>License — <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> · Source — <a href="https://github.com/sachaR063R/bra0-ns">github.com/sachaR063R/bra0-ns</a> · ADR-060 (cross-domain rank, rupture sèche)</p>
+</footer>
+
+</body>
+</html>

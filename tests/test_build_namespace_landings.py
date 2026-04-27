@@ -128,13 +128,23 @@ def test_is_canonical_false_for_unknown_dir():
 
 
 def test_is_mirror_true_for_known_path():
-    assert B.is_mirror(make_entry("capability/edgy.ttl"))
-    assert B.is_mirror(make_entry("capability/retroeng.ttl"))
+    # ADR-060 §3 — only neuro-upper remains a mirror after edgy migrated to
+    # canonical (cross-domain/edgy/) and retroeng was unpublished.
     assert B.is_mirror(make_entry("capability/neuro-upper.ttl"))
 
 
 def test_is_mirror_false_for_canonical_in_same_dir():
     assert not B.is_mirror(make_entry("capability/capability-operations.ttl"))
+
+
+def test_is_mirror_false_for_migrated_edgy():
+    """ADR-060 §3 — cross-domain/edgy/edgy.ttl is canonical, not a mirror."""
+    assert not B.is_mirror(make_entry("cross-domain/edgy/edgy.ttl"))
+
+
+def test_is_canonical_true_for_cross_domain_edgy():
+    """ADR-060 §3 — cross-domain/edgy/ promoted to canonical landing dir."""
+    assert B.is_canonical(make_entry("cross-domain/edgy/edgy.ttl"))
 
 
 def test_canonical_and_mirror_are_disjoint():
@@ -195,14 +205,14 @@ def test_inject_audit_meta_fails_on_html_with_no_anchor():
 
 
 def test_inject_mirror_banner_contains_canonical_iri():
-    entry = make_entry("capability/edgy.ttl")
+    entry = make_entry("capability/neuro-upper.ttl")
     out = B.inject_mirror_banner(MINIMAL_PYLODE_HTML, entry)
     assert "ns-mirror-banner" in out
-    assert "http://www.omyn.ai/schema/edgy#" in out
+    assert "urn:omyn:neuro:" in out
 
 
 def test_inject_mirror_banner_contains_disclaimer_text():
-    entry = make_entry("capability/retroeng.ttl")
+    entry = make_entry("capability/neuro-upper.ttl")
     out = B.inject_mirror_banner(MINIMAL_PYLODE_HTML, entry)
     assert "External vocabulary" in out
     assert "documentation mirror" in out
@@ -210,7 +220,7 @@ def test_inject_mirror_banner_contains_disclaimer_text():
 
 
 def test_inject_mirror_banner_fails_on_html_with_no_anchor():
-    entry = make_entry("capability/edgy.ttl")
+    entry = make_entry("capability/neuro-upper.ttl")
     with pytest.raises(SystemExit):
         B.inject_mirror_banner(HTML_WITHOUT_HEADER_OR_BODY, entry)
 
@@ -221,27 +231,27 @@ def test_inject_mirror_banner_fails_on_html_with_no_anchor():
 
 
 def test_inject_siblings_nav_lists_others_in_same_dir():
-    self_entry = make_entry("capability/edgy.ttl")
-    canonical = make_entry("capability/capability-operations.ttl")
+    self_entry = make_entry("agent-service-contract/agent-service-contract.shapes.ttl")
+    canonical = make_entry("agent-service-contract/agent-service-contract.ttl")
     out = B.inject_siblings_nav(
         MINIMAL_PYLODE_HTML, self_entry, [self_entry, canonical]
     )
-    assert "capability-operations.ttl" in out
-    assert 'href="capability-operations.html"' in out
+    assert "agent-service-contract.ttl" in out
+    assert 'href="agent-service-contract.html"' in out
 
 
 def test_inject_siblings_nav_omits_self():
-    self_entry = make_entry("capability/edgy.ttl")
-    other = make_entry("capability/capability-operations.ttl")
+    self_entry = make_entry("agent-service-contract/agent-service-contract.shapes.ttl")
+    other = make_entry("agent-service-contract/agent-service-contract.ttl")
     out = B.inject_siblings_nav(MINIMAL_PYLODE_HTML, self_entry, [self_entry, other])
     # self listed nowhere
-    assert "edgy.ttl" not in out
-    assert 'href="edgy.html"' not in out
+    assert "agent-service-contract.shapes.ttl" not in out
+    assert 'href="agent-service-contract.shapes.html"' not in out
 
 
 def test_inject_siblings_nav_marks_canonical_with_label():
-    self_entry = make_entry("capability/edgy.ttl")
-    canonical = make_entry("capability/capability-operations.ttl")
+    self_entry = make_entry("agent-service-contract/agent-service-contract.shapes.ttl")
+    canonical = make_entry("agent-service-contract/agent-service-contract.ttl")
     out = B.inject_siblings_nav(
         MINIMAL_PYLODE_HTML, self_entry, [self_entry, canonical]
     )
@@ -250,7 +260,7 @@ def test_inject_siblings_nav_marks_canonical_with_label():
 
 def test_inject_siblings_nav_marks_external_mirror_with_label():
     self_entry = make_entry("capability/capability-operations.ttl")
-    mirror = make_entry("capability/edgy.ttl")
+    mirror = make_entry("capability/neuro-upper.ttl")
     out = B.inject_siblings_nav(MINIMAL_PYLODE_HTML, self_entry, [self_entry, mirror])
     assert "(external mirror)" in out
 
@@ -262,7 +272,7 @@ def test_inject_siblings_nav_no_op_when_alone_in_dir():
 
 
 def test_inject_siblings_nav_excludes_other_directories():
-    self_entry = make_entry("capability/edgy.ttl")
+    self_entry = make_entry("capability/capability-operations.ttl")
     other_dir = make_entry("essence-kernel/essence-kernel.ttl")
     out = B.inject_siblings_nav(
         MINIMAL_PYLODE_HTML, self_entry, [self_entry, other_dir]
@@ -311,10 +321,10 @@ def test_post_process_canonical_writes_alternate_link(tmp_path, monkeypatch):
 
 def test_post_process_mirror_writes_banner(tmp_path, monkeypatch):
     monkeypatch.setattr(B, "ROOT", tmp_path)
-    html_path = tmp_path / "capability" / "edgy.html"
+    html_path = tmp_path / "capability" / "neuro-upper.html"
     html_path.parent.mkdir(parents=True)
     html_path.write_text(MINIMAL_PYLODE_HTML, encoding="utf-8")
-    mirror = make_entry("capability/edgy.ttl")
+    mirror = make_entry("capability/neuro-upper.ttl")
     canonical = make_entry("capability/capability-operations.ttl")
     B.post_process(html_path, mirror, [mirror, canonical])
     out = html_path.read_text(encoding="utf-8")
@@ -452,11 +462,12 @@ def test_verify_count_fails_when_mismatch(tmp_path, monkeypatch):
 # ---------------------------------------------------------------------------
 
 
-def test_canonical_ttl_covers_five_pylode_rendered_directories():
-    """ADR-058 §2.2 (Voie A) — five canonical landings via pyLODE.
+def test_canonical_ttl_covers_six_pylode_rendered_directories():
+    """ADR-060 §3 — six canonical landings via pyLODE after edgy migration.
 
-    `evidence-os/query/` is no longer canonical: it carries SHACL-only
-    shapes and is served by a hand-written static landing per §2.11.
+    `cross-domain/edgy/` joins the canonical set: edgy is now a bra0-authored
+    cross-domain ontology hosted at https://schema.bra0.org/cross-domain/edgy#.
+    `evidence-os/query/` remains a static landing (SHACL-only).
     """
     assert set(B.CANONICAL_TTL) == {
         "agent-service-contract",
@@ -464,16 +475,27 @@ def test_canonical_ttl_covers_five_pylode_rendered_directories():
         "capability",
         "evidence-os",
         "evidence-os/edcc",
+        "cross-domain/edgy",
     }
 
 
-def test_mirrors_covers_three_known_foreign_namespaces():
-    """ADR-058 §2.4 — three mirrors exactly (edgy, retroeng, neuro-upper)."""
+def test_mirrors_covers_one_known_foreign_namespace():
+    """ADR-060 §3 — only neuro-upper remains a mirror.
+
+    edgy migrated to canonical (cross-domain/edgy/). retroeng unpublished
+    (Sacha decision 2026-04-26 — kept private until deep review).
+    """
     assert set(B.MIRRORS) == {
-        "capability/edgy.ttl",
-        "capability/retroeng.ttl",
         "capability/neuro-upper.ttl",
     }
+
+
+def test_mirrors_carries_no_omyn_ai_iri():
+    """ADR-060 §4 (rupture sèche) — no MIRROR may point to omyn.ai/schema/*."""
+    for path, iri in B.MIRRORS.items():
+        assert "omyn.ai/schema" not in iri, (
+            f"{path} → {iri} violates the omyn.ai/schema rupture sèche policy"
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -513,10 +535,16 @@ def test_shapes_skip_and_mirrors_are_disjoint():
 # ---------------------------------------------------------------------------
 
 
-def test_static_landings_maps_query_dir_to_layout():
-    """ADR-058 §2.11 — evidence-os/query/ uses a hand-written static landing."""
+def test_static_landings_covers_query_and_cross_domain():
+    """ADR-058 §2.11 + ADR-060 §3 — two static landings.
+
+    - evidence-os/query/ — SHACL-only result-structure shapes.
+    - cross-domain/ — parent grouping for cross-domain ontologies (currently
+      only edgy is published; retroeng kept private pending review).
+    """
     assert B.STATIC_LANDINGS == {
         "evidence-os/query": "_layouts/evidence-os-query-landing.html",
+        "cross-domain": "_layouts/cross-domain-landing.html",
     }
 
 
@@ -568,18 +596,23 @@ def test_copy_canonicals_writes_static_landing_for_query(tmp_path, monkeypatch):
     site = tmp_path / "_site"
     monkeypatch.setattr(B, "ROOT", tmp_path)
     monkeypatch.setattr(B, "SITE", site)
-    # Provide canonical renders for the five pyLODE dirs.
+    # Provide canonical renders for every pyLODE-canonical dir.
     for ns_dir, canonical_filename in B.CANONICAL_TTL.items():
         d = site / ns_dir
         d.mkdir(parents=True)
         html_name = canonical_filename.replace(".ttl", ".html")
         (d / html_name).write_text("CANONICAL_BODY", encoding="utf-8")
-    # Provide the static layout file.
-    layout = tmp_path / "_layouts" / "evidence-os-query-landing.html"
-    layout.parent.mkdir(parents=True)
-    layout.write_text("STATIC_QUERY_BODY", encoding="utf-8")
-    # Pre-create static landing dir (would normally be made when its TTLs render).
-    (site / "evidence-os" / "query").mkdir(parents=True)
+    # Provide every static layout file declared in STATIC_LANDINGS.
+    for ns_dir, layout_rel in B.STATIC_LANDINGS.items():
+        layout = tmp_path / layout_rel
+        layout.parent.mkdir(parents=True, exist_ok=True)
+        # Body marker per dir to assert the right one lands at the right path.
+        marker = "STATIC_QUERY_BODY" if ns_dir == "evidence-os/query" else f"STATIC_{ns_dir.upper().replace('/', '_')}_BODY"
+        layout.write_text(marker, encoding="utf-8")
+    # Pre-create static landing dirs (would normally be made when their TTLs
+    # render — cross-domain has no TTLs of its own, so create explicitly).
+    for ns_dir in B.STATIC_LANDINGS:
+        (site / ns_dir).mkdir(parents=True, exist_ok=True)
 
     B.copy_canonicals_to_index()
 

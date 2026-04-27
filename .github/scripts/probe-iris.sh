@@ -5,14 +5,17 @@
 #   local  — assert presence of expected files in _site/ (CI default).
 #   live   — HTTP-probe https://schema.bra0.org against the same contract.
 #
-# Acceptance contract (mirrors ADR-058 §2.12):
-#   1. Six directory landings return HTML at <ns>/ and <ns>/index.html.
+# Acceptance contract (ADR-058 §2.12 + ADR-060 §3):
+#   1. Eight directory landings (6 canonical + 2 static) return HTML.
 #   2. Every whitelisted TTL is reachable as text/turtle.
-#   3. Foreign-namespace mirrors (edgy, retroeng, neuro-upper) carry the
-#      mirror banner.
+#   3. The single foreign-namespace mirror (neuro-upper) carries the mirror
+#      banner. edgy migrated to canonical; retroeng kept private (ADR-060).
 #   4. Each ontology HTML carries an audit-meta block.
 #   5. Canonical HTMLs carry <link rel="alternate" type="text/turtle">.
-#   6. The static-landing /evidence-os/query/ exists and lists the shapes.
+#   6. Static landings exist:
+#        /evidence-os/query/   lists evoQ-kpi-shapes.shapes.ttl
+#        /cross-domain/        lists edgy/ as published child
+#   7. No public surface artefact references omyn.ai/schema/{edgy,retroeng}.
 
 set -euo pipefail
 
@@ -28,13 +31,13 @@ CANONICAL_DIRS=(
   "capability"
   "evidence-os"
   "evidence-os/edcc"
+  "cross-domain/edgy"
 )
 STATIC_DIRS=(
   "evidence-os/query"
+  "cross-domain"
 )
 MIRRORS=(
-  "capability/edgy.ttl"
-  "capability/retroeng.ttl"
   "capability/neuro-upper.ttl"
 )
 
@@ -107,14 +110,30 @@ probe_local() {
     fi
   done
 
-  echo "-- Static landing self-check --"
-  static="${SITE}/evidence-os/query/index.html"
-  if [ -f "${static}" ]; then
-    if grep -q 'evoQ-kpi-shapes.shapes.ttl' "${static}"; then
+  echo "-- Static landing self-checks --"
+  query_idx="${SITE}/evidence-os/query/index.html"
+  if [ -f "${query_idx}" ]; then
+    if grep -q 'evoQ-kpi-shapes.shapes.ttl' "${query_idx}"; then
       ok "evidence-os/query/index.html lists shapes TTL"
     else
       err "Static landing does not link evoQ-kpi-shapes.shapes.ttl"
     fi
+  fi
+  cd_idx="${SITE}/cross-domain/index.html"
+  if [ -f "${cd_idx}" ]; then
+    if grep -q 'edgy/' "${cd_idx}"; then
+      ok "cross-domain/index.html lists edgy/ child"
+    else
+      err "cross-domain/ static landing does not list edgy/ child"
+    fi
+  fi
+
+  echo "-- omyn.ai/schema rupture-sèche (ADR-060) --"
+  if grep -REn 'omyn\.ai/schema/(edgy|retroeng)' "${SITE}" >/dev/null 2>&1; then
+    err "Public surface contains omyn.ai/schema/{edgy,retroeng} references"
+    grep -REn 'omyn\.ai/schema/(edgy|retroeng)' "${SITE}" >&2 || true
+  else
+    ok "No omyn.ai/schema/{edgy,retroeng} references in _site/"
   fi
 }
 

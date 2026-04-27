@@ -14,9 +14,10 @@ essence-kernel/essence-kernel.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-
 
 # Capability operations
 capability/capability-operations.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
-capability/edgy.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
-capability/retroeng.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
 capability/neuro-upper.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
+
+# Cross-domain (mid-level, between BFO upper and bra0 KS — ADR-060)
+cross-domain/edgy/edgy.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-26
 
 # Evidence OS — TBox + shapes
 evidence-os/evidence-os.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
