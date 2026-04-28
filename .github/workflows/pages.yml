@@ -52,15 +52,18 @@ jobs:
           rm -rf _site
           mkdir -p _site
 
-          # Carry CNAME and root landing page
-          cp CNAME _site/
-          cp index.html _site/
-
           if [ "${{ steps.whitelist.outputs.count }}" != "0" ]; then
             python .github/scripts/build_namespace_landings.py
           else
             echo "Bootstrap phase: no ontologies whitelisted."
           fi
+
+          # Carry CNAME and apex landing page AFTER the python builder runs:
+          # build_namespace_landings.py wipes _site/ at start (idempotency
+          # guard, Diana R2 #3 lift 2026-04-28), so any apex artifacts must
+          # be staged post-script. Same pattern as audit/ below.
+          cp CNAME _site/
+          cp index.html _site/
 
           # Copy audit artifacts (publicly linkable)
           if [ -d audit ]; then
