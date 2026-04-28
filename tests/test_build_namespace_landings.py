@@ -462,11 +462,14 @@ def test_verify_count_fails_when_mismatch(tmp_path, monkeypatch):
 # ---------------------------------------------------------------------------
 
 
-def test_canonical_ttl_covers_six_pylode_rendered_directories():
-    """ADR-060 §3 — six canonical landings via pyLODE after edgy migration.
+def test_canonical_ttl_covers_seven_pylode_rendered_directories():
+    """ADR-060 §3 + Co-STORM 2026-04-28 S1 Decision A — seven canonical landings.
 
-    `cross-domain/edgy/` joins the canonical set: edgy is now a bra0-authored
+    `cross-domain/edgy/` joins the canonical set: edgy is a bra0-authored
     cross-domain ontology hosted at https://schema.bra0.org/cross-domain/edgy#.
+    `cross-domain/edgy/motivation-registry/` joins per Q-NS-2 ABox-under-TBox
+    pattern — instance-level motivation registry resolves at
+    https://schema.bra0.org/cross-domain/edgy/motivation-registry/.
     `evidence-os/query/` remains a static landing (SHACL-only).
     """
     assert set(B.CANONICAL_TTL) == {
@@ -476,6 +479,7 @@ def test_canonical_ttl_covers_six_pylode_rendered_directories():
         "evidence-os",
         "evidence-os/edcc",
         "cross-domain/edgy",
+        "cross-domain/edgy/motivation-registry",
     }
 
 
@@ -635,6 +639,145 @@ def test_copy_canonicals_fails_when_static_layout_missing(tmp_path, monkeypatch)
     # NB: no _layouts/ file written.
     with pytest.raises(SystemExit):
         B.copy_canonicals_to_index()
+
+
+# ---------------------------------------------------------------------------
+# β path-shape — emit_flat_ttl_aliases (ADR-058 §2.1 + §2.7 step 11)
+# ---------------------------------------------------------------------------
+
+
+def test_flat_ttl_alias_emitted_for_every_canonical_dir(tmp_path, monkeypatch):
+    """ADR-058 §2.7 step 11 — every canonical directory gets a flat-TTL alias.
+
+    For each `<dir>` in CANONICAL_TTL, the build copies
+    `_site/<dir>/<canonical-basename>.ttl` to `_site/<dir>.ttl`. Cardinality:
+    one flat alias per canonical directory.
+    """
+    site = tmp_path / "_site"
+    monkeypatch.setattr(B, "ROOT", tmp_path)
+    monkeypatch.setattr(B, "SITE", site)
+    # Stage canonical TTLs as if `render()` had already copied them.
+    for ns_dir, canonical_filename in B.CANONICAL_TTL.items():
+        d = site / ns_dir
+        d.mkdir(parents=True)
+        # Marker per dir to assert byte-identical copy lands at the flat path.
+        marker = f"CANONICAL_TURTLE_{ns_dir.replace('/', '_')}"
+        (d / canonical_filename).write_text(marker, encoding="utf-8")
+
+    B.emit_flat_ttl_aliases()
+
+    for ns_dir, canonical_filename in B.CANONICAL_TTL.items():
+        flat = site / f"{ns_dir}.ttl"
+        assert flat.exists(), f"Flat alias missing: {flat.relative_to(tmp_path)}"
+        marker = f"CANONICAL_TURTLE_{ns_dir.replace('/', '_')}"
+        assert flat.read_text(encoding="utf-8") == marker, (
+            f"Flat alias content drift at {flat.relative_to(tmp_path)}"
+        )
+
+
+def test_flat_ttl_alias_fails_when_canonical_ttl_missing(tmp_path, monkeypatch):
+    """ADR-058 §2.7 step 11 — missing canonical TTL = hard build failure."""
+    site = tmp_path / "_site"
+    site.mkdir()
+    monkeypatch.setattr(B, "ROOT", tmp_path)
+    monkeypatch.setattr(B, "SITE", site)
+    # No canonical TTL staged.
+    with pytest.raises(SystemExit):
+        B.emit_flat_ttl_aliases()
+
+
+def test_flat_ttl_alias_equals_current_source_ttl_after_rebuild(tmp_path, monkeypatch):
+    """Diana R2 #3 lift (2026-04-28) — idempotency guard.
+
+    Scenario: a stale `_site/<dir>.ttl` exists from a prior build referencing
+    yesterday's TTL content. The current rebuild must emit a flat alias whose
+    content equals the CURRENT source TTL, not whatever was cached in _site.
+
+    Asserts that `emit_flat_ttl_aliases()` invoked after a fresh
+    `_site/<dir>/<canonical>.ttl` write produces a flat alias whose bytes
+    match the current source — never the stale prior content.
+    """
+    site = tmp_path / "_site"
+    monkeypatch.setattr(B, "ROOT", tmp_path)
+    monkeypatch.setattr(B, "SITE", site)
+    # Restrict CANONICAL_TTL to one entry for this test's scope.
+    monkeypatch.setattr(B, "CANONICAL_TTL", {"a/b": "b.ttl"})
+
+    ns_dir, canonical_filename = "a/b", "b.ttl"
+
+    # Stage a STALE flat alias from "yesterday".
+    site.mkdir()
+    stale_flat = site / f"{ns_dir}.ttl"
+    stale_flat.parent.mkdir(parents=True, exist_ok=True)
+    stale_flat.write_text("STALE_YESTERDAY_TTL_CONTENT", encoding="utf-8")
+
+    # Stage CURRENT canonical TTL (as if render() just copied it).
+    current_dir = site / ns_dir
+    current_dir.mkdir(parents=True, exist_ok=True)
+    (current_dir / canonical_filename).write_text(
+        "CURRENT_SOURCE_TTL_CONTENT", encoding="utf-8"
+    )
+
+    B.emit_flat_ttl_aliases()
+
+    # The flat alias must reflect the CURRENT source, not the stale cache.
+    assert stale_flat.read_text(encoding="utf-8") == "CURRENT_SOURCE_TTL_CONTENT", (
+        "Flat alias serves stale content — Diana #3 regression"
+    )
+
+
+def test_main_wipes_site_before_rebuild(tmp_path, monkeypatch):
+    """Diana R2 #3 lift (2026-04-28) — `_site/` wiped at start of main().
+
+    Asserts that `main()` removes any pre-existing `_site/` tree before
+    invoking the build pipeline. This is the structural guard that keeps
+    cached state from leaking into the next build.
+    """
+    site = tmp_path / "_site"
+    wl = tmp_path / "docs-published.txt"
+    monkeypatch.setattr(B, "ROOT", tmp_path)
+    monkeypatch.setattr(B, "SITE", site)
+    monkeypatch.setattr(B, "WHITELIST", wl)
+
+    # Pre-populate _site with a stale artefact that should NOT survive.
+    site.mkdir()
+    (site / "stale.ttl").write_text("STALE_ARTEFACT", encoding="utf-8")
+
+    # Empty whitelist makes main() exit early after the wipe-and-mkdir;
+    # but actually the wipe happens AFTER the empty-whitelist check, so
+    # use a whitelist with a non-existent TTL to force the wipe path
+    # then fail at render. The wipe must happen first.
+    wl.write_text(
+        "fake/fake.ttl;DRAFT;audit/fake.md;2026-04-28\n", encoding="utf-8"
+    )
+
+    with pytest.raises(SystemExit):
+        B.main()
+
+    # The stale artefact must be gone (wipe happened before render-fail).
+    assert not (site / "stale.ttl").exists(), (
+        "Stale _site/ artefact survived rebuild — Diana #3 regression"
+    )
+
+
+def test_flat_ttl_alias_cardinality_matches_canonical_dirs(tmp_path, monkeypatch):
+    """ADR-058 §2.12 cardinality #5 — flat-alias count == canonical-dir count."""
+    site = tmp_path / "_site"
+    monkeypatch.setattr(B, "ROOT", tmp_path)
+    monkeypatch.setattr(B, "SITE", site)
+    for ns_dir, canonical_filename in B.CANONICAL_TTL.items():
+        d = site / ns_dir
+        d.mkdir(parents=True)
+        (d / canonical_filename).write_text("# turtle", encoding="utf-8")
+
+    B.emit_flat_ttl_aliases()
+
+    flat_aliases = sorted(p for p in site.rglob("*.ttl") if p.parent != site / list(B.CANONICAL_TTL)[0].split("/")[0] or True)
+    # Re-derive: count files at exact `_site/<dir>.ttl` paths.
+    expected_flats = {site / f"{ns_dir}.ttl" for ns_dir in B.CANONICAL_TTL}
+    actual_flats = {p for p in expected_flats if p.exists()}
+    assert actual_flats == expected_flats
+    assert len(actual_flats) == len(B.CANONICAL_TTL)
 
 
 # ---------------------------------------------------------------------------

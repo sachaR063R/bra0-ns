@@ -19,6 +19,9 @@ capability/neuro-upper.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.m
 # Cross-domain (mid-level, between BFO upper and bra0 KS — ADR-060)
 cross-domain/edgy/edgy.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-26
 
+# Cross-domain motivation registry (ABox under edgy: TBox — Q-NS-2 pattern, ADR-060)
+cross-domain/edgy/motivation-registry/motivation-registry.ttl;DRAFT;audit/motivation-registry-quality-2026-04-28.md;2026-04-28
+
 # Evidence OS — TBox + shapes
 evidence-os/evidence-os.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
 evidence-os/evo-story.shapes.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23

@@ -1,0 +1,567 @@
+@prefix owl:       <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:       <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:      <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos:      <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms:   <http://purl.org/dc/terms/> .
+@prefix prov:      <http://www.w3.org/ns/prov#> .
+@prefix xsd:       <http://www.w3.org/2001/XMLSchema#> .
+@prefix edgy:      <https://schema.bra0.org/cross-domain/edgy#> .
+@prefix archimate: <https://purl.org/archimate#> .
+@prefix unsdg:     <http://metadata.un.org/sdg/> .
+@prefix sdgio:     <http://purl.obolibrary.org/obo/SDGIO_> .
+@prefix bra0mot:   <https://schema.bra0.org/cross-domain/edgy/motivation-registry/> .
+
+# =============================================================================
+# bra0 Motivation Registry — instance-level enterprise design motivation
+# =============================================================================
+#
+# Scope: instances of edgy:Purpose / edgy:Outcome / edgy:People / edgy:Brand
+# plus four ArchiMate Motivation extensions (Driver, Assessment, Principle,
+# Value) imported from the EDGY-ArchiMate alignment v0.3.0+.
+#
+# Out of scope for this file (v0.3.0):
+#   - cap: technical capability registry (lives in ontologies/capabilities/)
+#   - cap: ↔ edgy:Purpose linkage (deferred — separate ADR)
+#
+# Reuse policy (Maria Keet rigor):
+#   - UN SDG Goals: skos:exactMatch unsdg:N (authoritative IRI)
+#   - SDGIO grounding: skos:closeMatch sdgio:NNNN (BFO-aligned, secondary)
+#   - bra0 Principles P1-P13: dcterms:source pointing to bra0-principles.md
+#   - No invention of motivation classes; reuse archimate: + edgy: only.
+#
+# Conventions (v0.2.0):
+#   - Punning policy at ABox: a Purpose instance is dual-typed
+#     `a edgy:Purpose , archimate:Goal` to make the EDGY↔ArchiMate
+#     closeMatch operational at instance level (queryable both ways).
+#   - Facet IRI convention: edgy:viewedThrough takes the canonical
+#     lowercase facet INSTANCES (edgy:identityFacet, edgy:architectureFacet,
+#     edgy:experienceFacet) per edgy.ttl §"FACET INSTANCES" — never the
+#     uppercase Facet classes.
+#   - Every signifying instance carries skos:definition (genus + differentia)
+#     in addition to rdfs:comment (narrative) and skos:scopeNote (usage).
+#   - Provenance: dcterms:creator bra0mot:Stakeholder-Sacha on every
+#     instance authored locally.
+#   - Infinite-game framing for Purposes: see motivation-registry-style-guide.md
+# =============================================================================
+
+<https://schema.bra0.org/cross-domain/edgy/motivation-registry/> a owl:Ontology ;
+    rdfs:label "bra0 Motivation Registry"@en ;
+    rdfs:comment """Instance-level registry of motivation elements for bra0
+enterprise design. Combines EDGY native vocabulary (People, Brand, Purpose,
+Outcome) with four ArchiMate Motivation extensions (Driver, Assessment,
+Principle, Value) per the alignment file v0.3.0. Embeds the 17 UN
+Sustainable Development Goals as edgy:Purpose instances via skos:exactMatch
+to authoritative UN metadata IRIs."""@en ;
+    dcterms:license "https://creativecommons.org/licenses/by-sa/4.0/" ;
+    dcterms:created "2026-04-27"^^xsd:date ;
+    dcterms:modified "2026-04-28"^^xsd:date ;
+    owl:versionInfo "0.3.1" ;
+    owl:imports <https://schema.bra0.org/cross-domain/edgy#> ,
+                <https://purl.org/archimate> .
+
+# Removed 2026-04-28 (S1 sign-off): owl:imports of mapping-edgy-archimate
+# pending S2 — alignment file requires a canonical IRI before re-import
+# (Nael R1 Addendum §E.2). Tracked as backlog. Re-add once whitelisted.
+
+# =============================================================================
+# § 0. Deprecation register (v0.2.0 migration)
+# =============================================================================
+#
+# Per Keet rigor: an IRI once published is never deleted; it is deprecated
+# and pointed to its replacement. The v0.1.0 broad parent
+# Purpose-SovereignKnowledgeSpaces is superseded by Purpose-Sovereignty
+# (Hirschman optionality reframing) and three peer Purposes that
+# absorb its other implicit verbs:
+#   - "edit"     → Purpose-ContinuousInteroperability
+#   - "audit"    → Purpose-EvidenceFirst
+#   - "federate" → Purpose-ContinuousInteroperability
+# Migration pattern: owl:deprecated + owl:sameAs (formal OWL fusion) +
+#                    dcterms:isReplacedBy (SKOS-side replacement signal).
+# =============================================================================
+
+bra0mot:Purpose-SovereignKnowledgeSpaces a edgy:Purpose , archimate:Goal ;
+    rdfs:label "Sovereign Knowledge Spaces (deprecated 2026-04-28)"@en ;
+    skos:prefLabel "Sovereign Knowledge Spaces"@en ;
+    owl:deprecated true ;
+    owl:sameAs bra0mot:Purpose-Sovereignty ;
+    dcterms:isReplacedBy bra0mot:Purpose-Sovereignty ;
+    archimate:guidedBy bra0mot:Principle-Sovereignty ;
+    rdfs:comment "Deprecated v0.2.0 — narrowed to Purpose-Sovereignty (Hirschman optionality framing). The original broad scope is now covered by four orthogonal peers: Sovereignty (ownership/optionality), ContinuousInteroperability (refusal-to-freeze), EvidenceFirst (epistemic discipline), Frugality (cost-of-existence)."@en ;
+    dcterms:creator bra0mot:Stakeholder-Sacha ;
+    dcterms:date "2026-04-28"^^xsd:date .
+
+# =============================================================================
+# § 1. Stakeholders (edgy:People / edgy:Brand)
+# =============================================================================
+
+bra0mot:Stakeholder-Sacha a edgy:People , archimate:Stakeholder ;
+    rdfs:label "Sacha Roger (single controller)"@en ;
+    skos:prefLabel "Sacha"@en ;
+    skos:definition "The single human controller of bra0 holding ultimate decision authority over every significant action."@en ;
+    rdfs:comment "The single human controller of bra0; ultimate decision authority on every significant action per the global delegation rule."@en .
+
+bra0mot:Stakeholder-Bra0Community a edgy:Brand , archimate:Stakeholder ;
+    rdfs:label "bra0 open-core community"@en ;
+    skos:prefLabel "bra0 community"@en ;
+    skos:definition "Aggregate stakeholder representing bra0 open-source contributors and downstream adopters of the malleable Knowledge Space substrate."@en ;
+    rdfs:comment "Aggregate stakeholder representing bra0 open-source contributors and downstream adopters of the malleable Knowledge Space substrate."@en ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+bra0mot:Stakeholder-EUOrganizations a edgy:People , archimate:Stakeholder ;
+    rdfs:label "European organizations"@en ;
+    skos:prefLabel "EU orgs"@en ;
+    skos:definition "European public and private organizations seeking sovereign, auditable, evidence-first knowledge infrastructure."@en ;
+    rdfs:comment "European organizations (public and private) seeking sovereign, auditable, evidence-first knowledge infrastructure."@en ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+# =============================================================================
+# § 2. Drivers (archimate:Driver — extension §4 of mapping file)
+# =============================================================================
+
+bra0mot:Driver-EUDataSovereignty a archimate:Driver ;
+    rdfs:label "EU data sovereignty imperative"@en ;
+    skos:prefLabel "EU sovereignty"@en ;
+    skos:definition "External regulatory and political force driving European organizations to adopt sovereign data infrastructures."@en ;
+    rdfs:comment "External regulatory and political force pushing European organizations to adopt sovereign data infrastructures (GDPR, GAIA-X, Data Act, AI Act)."@en ;
+    dcterms:source <https://digital-strategy.ec.europa.eu/en/policies/strategy-data> ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+bra0mot:Driver-EvidenceFirst a archimate:Driver ;
+    rdfs:label "Evidence-first decision discipline"@en ;
+    skos:prefLabel "Evidence-first"@en ;
+    skos:definition "Internal force requiring claims, decisions, and outputs to be grounded in verifiable artefacts before use rather than after."@en ;
+    rdfs:comment "Internal force: organizations need to prove claims, decisions, shapes, audits, and AI outputs are grounded in verifiable artefacts (shapes, packs, trails) before, not after, deployment."@en ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+bra0mot:Driver-LowEnergyImperative a archimate:Driver ;
+    rdfs:label "Low-energy / frugality imperative"@en ;
+    skos:prefLabel "Low-energy"@en ;
+    skos:definition "External force requiring AI and data infrastructures to minimise energy and compute footprint at runtime, never by build-time pre-baking."@en ;
+    rdfs:comment "External force: AI/data infrastructures must minimize energy and compute footprint at runtime, not by pre-baking at build-time. Aligned with EU Green Deal and CSRD reporting."@en ;
+    dcterms:source <https://commission.europa.eu/strategy-and-policy/priorities-2019-2024/european-green-deal_en> ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+bra0mot:Driver-LockInResistance a archimate:Driver ;
+    rdfs:label "Vendor lock-in resistance"@en ;
+    skos:prefLabel "Lock-in resistance"@en ;
+    skos:definition "Internal and external force requiring knowledge artefacts to remain portable across substrates and free of proprietary capture."@en ;
+    rdfs:comment "Internal + external force: knowledge artefacts must remain portable (W3C standards, no proprietary substrate) so users can leave at any time without data loss."@en ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+# =============================================================================
+# § 3. Assessments (archimate:Assessment — extension)
+# =============================================================================
+
+bra0mot:Assessment-OSSSovereignSubstrateGap a archimate:Assessment ;
+    rdfs:label "OSS sovereign substrate gap (2026)"@en ;
+    skos:prefLabel "OSS sovereign gap"@en ;
+    skos:definition "Diagnosis that no existing OSS knowledge substrate jointly satisfies malleability, auditability, EU sovereignty, and low-energy."@en ;
+    rdfs:comment "Existing OSS knowledge substrates (Wikidata, Solid, Neo4j) do not jointly satisfy malleability + auditability + EU sovereignty + low-energy. bra0 fills this quadruple gap."@en ;
+    prov:wasGeneratedBy bra0mot:Stakeholder-Sacha ;
+    dcterms:date "2026-04-27"^^xsd:date ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+bra0mot:Assessment-ClimateUrgency a archimate:Assessment ;
+    rdfs:label "Climate action urgency (IPCC AR6)"@en ;
+    skos:prefLabel "Climate urgency"@en ;
+    skos:definition "Diagnosis that the IPCC AR6 1.5°C threshold is reachable within a decade at current trajectories, with energy-scaling data infrastructures contributing materially to the trajectory."@en ;
+    rdfs:comment "IPCC AR6 (2023) confirms 1.5°C threshold reachable within a decade at current trajectories; data infrastructures that scale energy linearly with usage are part of the problem."@en ;
+    dcterms:source <https://www.ipcc.ch/report/ar6/syr/> ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+bra0mot:Assessment-FrozenArtefactsTax a archimate:Assessment ;
+    rdfs:label "Frozen artefacts tax"@en ;
+    skos:prefLabel "Frozen artefacts tax"@en ;
+    skos:definition "Diagnosis that the prevailing software ecosystem freezes artefacts at build-time, imposing a redeploy on every shape mutation and substrate transition."@en ;
+    rdfs:comment "The prevailing enterprise software ecosystem freezes shapes, schemas, and policies at build-time; every mutation requires a redeploy cycle, accumulating a hidden rigidity tax that compounds across the lifetime of the system. Frugality and Continuity both pay for this."@en ;
+    prov:wasGeneratedBy bra0mot:Stakeholder-Sacha ;
+    dcterms:date "2026-04-28"^^xsd:date ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+bra0mot:Assessment-EpistemicOpacityInAIAge a archimate:Assessment ;
+    rdfs:label "Epistemic opacity in the AI age"@en ;
+    skos:prefLabel "Epistemic opacity"@en ;
+    skos:definition "Diagnosis that AI claims and decision pipelines produce assertions without verifiable provenance trails, defeating post-hoc audit."@en ;
+    rdfs:comment "Claims emitted by AI systems and opaque decision pipelines lack reconstructible provenance chains; post-hoc explanation methods do not survive adversarial audit. The substrate must therefore make grounding the default, not an afterthought."@en ;
+    prov:wasGeneratedBy bra0mot:Stakeholder-Sacha ;
+    dcterms:date "2026-04-28"^^xsd:date ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+# =============================================================================
+# § 4. Principles (archimate:Principle — extension; bra0 P1-P13 subset)
+# =============================================================================
+
+bra0mot:Principle-LeastPower a archimate:Principle ;
+    rdfs:label "P1 — Least Power"@en ;
+    skos:prefLabel "Least Power"@en ;
+    skos:definition "Architectural principle prescribing the least powerful expressive substrate sufficient to express a given abstraction."@en ;
+    rdfs:comment "Every abstraction layer is guilty until proven innocent. Choose the least powerful expressive substrate that gets the job done."@en ;
+    dcterms:source <https://www.w3.org/2001/tag/doc/leastPower.html> ;
+    dcterms:isReferencedBy <https://github.com/sachaR063R/bra0/blob/main/_bmad/docs/bra0-principles.md> ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+bra0mot:Principle-Sovereignty a archimate:Principle ;
+    rdfs:label "P2 — Sovereignty"@en ;
+    skos:prefLabel "Sovereignty"@en ;
+    skos:definition "Architectural principle asserting user authority over every byte, schema, and policy in their knowledge space."@en ;
+    rdfs:comment "The user owns every byte, every schema, every policy. No external authority can revoke local autonomy over knowledge artefacts."@en ;
+    dcterms:source <https://www.inkandswitch.com/local-first/> ;
+    dcterms:isReferencedBy <https://github.com/sachaR063R/bra0/blob/main/_bmad/docs/bra0-principles.md> ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+bra0mot:Principle-RuntimeFrugality a archimate:Principle ;
+    rdfs:label "Runtime frugality (no build-time pre-baking)"@en ;
+    skos:prefLabel "Runtime frugality"@en ;
+    skos:definition "Architectural principle requiring frugal capabilities to resolve cheaply at runtime, never by build-time pre-baking."@en ;
+    rdfs:comment "Low-energy / frugal capabilities resolve cheaply at runtime, never by pre-baking at build-time. Build-time resolution freezes the system and kills malleability."@en ;
+    dcterms:isReferencedBy <https://github.com/sachaR063R/bra0/blob/main/_bmad/docs/bra0-principles.md> ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+# =============================================================================
+# § 5. Values (archimate:Value — extension)
+# =============================================================================
+
+bra0mot:Value-Auditability a archimate:Value ;
+    rdfs:label "Auditability"@en ;
+    skos:prefLabel "Auditability"@en ;
+    skos:definition "Worth ascribed by stakeholders to the property that every decision artefact carries an end-to-end PROV-O chain reconstructible by any auditor."@en ;
+    rdfs:comment "Every decision artefact in bra0 carries a provenance chain (PROV-O); every shape carries a justification. Auditors can reconstruct any conclusion end-to-end."@en ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+bra0mot:Value-Frugality a archimate:Value ;
+    rdfs:label "Frugality"@en ;
+    skos:prefLabel "Frugality"@en ;
+    skos:definition "Worth ascribed by stakeholders to the property of minimal surface, dependencies, and runtime compute across infrastructure and behaviours."@en ;
+    rdfs:comment "Minimal surface, minimal dependencies, minimal compute at runtime. Every added complexity must justify its cost against a simpler alternative."@en ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+bra0mot:Value-Malleability a archimate:Value ;
+    rdfs:label "Malleability"@en ;
+    skos:prefLabel "Malleability"@en ;
+    skos:definition "Worth ascribed by stakeholders to the property that schemas, shapes, and policies mutate in production without redeploy."@en ;
+    rdfs:comment "Schemas, shapes and policies mutate in production by the user, not by a deployment pipeline. The system bends; it does not break."@en ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+# =============================================================================
+# § 6. bra0-native Purposes (north stars)
+# =============================================================================
+#
+# Four orthogonal dispositions (BFO continuants), each manifesting through
+# multiple finite Outcomes. Disjunction proven pairwise; see
+# _bmad/work/motivation-registry-purpose-definitions-2026-04-27.md §2.
+# =============================================================================
+
+bra0mot:Purpose-Sovereignty a edgy:Purpose , archimate:Goal ;
+    rdfs:label "Sovereignty"@en ;
+    skos:prefLabel "Sovereignty"@en ;
+    skos:altLabel "Sovereign Knowledge Spaces"@en ;
+    skos:definition "Continuant disposition to preserve actor optionality by limiting dependencies and cultivating alternatives across tools, schemas, policies, and counterparts."@en ;
+    rdfs:comment "Continuously preserve optionality — by limiting dependencies (technical, vendor, regulatory, cognitive), by cultivating alternatives at every decision point, and by retaining the right to choose our tools, schemas, policies, and counterparts. An infinite-game disposition: each new dependency questioned, each new alternative cultivated, each exit path preserved, deepens the play."@en ;
+    skos:scopeNote "Infinite-game framing. Directional verbs: choose, preserve-options, limit-dependencies, cultivate-alternatives, exit, retain-agency. Hirschman lens: Sovereignty = Exit option preserved (paired with EvidenceFirst = Voice). NOT mutability of artefacts (= Continuity), NOT epistemic regime (= EvidenceFirst), NOT cost (= Frugality)."@en ;
+    edgy:viewedThrough edgy:identityFacet ;
+    archimate:influencedBy bra0mot:Driver-EUDataSovereignty ,
+                           bra0mot:Driver-LockInResistance ;
+    archimate:assessedBy bra0mot:Assessment-OSSSovereignSubstrateGap ;
+    archimate:guidedBy bra0mot:Principle-Sovereignty ,
+                       bra0mot:Principle-LeastPower ;
+    archimate:realizedBy bra0mot:Outcome-AlternativesAvailable ;
+    skos:closeMatch unsdg:16 ;
+    dcterms:source <https://github.com/sachaR063R/bra0/blob/main/_bmad/docs/bra0-principles.md> ,
+                   <https://www.inkandswitch.com/local-first/> ,
+                   <https://en.wikipedia.org/wiki/Exit,_Voice,_and_Loyalty> ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+bra0mot:Purpose-ContinuousInteroperability a edgy:Purpose , archimate:Goal ;
+    rdfs:label "Continuous Interoperability"@en ;
+    skos:prefLabel "Continuous Interoperability"@en ;
+    skos:altLabel "Continuity"@en ;
+    skos:definition "Continuant disposition to refuse the freezing of artefacts in time (live mutation) and across substrates (federation)."@en ;
+    rdfs:comment "Continuously refuse the freezing of artefacts — neither in time (shapes mutate live in production, never trapped behind a redeploy gate) nor across substrates (knowledge spaces federate without proprietary translation). An infinite-game disposition: each shape mutated in run, each substrate boundary crossed without loss, deepens the play."@en ;
+    skos:scopeNote "Infinite-game framing. Directional verbs: mutate-live, federate, port, evolve, refuse-to-freeze. Two manifestations: time (live mutation) and substrate (federation). NOT ownership (= Sovereignty)."@en ;
+    edgy:viewedThrough edgy:architectureFacet ;
+    archimate:influencedBy bra0mot:Driver-LockInResistance ;
+    archimate:assessedBy bra0mot:Assessment-FrozenArtefactsTax ;
+    archimate:guidedBy bra0mot:Principle-LeastPower ;
+    archimate:realizedBy bra0mot:Outcome-PortableEvidencePack ,
+                         bra0mot:Outcome-LiveSchemaMutation ;
+    archimate:measuredBy bra0mot:Value-Malleability ;
+    dcterms:source <https://www.inkandswitch.com/essay/local-first/> ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+bra0mot:Purpose-EvidenceFirst a edgy:Purpose , archimate:Goal ;
+    rdfs:label "Evidence-First Practice"@en ;
+    skos:prefLabel "Evidence-First"@en ;
+    skos:definition "Continuant disposition to ground every claim — decision, shape, audit, AI output — in verifiable artefacts produced before use rather than after."@en ;
+    rdfs:comment "Continuously ground every claim — decision, shape, audit, AI output, agent action — in verifiable artefacts produced before use, not after. An infinite-game disposition: each new claim class formalised as a SHACL acceptance shape, each new provenance trail extended, deepens the play."@en ;
+    skos:scopeNote "Infinite-game framing. Directional verbs: ground, prove, trace, attest. Applies broadly — decisions, shapes, claims, audits, AI outputs. Hirschman lens: EvidenceFirst = Voice (informed challenge backed by verifiable artefacts), paired with Sovereignty = Exit. NOT a substrate-kind choice (= SymbolicFirst Story, deferred v0.3.0)."@en ;
+    edgy:viewedThrough edgy:identityFacet ;
+    archimate:influencedBy bra0mot:Driver-EvidenceFirst ;
+    archimate:assessedBy bra0mot:Assessment-EpistemicOpacityInAIAge ;
+    archimate:guidedBy bra0mot:Principle-LeastPower ;
+    archimate:realizedBy bra0mot:Outcome-ClaimsTraceableToProvenance ;
+    archimate:measuredBy bra0mot:Value-Auditability ;
+    skos:closeMatch unsdg:16 ;
+    dcterms:source <https://github.com/sachaR063R/bra0/blob/main/_bmad/agents/business-strategist.md> ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+bra0mot:Purpose-Frugality a edgy:Purpose , archimate:Goal ;
+    rdfs:label "Frugality"@en ;
+    skos:prefLabel "Frugality"@en ;
+    skos:definition "Continuant disposition to minimise the cost of existence of every artefact across infrastructure and behaviours."@en ;
+    rdfs:comment "Continuously minimise the cost-of-existence of every artefact — runtime energy of compute, surface of code, surface of ontology, surface of communication. An infinite-game disposition: each removed dead abstraction, each lightened query, each terser communication, deepens the play."@en ;
+    skos:scopeNote "Infinite-game framing. Directional verbs: minimise, conserve, lighten, restrain. Applies pervasively (infra ET comportements per BFO continuant). NOT a substrate-kind choice (= SymbolicFirst Story, deferred v0.3.0)."@en ;
+    edgy:viewedThrough edgy:architectureFacet ;
+    archimate:influencedBy bra0mot:Driver-LowEnergyImperative ;
+    archimate:assessedBy bra0mot:Assessment-ClimateUrgency ;
+    archimate:guidedBy bra0mot:Principle-RuntimeFrugality ,
+                       bra0mot:Principle-LeastPower ;
+    archimate:realizedBy bra0mot:Outcome-LowEnergyKnowledgeOps ;
+    archimate:measuredBy bra0mot:Value-Frugality ;
+    skos:closeMatch unsdg:12 , unsdg:13 ;
+    dcterms:source <https://commission.europa.eu/strategy-and-policy/priorities-2019-2024/european-green-deal_en> ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+# =============================================================================
+# § 7. UN SDG Purposes (17 — strategy a, all embedded)
+# =============================================================================
+#
+# Each SDG is a edgy:Purpose / archimate:Goal with skos:exactMatch to UN
+# metadata authoritative IRI. SDGIO closeMatch deferred until OBO release
+# IDs verified per memory note (2026-04-27).
+# =============================================================================
+
+bra0mot:Purpose-SDG-01-NoPoverty a edgy:Purpose , archimate:Goal ;
+    rdfs:label "End poverty in all its forms everywhere"@en ;
+    skos:prefLabel "SDG 1 — No Poverty"@en ;
+    skos:definition "Continuant disposition aligned with United Nations Sustainable Development Goal 1 — No Poverty (UN Resolution A/RES/70/1, 2015)."@en ;
+    skos:exactMatch unsdg:1 ;
+    edgy:viewedThrough edgy:identityFacet ;
+    dcterms:source <https://sdgs.un.org/goals/goal1> ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+bra0mot:Purpose-SDG-02-ZeroHunger a edgy:Purpose , archimate:Goal ;
+    rdfs:label "End hunger, achieve food security and improved nutrition and promote sustainable agriculture"@en ;
+    skos:prefLabel "SDG 2 — Zero Hunger"@en ;
+    skos:definition "Continuant disposition aligned with United Nations Sustainable Development Goal 2 — Zero Hunger (UN Resolution A/RES/70/1, 2015)."@en ;
+    skos:exactMatch unsdg:2 ;
+    edgy:viewedThrough edgy:identityFacet ;
+    dcterms:source <https://sdgs.un.org/goals/goal2> ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+bra0mot:Purpose-SDG-03-GoodHealth a edgy:Purpose , archimate:Goal ;
+    rdfs:label "Ensure healthy lives and promote well-being for all at all ages"@en ;
+    skos:prefLabel "SDG 3 — Good Health and Well-being"@en ;
+    skos:definition "Continuant disposition aligned with United Nations Sustainable Development Goal 3 — Good Health and Well-being (UN Resolution A/RES/70/1, 2015)."@en ;
+    skos:exactMatch unsdg:3 ;
+    edgy:viewedThrough edgy:identityFacet ;
+    dcterms:source <https://sdgs.un.org/goals/goal3> ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+bra0mot:Purpose-SDG-04-QualityEducation a edgy:Purpose , archimate:Goal ;
+    rdfs:label "Ensure inclusive and equitable quality education and promote lifelong learning opportunities for all"@en ;
+    skos:prefLabel "SDG 4 — Quality Education"@en ;
+    skos:definition "Continuant disposition aligned with United Nations Sustainable Development Goal 4 — Quality Education (UN Resolution A/RES/70/1, 2015)."@en ;
+    skos:exactMatch unsdg:4 ;
+    edgy:viewedThrough edgy:identityFacet ;
+    dcterms:source <https://sdgs.un.org/goals/goal4> ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+bra0mot:Purpose-SDG-05-GenderEquality a edgy:Purpose , archimate:Goal ;
+    rdfs:label "Achieve gender equality and empower all women and girls"@en ;
+    skos:prefLabel "SDG 5 — Gender Equality"@en ;
+    skos:definition "Continuant disposition aligned with United Nations Sustainable Development Goal 5 — Gender Equality (UN Resolution A/RES/70/1, 2015)."@en ;
+    skos:exactMatch unsdg:5 ;
+    edgy:viewedThrough edgy:identityFacet ;
+    dcterms:source <https://sdgs.un.org/goals/goal5> ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+bra0mot:Purpose-SDG-06-CleanWater a edgy:Purpose , archimate:Goal ;
+    rdfs:label "Ensure availability and sustainable management of water and sanitation for all"@en ;
+    skos:prefLabel "SDG 6 — Clean Water and Sanitation"@en ;
+    skos:definition "Continuant disposition aligned with United Nations Sustainable Development Goal 6 — Clean Water and Sanitation (UN Resolution A/RES/70/1, 2015)."@en ;
+    skos:exactMatch unsdg:6 ;
+    edgy:viewedThrough edgy:identityFacet ;
+    dcterms:source <https://sdgs.un.org/goals/goal6> ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+bra0mot:Purpose-SDG-07-AffordableEnergy a edgy:Purpose , archimate:Goal ;
+    rdfs:label "Ensure access to affordable, reliable, sustainable and modern energy for all"@en ;
+    skos:prefLabel "SDG 7 — Affordable and Clean Energy"@en ;
+    skos:definition "Continuant disposition aligned with United Nations Sustainable Development Goal 7 — Affordable and Clean Energy (UN Resolution A/RES/70/1, 2015)."@en ;
+    skos:exactMatch unsdg:7 ;
+    edgy:viewedThrough edgy:identityFacet ;
+    dcterms:source <https://sdgs.un.org/goals/goal7> ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+bra0mot:Purpose-SDG-08-DecentWork a edgy:Purpose , archimate:Goal ;
+    rdfs:label "Promote sustained, inclusive and sustainable economic growth, full and productive employment and decent work for all"@en ;
+    skos:prefLabel "SDG 8 — Decent Work and Economic Growth"@en ;
+    skos:definition "Continuant disposition aligned with United Nations Sustainable Development Goal 8 — Decent Work and Economic Growth (UN Resolution A/RES/70/1, 2015)."@en ;
+    skos:exactMatch unsdg:8 ;
+    edgy:viewedThrough edgy:identityFacet ;
+    dcterms:source <https://sdgs.un.org/goals/goal8> ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+bra0mot:Purpose-SDG-09-Innovation a edgy:Purpose , archimate:Goal ;
+    rdfs:label "Build resilient infrastructure, promote inclusive and sustainable industrialization and foster innovation"@en ;
+    skos:prefLabel "SDG 9 — Industry, Innovation and Infrastructure"@en ;
+    skos:definition "Continuant disposition aligned with United Nations Sustainable Development Goal 9 — Industry, Innovation and Infrastructure (UN Resolution A/RES/70/1, 2015)."@en ;
+    skos:exactMatch unsdg:9 ;
+    edgy:viewedThrough edgy:identityFacet ;
+    dcterms:source <https://sdgs.un.org/goals/goal9> ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+bra0mot:Purpose-SDG-10-ReducedInequalities a edgy:Purpose , archimate:Goal ;
+    rdfs:label "Reduce inequality within and among countries"@en ;
+    skos:prefLabel "SDG 10 — Reduced Inequalities"@en ;
+    skos:definition "Continuant disposition aligned with United Nations Sustainable Development Goal 10 — Reduced Inequalities (UN Resolution A/RES/70/1, 2015)."@en ;
+    skos:exactMatch unsdg:10 ;
+    edgy:viewedThrough edgy:identityFacet ;
+    dcterms:source <https://sdgs.un.org/goals/goal10> ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+bra0mot:Purpose-SDG-11-SustainableCities a edgy:Purpose , archimate:Goal ;
+    rdfs:label "Make cities and human settlements inclusive, safe, resilient and sustainable"@en ;
+    skos:prefLabel "SDG 11 — Sustainable Cities and Communities"@en ;
+    skos:definition "Continuant disposition aligned with United Nations Sustainable Development Goal 11 — Sustainable Cities and Communities (UN Resolution A/RES/70/1, 2015)."@en ;
+    skos:exactMatch unsdg:11 ;
+    edgy:viewedThrough edgy:identityFacet ;
+    dcterms:source <https://sdgs.un.org/goals/goal11> ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+bra0mot:Purpose-SDG-12-ResponsibleConsumption a edgy:Purpose , archimate:Goal ;
+    rdfs:label "Ensure sustainable consumption and production patterns"@en ;
+    skos:prefLabel "SDG 12 — Responsible Consumption and Production"@en ;
+    skos:definition "Continuant disposition aligned with United Nations Sustainable Development Goal 12 — Responsible Consumption and Production (UN Resolution A/RES/70/1, 2015)."@en ;
+    skos:exactMatch unsdg:12 ;
+    edgy:viewedThrough edgy:identityFacet ;
+    dcterms:source <https://sdgs.un.org/goals/goal12> ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+# Fully developed example — full motivation chain attached.
+bra0mot:Purpose-SDG-13-ClimateAction a edgy:Purpose , archimate:Goal ;
+    rdfs:label "Take urgent action to combat climate change and its impacts"@en ;
+    skos:prefLabel "SDG 13 — Climate Action"@en ;
+    skos:definition "Continuant disposition aligned with United Nations Sustainable Development Goal 13 — Climate Action (UN Resolution A/RES/70/1, 2015)."@en ;
+    skos:exactMatch unsdg:13 ;
+    edgy:viewedThrough edgy:identityFacet ;
+    archimate:influencedBy bra0mot:Driver-LowEnergyImperative ;
+    archimate:assessedBy bra0mot:Assessment-ClimateUrgency ;
+    archimate:guidedBy bra0mot:Principle-RuntimeFrugality ,
+                       bra0mot:Principle-LeastPower ;
+    archimate:realizedBy bra0mot:Outcome-LowEnergyKnowledgeOps ;
+    archimate:measuredBy bra0mot:Value-Frugality ;
+    dcterms:source <https://sdgs.un.org/goals/goal13> ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+bra0mot:Purpose-SDG-14-LifeBelowWater a edgy:Purpose , archimate:Goal ;
+    rdfs:label "Conserve and sustainably use the oceans, seas and marine resources for sustainable development"@en ;
+    skos:prefLabel "SDG 14 — Life Below Water"@en ;
+    skos:definition "Continuant disposition aligned with United Nations Sustainable Development Goal 14 — Life Below Water (UN Resolution A/RES/70/1, 2015)."@en ;
+    skos:exactMatch unsdg:14 ;
+    edgy:viewedThrough edgy:identityFacet ;
+    dcterms:source <https://sdgs.un.org/goals/goal14> ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+bra0mot:Purpose-SDG-15-LifeOnLand a edgy:Purpose , archimate:Goal ;
+    rdfs:label "Protect, restore and promote sustainable use of terrestrial ecosystems, sustainably manage forests, combat desertification, and halt and reverse land degradation and halt biodiversity loss"@en ;
+    skos:prefLabel "SDG 15 — Life on Land"@en ;
+    skos:definition "Continuant disposition aligned with United Nations Sustainable Development Goal 15 — Life on Land (UN Resolution A/RES/70/1, 2015)."@en ;
+    skos:exactMatch unsdg:15 ;
+    edgy:viewedThrough edgy:identityFacet ;
+    dcterms:source <https://sdgs.un.org/goals/goal15> ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+bra0mot:Purpose-SDG-16-PeaceJusticeInstitutions a edgy:Purpose , archimate:Goal ;
+    rdfs:label "Promote peaceful and inclusive societies for sustainable development, provide access to justice for all and build effective, accountable and inclusive institutions at all levels"@en ;
+    skos:prefLabel "SDG 16 — Peace, Justice and Strong Institutions"@en ;
+    skos:definition "Continuant disposition aligned with United Nations Sustainable Development Goal 16 — Peace, Justice and Strong Institutions (UN Resolution A/RES/70/1, 2015)."@en ;
+    skos:exactMatch unsdg:16 ;
+    edgy:viewedThrough edgy:identityFacet ;
+    dcterms:source <https://sdgs.un.org/goals/goal16> ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+bra0mot:Purpose-SDG-17-Partnerships a edgy:Purpose , archimate:Goal ;
+    rdfs:label "Strengthen the means of implementation and revitalize the global partnership for sustainable development"@en ;
+    skos:prefLabel "SDG 17 — Partnerships for the Goals"@en ;
+    skos:definition "Continuant disposition aligned with United Nations Sustainable Development Goal 17 — Partnerships for the Goals (UN Resolution A/RES/70/1, 2015)."@en ;
+    skos:exactMatch unsdg:17 ;
+    edgy:viewedThrough edgy:identityFacet ;
+    dcterms:source <https://sdgs.un.org/goals/goal17> ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+# =============================================================================
+# § 8. Outcomes (edgy:Outcome / archimate:Outcome)
+# =============================================================================
+
+bra0mot:Outcome-PortableEvidencePack a edgy:Outcome , archimate:Outcome ;
+    rdfs:label "Evidence packs portable across substrates"@en ;
+    skos:prefLabel "Portable Evidence Pack"@en ;
+    skos:definition "Measurable end-state where any bra0 evidence pack — shapes, instances, provenance — can be exported, audited, and re-imported on any W3C-conformant substrate without loss."@en ;
+    rdfs:comment "Measurable end-state: any bra0 evidence pack (shapes + instances + provenance) can be exported, audited, and re-imported on any W3C-conformant substrate without loss."@en ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+bra0mot:Outcome-LowEnergyKnowledgeOps a edgy:Outcome , archimate:Outcome ;
+    rdfs:label "Low-energy knowledge operations"@en ;
+    skos:prefLabel "Low-energy KS Ops"@en ;
+    skos:definition "Measurable end-state where bra0 knowledge operations execute under a published energy budget per operation, with no build-time pre-baking inflating redeploy cost."@en ;
+    rdfs:comment "Measurable end-state: bra0 knowledge operations (validation, query, reactive shape) execute under a published energy budget per operation, with no build-time pre-baking that would inflate redeploy cost."@en ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+bra0mot:Outcome-AlternativesAvailable a edgy:Outcome , archimate:Outcome ;
+    rdfs:label "Alternatives available at every critical dependency"@en ;
+    skos:prefLabel "Alternatives Available"@en ;
+    skos:definition "Measurable end-state where every critical dependency of a bra0 deployment has at least one viable, documented, and reachable alternative — exit path testable on demand."@en ;
+    rdfs:comment "Measurable end-state: for every critical dependency in a bra0 deployment (substrate, validator, runtime, vendor, ontology), at least one viable, documented, and reachable alternative is preserved — exit path testable on demand. Operationalises the Hirschman Exit option."@en ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+bra0mot:Outcome-LiveSchemaMutation a edgy:Outcome , archimate:Outcome ;
+    rdfs:label "Live schema mutation in production"@en ;
+    skos:prefLabel "Live Schema Mutation"@en ;
+    skos:definition "Measurable end-state where shapes and instances mutate in production without redeploy or build-time intervention."@en ;
+    rdfs:comment "Measurable end-state: shapes, ShEx schemas, SHACL constraints, and bra0 instances mutate in running production with no redeploy and no build-time pre-baking. Operationalises the time-dimension of Continuity."@en ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+bra0mot:Outcome-ClaimsTraceableToProvenance a edgy:Outcome , archimate:Outcome ;
+    rdfs:label "Claims traceable to provenance end-to-end"@en ;
+    skos:prefLabel "Claims Traceable"@en ;
+    skos:definition "Measurable end-state where every claim — decision, shape, audit, AI output, agent action — carries an auditable PROV-O chain reconstructible end-to-end."@en ;
+    rdfs:comment "Measurable end-state: every claim emitted within bra0 — decision, shape acceptance, audit conclusion, AI output, agent action — carries a PROV-O chain such that any auditor can reconstruct the derivation end-to-end with no post-hoc explanation gap."@en ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+# =============================================================================
+# § 9. Stories (edgy:Story / archimate:CourseOfAction)
+# =============================================================================
+#
+# Stories are courses of action — the "moyen" (means) by which Purposes (the
+# "fin"/end) are pursued. Discriminator (motivation-registry-style-guide.md
+# § 4 critère 11): a Story names a HOW; a Purpose names a WHY/WHAT-FOR.
+#
+# Each Story dual-types as edgy:Story (EDGY identity-facet narrative) and
+# archimate:CourseOfAction (ArchiMate strategy element). Linkage to served
+# Purposes uses both edgy:contextualizes (EDGY canonical) and
+# archimate:realizes (ArchiMate canonical) to make the punning operational.
+# =============================================================================
+
+bra0mot:Story-SymbolicFirstPrimacy a edgy:Story , archimate:CourseOfAction ;
+    rdfs:label "Symbolic-First Primacy"@en ;
+    skos:prefLabel "Symbolic-First Primacy"@en ;
+    skos:definition "Course of action that resolves bra0 capability invocations through symbolic engines (rudof, SHACL, SPARQL) before any neural fallback, materialising the Symbolic-First Cascade (ADR-027 sophia + candle)."@en ;
+    rdfs:comment "Symbolic-first execution policy: every capability invocation tries the symbolic path (rudof shacl-validate, SPARQL query, ShEx schema check) first ; the neural runtime (sophia + candle) is engaged only when the symbolic path is structurally inapplicable. Materialises P1 Least Power at runtime and serves Frugality (cheap symbolic operations) and EvidenceFirst (auditable derivation chain) without becoming a Purpose itself — it is the 'how', not the 'why'."@en ;
+    skos:scopeNote "This is a means, not an end. Purposes served: Frugality (symbolic ops are orders of magnitude cheaper than neural inference) and EvidenceFirst (symbolic outputs carry deterministic provenance). If a future course of action serves the same Purposes more frugally or with stronger evidence guarantees, it supersedes this one without disturbing the Purposes themselves."@en ;
+    edgy:contextualizes bra0mot:Purpose-Frugality , bra0mot:Purpose-EvidenceFirst ;
+    archimate:realizes bra0mot:Purpose-Frugality , bra0mot:Purpose-EvidenceFirst ;
+    edgy:viewedThrough edgy:identityFacet ;
+    dcterms:source <https://github.com/sachaR063R/bra0/blob/main/_bmad/docs/adr/ADR-027-symbolic-first-cascade.md> ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .
+
+bra0mot:Story-OpenCoreCollaboration a edgy:Story , archimate:CourseOfAction ;
+    rdfs:label "Open-Core Collaboration"@en ;
+    skos:prefLabel "Open-Core Collaboration"@en ;
+    skos:definition "Course of action that ships the bra0 core under MIT OR Apache-2.0 and ships enterprise modules as separate proprietary repositories interfacing through stable hooks, following the GitLab open-core licensing pattern."@en ;
+    rdfs:comment "Open-core distribution policy: bra0 core (KS Studio, ontologies, agent contracts, validation pipeline) is permissively licensed (MIT OR Apache-2.0) and forkable ; enterprise plugins (audit packs, vendor-specific connectors) live in separate repositories with proprietary licenses and connect through stable, documented hook interfaces. Materialises Sovereignty (every dependency forkable) and ContinuousInteroperability (hook contracts published as part of core) without becoming a Purpose itself."@en ;
+    skos:scopeNote "This is a means, not an end. Purposes served: Sovereignty (permissive license preserves Exit option) and ContinuousInteroperability (hook contracts are first-class interfaces). If a future licensing or distribution arrangement serves the same Purposes more robustly, it supersedes this one without disturbing the Purposes themselves."@en ;
+    edgy:contextualizes bra0mot:Purpose-Sovereignty , bra0mot:Purpose-ContinuousInteroperability ;
+    archimate:realizes bra0mot:Purpose-Sovereignty , bra0mot:Purpose-ContinuousInteroperability ;
+    edgy:viewedThrough edgy:identityFacet ;
+    dcterms:creator bra0mot:Stakeholder-Sacha .

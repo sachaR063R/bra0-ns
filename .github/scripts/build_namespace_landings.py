@@ -31,6 +31,8 @@ WHITELIST = ROOT / "docs-published.txt"
 # and is served by a hand-written static landing per §2.11.
 # `cross-domain/edgy/` joins the canonical set per ADR-060 (edgy migrated from
 # omyn.ai/schema/edgy# to schema.bra0.org/cross-domain/edgy#, rupture sèche).
+# `cross-domain/edgy/motivation-registry/` joins per Co-STORM 2026-04-28 / S1
+# Decision A verdict D — Q-NS-2 pattern (ABox under edgy: TBox parent).
 CANONICAL_TTL: dict[str, str] = {
     "agent-service-contract": "agent-service-contract.ttl",
     "essence-kernel": "essence-kernel.ttl",
@@ -38,6 +40,7 @@ CANONICAL_TTL: dict[str, str] = {
     "evidence-os": "evidence-os.ttl",
     "evidence-os/edcc": "edcc-bridge.ttl",
     "cross-domain/edgy": "edgy.ttl",
+    "cross-domain/edgy/motivation-registry": "motivation-registry.ttl",
 }
 
 # ADR-058 §2.4 + ADR-060 §3 — foreign-namespace mirrors.
@@ -254,6 +257,26 @@ def copy_canonicals_to_index() -> None:
         print(f"  ✓ {ns_dir}/index.html ← {layout_rel} (static)")
 
 
+def emit_flat_ttl_aliases() -> None:
+    """ADR-058 §2.1 + §2.7 step 11 (β path-shape, added 2026-04-28).
+
+    For each canonical directory in CANONICAL_TTL, copy the canonical
+    raw Turtle from `_site/<dir>/<canonical-basename>.ttl` to
+    `_site/<dir>.ttl`. The flat alias is a byte-identical copy and serves
+    `Content-Type: text/turtle` (GitHub Pages MIME inferred from .ttl).
+
+    Hard-fails if the source canonical TTL is absent at copy time.
+    """
+    for ns_dir, canonical_filename in CANONICAL_TTL.items():
+        src_ttl = SITE / ns_dir / canonical_filename
+        if not src_ttl.exists():
+            fail(f"Canonical TTL missing for flat-alias copy: {src_ttl.relative_to(ROOT)}")
+        flat_alias = SITE / f"{ns_dir}.ttl"
+        flat_alias.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(src_ttl, flat_alias)
+        print(f"  ✓ {ns_dir}.ttl ← {ns_dir}/{canonical_filename} (β flat alias)")
+
+
 def verify_count(entries: list[dict]) -> None:
     rendered = sorted(
         p
@@ -285,6 +308,13 @@ def main() -> None:
         print("Bootstrap phase: empty whitelist. Skipping.")
         return
 
+    # Idempotency guard (Diana R2 #3 lift, 2026-04-28): wipe _site/ before
+    # rebuild. A cached _site/ between whitelist edits silently serves
+    # yesterday's flat-TTL alias from emit_flat_ttl_aliases(). Brutal removal
+    # is the only path that keeps the flat-alias contract (ADR-058 §2.1)
+    # source-honest under repeated rebuilds.
+    if SITE.exists():
+        shutil.rmtree(SITE)
     SITE.mkdir(exist_ok=True)
     print(f"Rendering {len(entries)} whitelisted TTLs ...")
     for e in entries:
@@ -299,6 +329,9 @@ def main() -> None:
     print("Promoting canonicals + static landings to index.html ...")
     copy_canonicals_to_index()
 
+    print("Emitting β flat-TTL aliases (ADR-058 §2.7 step 11) ...")
+    emit_flat_ttl_aliases()
+
     print("Verifying counts ...")
     verify_count(entries)
 
@@ -306,7 +339,8 @@ def main() -> None:
     print(
         f"\n✓ Build complete: {len(entries)} whitelist entries, "
         f"{n_landings} directory landings "
-        f"({len(CANONICAL_TTL)} canonical + {len(STATIC_LANDINGS)} static)."
+        f"({len(CANONICAL_TTL)} canonical + {len(STATIC_LANDINGS)} static), "
+        f"{len(CANONICAL_TTL)} flat-TTL aliases."
     )
 
 

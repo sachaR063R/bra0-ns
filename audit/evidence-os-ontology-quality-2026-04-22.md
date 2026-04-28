@@ -198,3 +198,42 @@ rudof shacl-validate \
 ```
 
 Audit closed 2026-04-22.
+
+---
+
+## Cross-strengthening 2026-04-28 — motivation-registry audit reciprocity
+
+> **Added 2026-04-28** under Co-STORM Phase 2026-04-28 / S1 sign-off. Companion audit: [`motivation-registry-quality-2026-04-28.md`](motivation-registry-quality-2026-04-28.md). Both audits are now **mutually reinforcing** — the joint invariants below are load-bearing for any future bra0 ontology audit.
+
+### Items lifted by the registry
+
+| evidence-os CONDITIONAL | Registry contribution | Updated status |
+|---|---|---|
+| **Dim 5 P0-9 (license unification)** — `dct:license` missing on `evo:` and `edgy:` headers | Registry header carries `dcterms:license "https://creativecommons.org/licenses/by-sa/4.0/"` since v0.1.0 — sets the operational precedent every bra0-authored ontology copies. | **Precedent set** — P0-9 fix is now a 3-line edit on each missing file; the example exists. |
+| **Dim 2 P0-2 (3-Story arbitration)** — `edgy:Story ∪ asc:Story ∪ evo:UserStory` cross-layer coverage gap | Registry instantiates 2 `edgy:Story` instances (`SymbolicFirstPrimacy`, `OpenCoreCollaboration`) dual-typed `archimate:Course-of-Action`. | **First ABox witness** — P0-2 UNION arbitration can be tested on real instance data. The dual-typing demonstrates one viable resolution (instance-level punning rather than TBox-level UNION class). |
+| **Dim 4 — versionIRI discipline (PASS)** | Registry adds the **triple-witness deprecation pattern** (`owl:deprecated` + `owl:sameAs` + `dcterms:isReplacedBy`) — non-destructive class evolution. | **Discipline extended** — version-string evolution (evo:) now has a battle-tested companion pattern for class evolution. |
+| **Dim 5 — bilingual parity (PASS)** | Registry adds the **5-layer lexical discipline**: `label` + `prefLabel` + `definition` + `comment` + `scopeNote` for every signifying instance. | **Bar raised** — evo:'s 2-layer (`label` + `comment`) becomes the floor; registry's 5-layer becomes the ceiling. RETROACTIF SYSTÉMATIQUE per Co-STORM S1 follow-up #4. |
+| **Dim 3 — multi-parent CONDITIONAL (P0-7/P0-8)** | Registry's punning policy at ABox demonstrates multi-typing is defensible **as instance-level pragma**, not class-level confusion. | **Reframing** — the question becomes "where in the stack does multi-typing live"; ABox is the right layer. evo:/asc: must defend why multi-parent occurs at TBox. |
+
+### Items binding the registry
+
+| evidence-os ratchet | Registry inheritance |
+|---|---|
+| **rudof coupled floor (50 Violations held)** | Registry runs 0 Violations + 1 design Warning — **stricter than the 50 baseline**. Sets the v0.4 ratchet target for coupled validation runs. |
+| **Cross-reference table convention** | Registry audit adopts the same matrix format. Establishes a reusable audit-pattern: every new bra0 audit declares its mutual reinforcement with prior audits. |
+| **Disjointness axiom discipline (P0-6 on asc:)** | Registry adds `PurposeOutcomeDisjointShape` (CQ-MR-06): instance disjointness BFO-grounded (continuants vs ProcessBoundary). |
+| **No-cycle directionality (evo:→asc:, never reverse)** | Registry imports `edgy: + archimate:` only; symmetry preserved at L0.5. One contiguous invariant across L0.5/L1/L3. |
+| **CONDITIONAL with named-lift-trigger discipline** | Registry's design-Warning on deprecated instances follows the same pattern: scoped, documented, with v0.4 promotion trigger. |
+
+### Joint invariants (binding on both audits going forward)
+
+These six rules are now **load-bearing for any future bra0 ontology audit** — emerged from the cross-strengthening of evidence-os + motivation-registry audits, apply to retroactive sweeps and new ontologies alike:
+
+1. **License visibility is non-optional**: `dcterms:license` on every ontology header.
+2. **5-layer lexical discipline**: `rdfs:label` + `skos:prefLabel` + `skos:definition` (Keet genus+differentia) + `rdfs:comment` + `skos:scopeNote` per signifying instance/class. Shape-enforced as Warning, ratcheting to Violation per ontology's roadmap.
+3. **Triple-witness deprecation**: `owl:deprecated` + `owl:sameAs` + `dcterms:isReplacedBy` whenever an IRI is superseded.
+4. **Punning over UNION** for cross-vocabulary equivalence at instance level, never UNION class invention at TBox level (P1 Least Power).
+5. **Cardinality contracts in shapes carry explicit `Severity` + explicit lift-trigger comment** — no silent shapes; every Warning is on a documented ratchet.
+6. **rudof-clean is the publication gate**: 0 Violations mandatory; design-warnings allowed iff documented in the shapes file with a v-Next promotion trigger.
+
+Future audits cite this section instead of re-deriving these rules. Cross-strengthening closed 2026-04-28.
