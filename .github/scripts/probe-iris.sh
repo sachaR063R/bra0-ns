@@ -128,6 +128,36 @@ probe_local() {
     fi
   fi
 
+  echo "-- Apex link integrity --"
+  # Every relative href in the apex landing (index.html) must resolve to a
+  # real artefact in _site/. Guards against dangling links surviving a
+  # namespace migration (e.g. an ontology moved from capability/ to
+  # cross-domain/ while the apex kept the stale path). External schemes and
+  # in-page anchors are out of scope. Process substitution (not a pipe) keeps
+  # err()/fail_count in the parent shell.
+  apex="${SITE}/index.html"
+  if [ ! -f "${apex}" ]; then
+    err "Apex index.html missing in _site"
+  else
+    while IFS= read -r href; do
+      case "${href}" in
+        ""|"#"*|http://*|https://*|mailto:*|//*) continue ;;
+      esac
+      target="${href%%#*}"; target="${target%%\?*}"   # strip fragment + query
+      [ -z "${target}" ] && continue
+      if [ "${target%/}" != "${target}" ]; then
+        check="${SITE}/${target}index.html"            # directory href
+      else
+        check="${SITE}/${target}"                      # file href
+      fi
+      if [ -e "${check}" ]; then
+        ok "apex → ${href}"
+      else
+        err "Apex link target missing in _site: ${href}"
+      fi
+    done < <(grep -oE 'href="[^"]+"' "${apex}" | sed -E 's/^href="//; s/"$//')
+  fi
+
   echo "-- omyn.ai/schema rupture-sèche (ADR-060) --"
   if grep -REn 'omyn\.ai/schema/(edgy|retroeng)' "${SITE}" >/dev/null 2>&1; then
     err "Public surface contains omyn.ai/schema/{edgy,retroeng} references"
