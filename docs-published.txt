@@ -12,8 +12,8 @@ agent-service-contract/agent-service-contract.shapes.ttl;Audited;audit/agent-ser
 # Essence Kernel
 essence-kernel/essence-kernel.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
 
-# Capability operations
-capability/capability-operations.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
+# Capability operations — re-audited at 0.2.6 (ADR-132 §3.1 / ADR-134 pin 732569ba), PASS-WITH-2-WARNINGS
+capability/capability-operations.ttl;Audited;audit/capability-operations-ontology-quality-audit-2026-06-21.md;2026-06-21
 capability/neuro-upper.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
 
 # Cross-domain (mid-level, between BFO upper and bra0 KS — ADR-060)
