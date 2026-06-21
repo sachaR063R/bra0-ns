@@ -10,14 +10,14 @@ agent-service-contract/agent-service-contract.ttl;Audited;audit/agent-service-co
 agent-service-contract/agent-service-contract.shapes.ttl;Audited;audit/agent-service-contract-ontology-quality-audit-2026-06-21.md;2026-06-21
 
 # Essence Kernel
-essence-kernel/essence-kernel.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
+essence-kernel/essence-kernel.ttl;Audited;audit/foundation-essence-enterprise-edgy-ontology-quality-audit-2026-06-21.md;2026-06-21
 
 # Capability operations — re-audited at 0.2.6 (ADR-132 §3.1 / ADR-134 pin 732569ba), PASS-WITH-2-WARNINGS
 capability/capability-operations.ttl;Audited;audit/capability-operations-ontology-quality-audit-2026-06-21.md;2026-06-21
 capability/neuro-upper.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
 
 # Cross-domain (mid-level, between BFO upper and bra0 KS — ADR-060)
-cross-domain/edgy/edgy.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-26
+cross-domain/edgy/edgy.ttl;Audited;audit/foundation-essence-enterprise-edgy-ontology-quality-audit-2026-06-21.md;2026-06-21
 
 # Cross-domain motivation registry (ABox under edgy: TBox — Q-NS-2 pattern, ADR-060)
 cross-domain/edgy/motivation-registry/motivation-registry.ttl;DRAFT;audit/motivation-registry-quality-2026-04-28.md;2026-04-28
