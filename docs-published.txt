@@ -38,3 +38,5 @@ evidence-os/edcc/edcc-frameworks.ttl;DRAFT;audit/evidence-os-ontology-quality-20
 evidence-os/edcc/edcc-pemd.shapes.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
 evidence-os/edcc/edcc-csrd.shapes.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
 evidence-os/edcc/edcc-domain-holon.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
+cross-domain/party/party-role.tbox.ttl;Published;audit/cross-domain-party-ontology-quality-audit-2026-06-21.md;2026-06-21
+cross-domain/retroeng/retroeng.ttl;Published;audit/cross-domain-retroeng-ontology-quality-audit-2026-04-20.md;2026-06-21

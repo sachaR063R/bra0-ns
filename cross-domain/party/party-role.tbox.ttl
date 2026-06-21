@@ -1,0 +1,171 @@
+# Party / Role — transverse third-party referential socle (core TBox)
+# =============================================================================
+# Cross-domain, domain-agnostic socle for the OntoClean/UFO Party–Role pattern.
+#
+# BACKBONE (OntoClean/UFO meta-types, machine-readable via party:ontoCleanType):
+#   party:Party          Category  (+R −I)  rigid non-sortal — supplies NO uniform
+#                                            identity (persons and organisations are
+#                                            individuated by different criteria)
+#   party:NaturalPerson  Kind      (+R +I)  own identity criterion
+#   party:Organisation   Kind      (+R +I)  own identity criterion
+#   party:LegalEntity    SubKind   (+R +I)  inherits Organisation identity; bears the
+#                                            LEI as an extrinsic IDENTIFIER (ISO 17442),
+#                                            never as an identity criterion
+#   party:PartyRole      Role      (−R +D)  anti-rigid, relationally dependent
+#   party:Relationship   Relator   (+R +D)  truth-maker of role-playing
+#
+# TWO LAWS (OntoClean): L1 an anti-rigid type never subsumes a rigid type; L2 an
+# identity criterion is declared on a Kind/SubKind, never on a Role. The LEI is an
+# identifier, not the identity criterion of any Kind (AP-TR-4 / ADR-129 §2.2).
+#
+# WHY THIS EXISTS: domain referentials (banking, CRM, wealth) must NOT re-mint a
+# party class. They consume this socle (owl:imports) and specialise its anti-rigid
+# Role. A single shared PartyRole taxonomy serves every consumer lens.
+#
+# DESIGN DISCIPLINE
+#   - This core file is SELF-CONTAINED and carries NO cross-namespace axiom.
+#     All upstream grounding lives in companion alignment files (R-TPR-2 / ADR-067):
+#       alignments/party-role.alignments.ttl   — CMNS / FIBO / GLEIF / FOAF
+#       alignments/party-role-bfo-2020.ttl      — BFO 2020 systematic grounding
+#   - party:ontoCleanType is a LOCAL annotation property (no external dependency).
+#
+# STATUS: 0.2.0 — AUDITED (grounded rebuild, ADR-129), NOT published. Intended home
+#         schema.bra0.org/cross-domain/party (publication gated by the
+#         ontology-quality whitelist). Structure English; labels bilingual @fr/@en.
+# =============================================================================
+
+@prefix party:   <https://schema.bra0.org/cross-domain/party#> .
+@prefix bra0m:   <https://schema.bra0.org/module#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix dct:     <http://purl.org/dc/terms/> .
+
+<https://schema.bra0.org/cross-domain/party>
+    a owl:Ontology ;
+    rdfs:label "Party / Role — transverse referential socle"@en ,
+               "Tiers / Rôle — socle de référentiel transverse"@fr ;
+    rdfs:comment "OntoClean/UFO-clean party backbone. Party is a Category (rigid non-sortal); NaturalPerson and Organisation are Kinds; LegalEntity is a SubKind of Organisation. Roles are anti-rigid and dependent; a single shared PartyRole taxonomy is specialised by every consumer lens."@en ;
+    skos:scopeNote "Domain-agnostic OntoClean/UFO Party–Role pattern. Consumed (owl:imports) by domain referentials (banking, CRM, wealth); never re-minted downstream. Grounding axioms live in the companion alignment files (CMNS/FIBO/GLEIF/FOAF + BFO 2020)."@en ;
+    dcterms:license "MIT OR Apache-2.0" ;
+    owl:versionInfo "0.2.0" .
+
+############################
+# OntoClean/UFO meta-typing — local annotation property (self-contained)
+############################
+
+party:ontoCleanType a owl:AnnotationProperty ;
+    rdfs:label "type OntoClean/UFO"@fr , "OntoClean/UFO meta-type"@en ;
+    skos:prefLabel "OntoClean/UFO meta-type"@en ;
+    skos:definition "The OntoClean/UFO meta-category of a class: Category | Kind | SubKind | Role | Relator. Drives the rigidity/identity discipline (L1 anti-rigid never subsumes rigid; L2 identity on Kind/SubKind never on a Role)."@en ;
+    rdfs:comment "Local annotation (no external dependency). Machine-readable witness of the OntoClean classification documented in ADR-129 §2.1."@en .
+
+############################
+# Category (rigid non-sortal, +R −I) — the taxonomic root
+############################
+
+party:Party a owl:Class ;
+    party:ontoCleanType "Category" ;
+    rdfs:label "Tiers"@fr , "Party"@en ;
+    skos:prefLabel "Party"@en ;
+    skos:definition "A rigid non-sortal that subsumes the party Kinds (natural person, organisation) and may play one or more context-relative Roles. The taxonomic root of the third-party referential."@en ;
+    rdfs:comment "OntoClean Category: rigid (+R) but supplies NO uniform identity (−I) — natural persons and organisations are individuated by different criteria, so Party cannot be a Kind (ADR-129 C-1). Anchored on OMG Commons cmns:Party and foaf:Agent (alignments file) and BFO independent continuant (BFO file)."@en ;
+    skos:scopeNote "Do not attach an identity criterion here; identity lives on the Kinds below."@en .
+
+############################
+# Kinds (rigid sortal, +R +I — each supplies one identity criterion)
+############################
+
+party:NaturalPerson a owl:Class ;
+    party:ontoCleanType "Kind" ;
+    rdfs:subClassOf party:Party ;
+    rdfs:label "Personne physique"@fr , "Natural person"@en ;
+    skos:prefLabel "Natural person"@en ;
+    skos:definition "A human being, considered as a party independently of any relationship it holds."@en ;
+    rdfs:comment "OntoClean Kind: rigid sortal supplying its own identity criterion. Anchored on FIBO Person and foaf:Person (alignments) + BFO material entity (BFO file)."@en ;
+    skos:scopeNote "disjointWith Organisation: a party is a person XOR an organisation."@en .
+
+party:Organisation a owl:Class ;
+    party:ontoCleanType "Kind" ;
+    rdfs:subClassOf party:Party ;
+    rdfs:label "Organisation"@fr , "Organisation"@en ;
+    skos:prefLabel "Organisation"@en ;
+    skos:definition "A formally constituted organisation, considered as a party independently of any relationship it holds."@en ;
+    rdfs:comment "OntoClean Kind: rigid sortal supplying its own identity criterion. Anchored on FIBO FormalOrganization and foaf:Organization (alignments); BFO grounding inherited from Party."@en ;
+    skos:scopeNote "disjointWith NaturalPerson. The legal-entity specialisation is a SubKind below."@en .
+
+############################
+# SubKind (rigid, +R +I inherited)
+############################
+
+party:LegalEntity a owl:Class ;
+    party:ontoCleanType "SubKind" ;
+    rdfs:subClassOf party:Organisation ;
+    rdfs:label "Personne morale"@fr , "Legal entity"@en ;
+    skos:prefLabel "Legal entity"@en ;
+    skos:definition "An organisation that is a legal person, i.e. a subject of rights and obligations, bearing a Legal Entity Identifier (LEI, ISO 17442)."@en ;
+    rdfs:comment "OntoClean SubKind of the Organisation Kind: it specialises the legal regime and INHERITS the Organisation identity criterion — it does not re-found identity (ADR-129 C-3). The LEI is an extrinsic identifier carried here, never a Kind identity criterion (C-4 / AP-TR-4)."@en ;
+    skos:scopeNote "Anchored on GLEIF L1 LegalEntity (alignments). The LEI attaches HERE, on the SubKind, never on a downstream Role."@en .
+
+# Identity disjointness: a party is a person XOR an organisation (ORSD CQ-G1-4).
+party:NaturalPerson owl:disjointWith party:Organisation .
+
+############################
+# Role (anti-rigid ~R, externally dependent +D) and the relator
+############################
+
+party:PartyRole a owl:Class ;
+    party:ontoCleanType "Role" ;
+    rdfs:label "Rôle de tiers"@fr , "Party role"@en ;
+    skos:prefLabel "Party role"@en ;
+    skos:definition "An anti-rigid, externally-dependent Role played by a Party within a Relationship. The single shared root specialised by every consumer lens (e.g. a banking Client)."@en ;
+    rdfs:comment "OntoClean Role: anti-rigid (−R), relationally dependent (+D). Never subsumes a rigid Kind (L1). One shared taxonomy — consumers rdfs:subClassOf this class, never fork it. Anchored on OMG Commons cmns:PartyRole (alignments) + BFO role (BFO file)."@en ;
+    skos:scopeNote "A Role is not a Kind: do not root a party taxonomy in a Role, and do not attach Kind identity criteria to it."@en .
+
+party:Relationship a owl:Class ;
+    party:ontoCleanType "Relator" ;
+    rdfs:label "Relation"@fr , "Relationship"@en ;
+    skos:prefLabel "Relationship"@en ;
+    skos:definition "A relator that mediates the playing of one or more Roles by Parties (e.g. a contract, a banking relationship)."@en ;
+    rdfs:comment "UFO Relator: the truth-maker that founds role-playing; specifically dependent on its relata. Downstream relators (e.g. banking:BankingRelationship) subclass this."@en ;
+    skos:scopeNote "No single public OWL standard ships a domain-neutral relator class fit for direct reuse; grounded on BFO specifically dependent continuant (BFO file)."@en ;
+    bra0m:whyNoStandard "UFO/OntoUML relator is a foundational-ontology construct with no domain-neutral upstream OWL class to align to (CMNS PartyRole models the role, not the relator). Modelled locally; BFO grounds it as a specifically dependent continuant."@en .
+
+############################
+# Object properties — the Role-playing pattern
+############################
+
+party:plays a owl:ObjectProperty ;
+    rdfs:label "joue"@fr , "plays"@en ;
+    skos:prefLabel "plays"@en ;
+    skos:definition "Relates a Party to a Role it plays. Domain is the Category Party, so any Kind below (natural person or organisation) may play a Role."@en ;
+    rdfs:domain party:Party ; rdfs:range party:PartyRole ;
+    owl:inverseOf party:isPlayedBy .
+
+party:isPlayedBy a owl:ObjectProperty ;
+    rdfs:label "est joué par"@fr , "is played by"@en ;
+    skos:prefLabel "is played by"@en ;
+    skos:definition "Relates a Role to the Party that plays it."@en ;
+    rdfs:domain party:PartyRole ; rdfs:range party:Party .
+
+party:roleInRelationship a owl:ObjectProperty ;
+    rdfs:label "rôle dans la relation"@fr , "role in relationship"@en ;
+    skos:prefLabel "role in relationship"@en ;
+    skos:definition "Relates a Role to the Relationship relator within which it is played."@en ;
+    rdfs:domain party:PartyRole ; rdfs:range party:Relationship .
+
+############################
+# Datatype properties — the LEI as an extrinsic identifier (NOT identity criterion)
+############################
+
+party:legalEntityIdentifier a owl:DatatypeProperty ;
+    rdfs:label "LEI"@fr , "LEI"@en ;
+    skos:prefLabel "Legal Entity Identifier"@en ;
+    skos:definition "Legal Entity Identifier: 20 chars = 18 alphanumeric + 2 check digits (ISO 17442 / GLEIF)."@en ;
+    rdfs:comment "An EXTRINSIC identifier (registry-scoped, assigned, revocable), distinct from the Kind's metaphysical identity criterion (ADR-129 C-4). Attaches to the LegalEntity SubKind, never to a relationship-scoped Role."@en ;
+    skos:scopeNote "Constrained for presence and shape by the C1 SHACL shape, which does not encode identity."@en ;
+    rdfs:domain party:LegalEntity ; rdfs:range xsd:string ;
+    dct:conformsTo <https://www.iso.org/standard/59771.html> .
