@@ -134,3 +134,26 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v5
+
+  live-probe:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      # Post-deploy anti-regression gate: assert every Published namespace
+      # actually resolves on schema.bra0.org (not just present in _site/).
+      # Closes the 2026-06-21 false-green where party/retroeng shipped
+      # Published but 404'd. Pages CDN can lag the deploy; retry before failing.
+      - name: Live IRI probe (schema.bra0.org)
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3 4 5; do
+            echo "== live-probe attempt ${attempt}/5 =="
+            if bash .github/scripts/probe-iris.sh live; then
+              exit 0
+            fi
+            echo "Probe failed; waiting for Pages CDN propagation ..."
+            sleep 30
+          done
+          echo "::error::Live IRI probe still failing after 5 attempts"
+          exit 1

@@ -6,7 +6,12 @@
 #   live   — HTTP-probe https://schema.bra0.org against the same contract.
 #
 # Acceptance contract (ADR-058 §2.12 + ADR-060 §3):
-#   1. Eight directory landings (6 canonical + 2 static) return HTML.
+#   1. Every namespace directory landing returns HTML. The landing-dir set is
+#      DERIVED from the whitelist (parent dir of each row) unioned with the
+#      static-only parents, so a newly-published namespace is probed
+#      automatically — no hardcoded list to forget (anti-regression invariant,
+#      2026-06-21: party/retroeng shipped Published but unresolved because the
+#      old hardcoded CANONICAL_DIRS missed them and the probe stayed green).
 #   2. Every whitelisted TTL is reachable as text/turtle.
 #   3. The single foreign-namespace mirror (neuro-upper) carries the mirror
 #      banner. edgy migrated to canonical; retroeng kept private (ADR-060).
@@ -25,6 +30,9 @@ WHITELIST="${ROOT}/docs-published.txt"
 SITE="${ROOT}/_site"
 BASE_URL="https://schema.bra0.org"
 
+# Hardcoded only for the structural alternate-link check (which dirs carry a
+# pyLODE-rendered canonical landing with <link rel="alternate">). The
+# landing-RESOLUTION check below does NOT use this list — it is whitelist-derived.
 CANONICAL_DIRS=(
   "agent-service-contract"
   "essence-kernel"
@@ -32,7 +40,11 @@ CANONICAL_DIRS=(
   "evidence-os"
   "evidence-os/edcc"
   "cross-domain/edgy"
+  "cross-domain/party"
+  "cross-domain/retroeng"
 )
+# Static-only parents have NO whitelist row of their own (their children do), so
+# they are unioned in explicitly. Everything else is derived from the whitelist.
 STATIC_DIRS=(
   "evidence-os/query"
   "cross-domain"
@@ -40,6 +52,20 @@ STATIC_DIRS=(
 MIRRORS=(
   "capability/neuro-upper.ttl"
 )
+
+# LANDING_DIRS — every namespace dir expected to carry an index.html. DERIVED
+# from the whitelist (parent dir of each non-comment row) ∪ the static-only
+# parents, deduped. This is the auto-covering anti-regression set: publish a new
+# namespace and its landing is probed without touching this script.
+_derive_landing_dirs() {
+  {
+    grep -v '^[[:space:]]*#' "${WHITELIST}" | grep -v '^[[:space:]]*$' \
+      | cut -d';' -f1 | tr -d '[:blank:]' \
+      | while IFS= read -r p; do [ -n "${p}" ] && dirname "${p}"; done
+    printf '%s\n' "${STATIC_DIRS[@]}"
+  } | grep -vx '\.' | sort -u
+}
+mapfile -t LANDING_DIRS < <(_derive_landing_dirs)
 
 fail_count=0
 
@@ -52,8 +78,8 @@ ok() { echo "  ✓ $*"; }
 probe_local() {
   echo "== Local probe (mode=local) =="
 
-  echo "-- Directory landings --"
-  for d in "${CANONICAL_DIRS[@]}" "${STATIC_DIRS[@]}"; do
+  echo "-- Directory landings (whitelist-derived) --"
+  for d in "${LANDING_DIRS[@]}"; do
     idx="${SITE}/${d}/index.html"
     if [ -f "${idx}" ]; then
       ok "${d}/index.html present"
@@ -173,8 +199,8 @@ probe_live() {
   curl_status() { curl -sS -o /dev/null -w '%{http_code}' -L "$1"; }
   curl_ctype()  { curl -sS -o /dev/null -w '%{content_type}' -L "$1"; }
 
-  echo "-- Directory landings (HTML) --"
-  for d in "${CANONICAL_DIRS[@]}" "${STATIC_DIRS[@]}"; do
+  echo "-- Directory landings (HTML, whitelist-derived) --"
+  for d in "${LANDING_DIRS[@]}"; do
     code="$(curl_status "${BASE_URL}/${d}/")"
     if [ "${code}" = "200" ]; then
       ok "GET ${d}/ → 200"

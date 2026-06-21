@@ -33,6 +33,8 @@ WHITELIST = ROOT / "docs-published.txt"
 # omyn.ai/schema/edgy# to schema.bra0.org/cross-domain/edgy#, rupture sèche).
 # `cross-domain/edgy/motivation-registry/` joins per Co-STORM 2026-04-28 / S1
 # Decision A verdict D — Q-NS-2 pattern (ABox under edgy: TBox parent).
+# `cross-domain/party` + `cross-domain/retroeng` join as the C-R1 first deploy
+# onto the IRI train (party socle audited 2026-06-21; retroeng now public).
 CANONICAL_TTL: dict[str, str] = {
     "agent-service-contract": "agent-service-contract.ttl",
     "essence-kernel": "essence-kernel.ttl",
@@ -41,11 +43,13 @@ CANONICAL_TTL: dict[str, str] = {
     "evidence-os/edcc": "edcc-bridge.ttl",
     "cross-domain/edgy": "edgy.ttl",
     "cross-domain/edgy/motivation-registry": "motivation-registry.ttl",
+    "cross-domain/party": "party-role.tbox.ttl",
+    "cross-domain/retroeng": "retroeng.ttl",
 }
 
 # ADR-058 §2.4 + ADR-060 §3 — foreign-namespace mirrors.
-# Only neuro-upper remains: edgy migrated to canonical, retroeng unpublished
-# (kept private pending Sacha's deep review). Adding a new mirror requires
+# Only neuro-upper remains: edgy + retroeng both migrated to canonical
+# (retroeng deployed in C-R1 2026-06-21). Adding a new mirror requires a
 # Sacha-only edit, similar to whitelist discipline. No omyn.ai/schema/* IRI
 # may appear here — see test_mirrors_carries_no_omyn_ai_iri.
 MIRRORS: dict[str, str] = {
