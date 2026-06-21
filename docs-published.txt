@@ -5,9 +5,9 @@
 # Governance: Sacha-only edits. CI renders HTML only for listed entries.
 # Canonical source of truth for TTLs remains bra0_meta/ontologies/.
 
-# Agent governance
-agent-service-contract/agent-service-contract.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
-agent-service-contract/agent-service-contract.shapes.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
+# Agent governance — re-audited at 0.10.0 (ADR-132 §3.1 / ADR-134 pin f8d4dd41), PASS-WITH-2-WARNINGS
+agent-service-contract/agent-service-contract.ttl;Audited;audit/agent-service-contract-ontology-quality-audit-2026-06-21.md;2026-06-21
+agent-service-contract/agent-service-contract.shapes.ttl;Audited;audit/agent-service-contract-ontology-quality-audit-2026-06-21.md;2026-06-21
 
 # Essence Kernel
 essence-kernel/essence-kernel.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
