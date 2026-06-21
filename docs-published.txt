@@ -22,15 +22,15 @@ cross-domain/edgy/edgy.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.m
 # Cross-domain motivation registry (ABox under edgy: TBox — Q-NS-2 pattern, ADR-060)
 cross-domain/edgy/motivation-registry/motivation-registry.ttl;DRAFT;audit/motivation-registry-quality-2026-04-28.md;2026-04-28
 
-# Evidence OS — TBox + shapes
-evidence-os/evidence-os.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
-evidence-os/evo-story.shapes.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
-evidence-os/evo-change-pipeline.shapes.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
-evidence-os/evo-test-evidence.shapes.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
-evidence-os/evo-ambient-agent-policy.shapes.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
+# Evidence OS — TBox + shapes — re-audited 2026-06-21 at 0.2.0 (ADR-132 §3.1 C-R2b / ADR-134); §3.7 BFO gap closed via sidecar; ambient-policy shape re-encoded SPARQLTarget→targetSubjectsOf
+evidence-os/evidence-os.ttl;Audited;audit/evidence-os-ontology-quality-audit-2026-06-21.md;2026-06-21
+evidence-os/evo-story.shapes.ttl;Audited;audit/evidence-os-ontology-quality-audit-2026-06-21.md;2026-06-21
+evidence-os/evo-change-pipeline.shapes.ttl;Audited;audit/evidence-os-ontology-quality-audit-2026-06-21.md;2026-06-21
+evidence-os/evo-test-evidence.shapes.ttl;Audited;audit/evidence-os-ontology-quality-audit-2026-06-21.md;2026-06-21
+evidence-os/evo-ambient-agent-policy.shapes.ttl;Audited;audit/evidence-os-ontology-quality-audit-2026-06-21.md;2026-06-21
 
 # Evidence OS — query result-structure shapes
-evidence-os/query/evoQ-kpi-shapes.shapes.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
+evidence-os/query/evoQ-kpi-shapes.shapes.ttl;Audited;audit/evidence-os-ontology-quality-audit-2026-06-21.md;2026-06-21
 
 # Evidence OS — EDCC extension
 evidence-os/edcc/edcc-bridge.ttl;DRAFT;audit/evidence-os-ontology-quality-2026-04-22.md;2026-04-23
