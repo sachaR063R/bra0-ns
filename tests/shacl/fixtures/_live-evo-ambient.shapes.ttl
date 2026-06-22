@@ -1,0 +1,39 @@
+@prefix sh:      <http://www.w3.org/ns/shacl#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix odrl:    <http://www.w3.org/ns/odrl/2/> .
+@prefix evo:     <https://schema.bra0.org/evidence-os#> .
+
+# HARNESS POSITIVE CONTROL — rudof-sparql-revalidation-2026-06-22.
+# NOT a published artifact (lives under tests/, never in docs-published.txt). This
+# is the SHACL-Core re-encoding of evo:AmbientAgentPolicyShape (mirrors bra0_meta
+# P0 9c15bc4 v0.3.0): sh:SPARQLTarget replaced by sh:targetSubjectsOf + sh:class.
+# It proves the falsifiability harness has teeth — the same bad fixture that the
+# DORMANT published bytes conform on, this live shape MUST violate. Without a
+# positive control a harness of only known-dormant rows could itself be vacuous.
+
+evo:AmbientAgentPolicyShape
+    a sh:NodeShape ;
+    sh:targetSubjectsOf evo:agentRoleProfile ;
+    sh:class odrl:Policy ;
+    sh:property [
+        sh:path dcterms:identifier ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+    ] ,
+    [
+        sh:path evo:agentRoleProfile ;
+        sh:datatype xsd:string ;
+        sh:in ( "Reader" "Writer" "Trigger" ) ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+    ] ,
+    [
+        sh:path evo:declaredContext ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ;
+    ] ,
+    [
+        sh:path odrl:permission ;
+        sh:minCount 1 ;
+    ] .

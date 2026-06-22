@@ -1,0 +1,12 @@
+@prefix odrl:    <http://www.w3.org/ns/odrl/2/> .
+@prefix evo:     <https://schema.bra0.org/evidence-os#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+# POSITIVE fixture — rudof-sparql-revalidation-2026-06-22.
+# A complete ambient-agent odrl:Policy: identifier, a role profile in the enum,
+# a bounded-context IRI, and a permission. The live re-encoding MUST conform.
+<urn:evo-fixture:good-ambient-policy> a odrl:Policy ;
+    dcterms:identifier "good-ambient-policy" ;
+    evo:agentRoleProfile "Reader" ;
+    evo:declaredContext <urn:graph:bounded-context-a> ;
+    odrl:permission [ odrl:action odrl:read ] .

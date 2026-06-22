@@ -1,0 +1,15 @@
+@prefix odrl:    <http://www.w3.org/ns/odrl/2/> .
+@prefix evo:     <https://schema.bra0.org/evidence-os#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+# NEGATIVE fixture — rudof-sparql-revalidation-2026-06-22.
+# An ambient-agent odrl:Policy with two breaches of evo:AmbientAgentPolicyShape:
+#   1. evo:agentRoleProfile "SuperAdmin" is NOT in {Reader, Writer, Trigger} (sh:in).
+#   2. evo:declaredContext is absent (sh:minCount 1, bounded-context IRI).
+# Under the LIVE re-encoding (sh:targetSubjectsOf evo:agentRoleProfile + sh:class
+# odrl:Policy) these MUST fire. Under the PUBLISHED bytes (sh:SPARQLTarget, L26) the
+# focus set is empty on rudof 0.2.8, so the shape is vacuous and this fixture conforms.
+<urn:evo-fixture:bad-ambient-policy> a odrl:Policy ;
+    dcterms:identifier "bad-ambient-policy" ;
+    evo:agentRoleProfile "SuperAdmin" ;
+    odrl:permission [ odrl:action odrl:read ] .

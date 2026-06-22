@@ -1,0 +1,26 @@
+# bra0-ns SHACL falsifiability manifest — rudof-sparql-revalidation-2026-06-22
+#
+# Each whitelisted .shapes.ttl is run against a negative fixture to prove it
+# ACTUALLY FIRES (is not vacuous). rudof 0.2.8 silently no-ops sh:sparql and
+# selects an empty focus set for sh:SPARQLTarget, so a SPARQL-targeted shape
+# conforms-on-breach (false-green). This harness catches that.
+#
+# Fields (pipe-delimited): shapes_path|fixture|expected|note
+#   expected = violate        — shape MUST fire on the bad fixture (real SHACL Core).
+#   expected = conform        — shape MUST stay clean on a good fixture.
+#   expected = known-dormant  — shape is provably vacuous under rudof 0.2.8 (SPARQLTarget);
+#                               conforms-on-breach today (XFAIL, CI green). Flips to
+#                               `violate` the day the re-encoded P0 bytes are published.
+#
+# Governance: fixtures live in tests/shacl/fixtures/. Adding/removing a known-dormant
+# row tracks campaign rudof-sparql-revalidation-2026-06-22 (bra0_meta ADR-135 / 9c15bc4).
+
+# --- Published shapes under test (dormancy quarantine) ---
+evidence-os/evo-ambient-agent-policy.shapes.ttl|evo-ambient-policy-bad.ttl|known-dormant|evo:AmbientAgentPolicyShape sh:SPARQLTarget (L26) dormant; P0 re-encode to sh:targetSubjectsOf+sh:class lands at publication (bra0_meta 9c15bc4 v0.3.0)
+agent-service-contract/agent-service-contract.shapes.ttl|asc-policy-bad.ttl|known-dormant|PolicyCompleteness/Inheritance sh:SPARQLTarget (L279/L324) dormant; P0 re-encode to sh:targetClass+sequence-paths lands at publication (bra0_meta 9c15bc4 v0.7.0)
+
+# --- Positive controls (test-only snapshots, never whitelisted/published) ---
+# Prove the harness has teeth: the same bad fixture the dormant bytes conform on,
+# the re-encoded SHACL Core MUST violate; and it stays clean on a complete policy.
+tests/shacl/fixtures/_live-evo-ambient.shapes.ttl|evo-ambient-policy-bad.ttl|violate|self-test: re-encoded evo Core must fire on the bad ambient policy
+tests/shacl/fixtures/_live-evo-ambient.shapes.ttl|evo-ambient-policy-good.ttl|conform|self-test: re-encoded evo Core must stay clean on a complete ambient policy

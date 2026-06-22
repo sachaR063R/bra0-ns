@@ -58,11 +58,20 @@ jobs:
               echo "::error::Whitelisted TTL not found: $ttl_path"
               exit 1
             fi
-            # TODO: wire shape catalogue once first ontology lands.
-            # Structural parse check at minimum; SHACL shapes added when
-            # the first publication references them.
+            # Structural parse gate for every whitelisted TTL. Real SHACL
+            # falsifiability runs in the next step (tests/shacl harness).
             rudof data -r turtle "$ttl_path" > /dev/null
           done < /tmp/whitelist.txt
+
+      - name: SHACL falsifiability harness (real SHACL, not parse-only)
+        run: |
+          set -euo pipefail
+          # Proves whitelisted .shapes.ttl actually FIRE (are not vacuous). rudof
+          # 0.2.8 silently no-ops sh:sparql / sh:SPARQLTarget; dormant published
+          # shapes are quarantined as known-dormant (XFAIL) and flip to required
+          # green when their re-encoded P0 bytes are published. Campaign:
+          # rudof-sparql-revalidation-2026-06-22 (bra0_meta ADR-135 / 9c15bc4).
+          bash tests/shacl/run-shacl-falsifiability.sh
 
       - name: Summary
         run: |

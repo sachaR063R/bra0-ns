@@ -1,0 +1,25 @@
+@prefix asc:  <https://schema.bra0.org/agent-service-contract#> .
+@prefix odrl: <http://www.w3.org/ns/odrl/2/> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+# NEGATIVE fixture — rudof-sparql-revalidation-2026-06-22.
+# The asc:Mandate itself is VALID under the always-live asc:MandateShape
+# (exactly one odrl:Set policy + autonomyLevel + dct:created), so the only
+# defects left are in the policy completeness/inheritance shapes:
+#   - policy has no rdfs:label, no odrl:prohibition, no odrl:duty (PolicyCompletenessShape)
+#   - policy has no odrl:inheritFrom (PolicyInheritanceShape)
+# Under the LIVE re-encoding (sh:targetClass asc:Mandate + asc:policy sequence
+# paths) these MUST fire. Under the PUBLISHED bytes (sh:SPARQLTarget, L279/L324)
+# the focus set is empty on rudof 0.2.8, so the shapes are vacuous and conform.
+<urn:asc-fixture:bad-mandate> a asc:Mandate ;
+    asc:policy <urn:asc-fixture:bad-policy> ;
+    asc:autonomyLevel "L2" ;
+    dct:created "2026-06-22"^^xsd:date ;
+    asc:validFrom "2026-06-22"^^xsd:date ;
+    asc:validUntil "2026-12-31"^^xsd:date ;
+    asc:reviewDate "2026-09-30"^^xsd:date ;
+    asc:reviewedBy <urn:person:sacha> .
+
+<urn:asc-fixture:bad-policy> a odrl:Set ;
+    odrl:permission [ odrl:action odrl:read ] .
