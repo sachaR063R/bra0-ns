@@ -128,8 +128,8 @@ def test_is_canonical_false_for_unknown_dir():
 
 
 def test_is_mirror_true_for_known_path():
-    # ADR-060 §3 — only neuro-upper remains a mirror after edgy migrated to
-    # canonical (cross-domain/edgy/) and retroeng was unpublished.
+    # ADR-060 §3 — only neuro-upper remains a mirror after edgy and retroeng
+    # both migrated to canonical (cross-domain/{edgy,retroeng}/).
     assert B.is_mirror(make_entry("capability/neuro-upper.ttl"))
 
 
@@ -462,14 +462,17 @@ def test_verify_count_fails_when_mismatch(tmp_path, monkeypatch):
 # ---------------------------------------------------------------------------
 
 
-def test_canonical_ttl_covers_seven_pylode_rendered_directories():
-    """ADR-060 §3 + Co-STORM 2026-04-28 S1 Decision A — seven canonical landings.
+def test_canonical_ttl_covers_ten_pylode_rendered_directories():
+    """ADR-060 §3 + Co-STORM 2026-04-28 S1 Decision A — ten canonical landings.
 
     `cross-domain/edgy/` joins the canonical set: edgy is a bra0-authored
     cross-domain ontology hosted at https://schema.bra0.org/cross-domain/edgy#.
     `cross-domain/edgy/motivation-registry/` joins per Q-NS-2 ABox-under-TBox
     pattern — instance-level motivation registry resolves at
     https://schema.bra0.org/cross-domain/edgy/motivation-registry/.
+    `cross-domain/party` + `cross-domain/retroeng` join in the C-R1 first
+    deploy onto the IRI train (2026-06-21).
+    `cross-domain/grop` joins with the 0.1.1 Audited publication (2026-07-11).
     `evidence-os/query/` remains a static landing (SHACL-only).
     """
     assert set(B.CANONICAL_TTL) == {
@@ -480,14 +483,17 @@ def test_canonical_ttl_covers_seven_pylode_rendered_directories():
         "evidence-os/edcc",
         "cross-domain/edgy",
         "cross-domain/edgy/motivation-registry",
+        "cross-domain/party",
+        "cross-domain/retroeng",
+        "cross-domain/grop",
     }
 
 
 def test_mirrors_covers_one_known_foreign_namespace():
     """ADR-060 §3 — only neuro-upper remains a mirror.
 
-    edgy migrated to canonical (cross-domain/edgy/). retroeng unpublished
-    (Sacha decision 2026-04-26 — kept private until deep review).
+    edgy migrated to canonical (cross-domain/edgy/); retroeng migrated to
+    canonical in the C-R1 deploy (2026-06-21).
     """
     assert set(B.MIRRORS) == {
         "capability/neuro-upper.ttl",
@@ -543,8 +549,8 @@ def test_static_landings_covers_query_and_cross_domain():
     """ADR-058 §2.11 + ADR-060 §3 — two static landings.
 
     - evidence-os/query/ — SHACL-only result-structure shapes.
-    - cross-domain/ — parent grouping for cross-domain ontologies (currently
-      only edgy is published; retroeng kept private pending review).
+    - cross-domain/ — parent grouping for cross-domain ontologies (published
+      children: edgy, party, retroeng, grop).
     """
     assert B.STATIC_LANDINGS == {
         "evidence-os/query": "_layouts/evidence-os-query-landing.html",
