@@ -1,0 +1,236 @@
+# GROP — Generic Runtime Operating Protocol (interop kernel, core TBox)
+# =============================================================================
+# The ultra-abstract, lightweight, domain-agnostic interoperation kernel every
+# Knowledge Space speaks NATIVELY, by construction — the "SMTP floor" of a
+# decentralized KS ecosystem. The smallest possible shared interaction contract.
+#
+# COUPLING LAW (why the kernel must be ultra-light):
+#   The only thing a KS couples to NATIVELY is this minimal generic kernel;
+#   everything richer or contextual is loosely coupled and pluggable. Native
+#   coupling costs ~0 BECAUSE the kernel is minimal and stable. Heterogeneous KS
+#   align THROUGH the kernel without fusing (family resemblance, not isomorphism).
+#
+# THE KERNEL (closed, minimal) — characterized by BORROW, no domain weight:
+#   grop:Kernel            the kernel identity node's class (G2 pins grop:kernel)
+#   grop:Phase (triad)     grop:Request / grop:Offer / grop:Commit — the abstract
+#                          demand -> proposition -> binding lifecycle. CLOSED AT
+#                          THREE (the minimality boundary, gate G1b). Each phase
+#                          prov:wasDerivedFrom an ActivityStreams 2.0 verb.
+#   roles                  as:actor / as:object / as:target reused DIRECTLY (AS2,
+#                          already estate-resident) — who acts, on what, toward whom.
+#   two lanes              grop:context (governing/addressing, PII-shielded) _|_
+#                          grop:message (payload). Own mint — no external vocab
+#                          ships this binding as an importable RDF primitive
+#                          (resolves the logged D-F5-1 debt).
+#   polarity               grop:demandRole / grop:offerRole — the two poles a party
+#                          plays (abstraction of the Beckn BAP/BPP topology).
+#   trust                  grop:attestation — trust by attestation, not central
+#                          authority (borrow W3C VC 2.0 / DID model).
+#   native conformance     grop:speaks — the constitutive membership predicate a KS
+#                          uses to bind to grop:kernel (gate G2).
+#   derivation target      grop:ConcreteProtocol — a downstream contextual protocol
+#                          that prov:wasDerivedFrom grop:kernel (gate G3).
+#
+# EXCLUDED (the minimality boundary): domain nouns (schema:Product, commercial
+#   schema:Offer semantics); commerce objects (schema:Payment/Invoice/
+#   PriceSpecification/PriceComponent — F5-1); LDP transport (inbox/outbox
+#   containers, djangoldp — F5-3). These belong to concrete protocols, never here.
+#
+# KERNEL COHESION (gate G4 / ST-5): this file references NOTHING downstream. The
+#   dependency arrow points UP only (KS -> kernel, concrete protocol -> kernel).
+#   No triple whose subject is grop:kernel points at a bra0m:Module or a
+#   grop:ConcreteProtocol. Upstream borrow provenance (AS2/VC) is carried by
+#   prov:wasDerivedFrom on the individual borrowed terms.
+#
+# GATES (negative-tested LIVE, Oxigraph 0.5.8, 2026-07-07; fixtures + gates ship
+#   under _bmad/work/ks-holonic-cartography-2026-07-07/P3-standard/):
+#   G1b kernel minimality (phase set closed at the triad, targeted by grop:phase
+#       presence regardless of class — closes the ST-3 laundering escape)
+#   G2  native interop (every KS carries grop:speaks grop:kernel)
+#   G3  derivation (every grop:ConcreteProtocol prov:wasDerivedFrom grop:kernel;
+#       necessary-not-sufficient — the profile's own interactions must also pass G1b)
+#   G4  kernel cohesion (upward-only dependency)
+#   composite minimality = G1b AND F5-1 AND F5-3 evaluated at the GROP lane.
+#
+# STATUS: 0.1.1 — DRAFT (borrow characterization, ST-6/ST-7 ratified 2026-07-07;
+#   B1 lexical lift + license IRI + versionIRI applied 2026-07-10 per the Keet
+#   audit grop-quality-2026-07-10.md, annotations only, zero structural change).
+#   NOT published. Intended home schema.bra0.org/cross-domain/grop (publication
+#   gated by the ontology-quality whitelist). Structure + labels English.
+#   Registers native-GROP per the KS-GROP seam change-spec; the KS-side
+#   constitutive-invariant edit (bra0:speaksProtocol) lives in core/knowledge-space.ttl.
+# =============================================================================
+
+@prefix grop:    <https://schema.bra0.org/cross-domain/grop#> .
+@prefix as:      <https://www.w3.org/ns/activitystreams#> .
+@prefix cred:    <https://www.w3.org/2018/credentials#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+@prefix prov:    <http://www.w3.org/ns/prov#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix vann:    <http://purl.org/vocab/vann/> .
+
+<https://schema.bra0.org/cross-domain/grop>
+    a owl:Ontology ;
+    rdfs:label "GROP — Generic Runtime Operating Protocol"@en ;
+    rdfs:comment "The ultra-abstract, lightweight, domain-agnostic interoperation kernel every Knowledge Space speaks natively, by construction. The smallest possible shared interaction contract (demand -> proposition -> binding lifecycle, two lanes, polarity, attestation) from which concrete contextual operating protocols derive. Characterized by borrow (ActivityStreams 2.0 verbs and roles, W3C VC 2.0 attestation model); carries provenance; no domain weight."@en ;
+    skos:scopeNote "Kernel cohesion (G4): references nothing downstream; the dependency arrow points up only (KS -> kernel, concrete protocol -> kernel). Native-GROP is a constitutive KS invariant (sibling of Offline-First, ST-7), NOT a content facet: it does not touch the sealed eight-facet closure. The lifecycle phase set is closed at three (G1b minimality boundary)."@en ;
+    vann:preferredNamespacePrefix "grop" ;
+    vann:preferredNamespaceUri "https://schema.bra0.org/cross-domain/grop#" ;
+    dcterms:creator "sachaR063R" ;
+    dcterms:created "2026-07-07"^^xsd:date ;
+    dcterms:modified "2026-07-10"^^xsd:date ;
+    dcterms:license <https://creativecommons.org/licenses/by-sa/4.0/> ;
+    owl:versionInfo "0.1.1" ;
+    owl:versionIRI <https://schema.bra0.org/cross-domain/grop/0.1.1> .
+
+############################
+# Kernel identity (G2 pins this node)
+############################
+
+grop:Kernel a owl:Class ;
+    rdfs:label "GROP kernel"@en ;
+    skos:prefLabel "GROP kernel"@en ;
+    skos:definition "The class of the single canonical generic runtime operating protocol kernel. A Knowledge Space is native-GROP iff it declares grop:speaks grop:kernel (gate G2). The kernel is the minimal shared interaction contract; keeping it minimal (gate G1b) is what makes native coupling near-free."@en ;
+    rdfs:comment "G2 pins kernel identity to grop:kernel literally: a KS speaking a self-minted heavy 'kernel' does not satisfy native interop (ST-2). Minimality of grop:kernel is enforced by G1b + composite F5-1/F5-3."@en ;
+    skos:scopeNote "Use only to type the single canonical kernel node grop:kernel. Never subclass it for a domain-specific 'kernel' and never mint sibling instances: a self-minted kernel fails native interop by construction (ST-2 / gate G2). Domain richness belongs to grop:ConcreteProtocol derivations."@en .
+
+grop:kernel a grop:Kernel ;
+    rdfs:label "the canonical GROP kernel"@en ;
+    skos:prefLabel "the canonical GROP kernel"@en ;
+    skos:definition "The one canonical kernel instance every Knowledge Space binds to natively. Referenced by grop:speaks (native conformance, G2) and by prov:wasDerivedFrom on every concrete protocol (derivation, G3)."@en ;
+    rdfs:comment "Cohesion (G4): this node carries no triple pointing at any bra0m:Module or grop:ConcreteProtocol. Dependency is upward-only."@en ;
+    skos:scopeNote "The sole legitimate object of grop:speaks and the sole legitimate derivation source (prov:wasDerivedFrom) for a grop:ConcreteProtocol. Reference it; never duplicate it, extend it in place, or attach downstream edges to it (G4 cohesion)."@en .
+
+############################
+# Lifecycle phase — the closed triad (minimality boundary, G1b)
+############################
+
+grop:Phase a owl:Class ;
+    rdfs:label "interaction phase"@en ;
+    skos:prefLabel "interaction phase"@en ;
+    skos:definition "An abstract phase of the kernel interaction lifecycle. The phase set is CLOSED at exactly three members (grop:Request, grop:Offer, grop:Commit): the demand -> proposition -> binding lifecycle. Any node carrying a grop:phase outside the triad is kernel bloat (gate G1b)."@en ;
+    rdfs:comment "Closed at three is the minimality boundary. Growing the phase set is how a generic kernel silently becomes a heavy domain protocol; G1b targets by grop:phase presence regardless of the node's class (ST-3)."@en ;
+    skos:scopeNote "Concrete protocols map their steps ONTO the triad; they never add Phase instances. A phase designator is a shared specification (BFO generically dependent continuant, sidecar 0.2.0), not a runtime event: the temporal parts of running interactions are typed downstream in session data, never here."@en .
+
+grop:Request a grop:Phase ;
+    rdfs:label "Request"@en ;
+    skos:prefLabel "Request"@en ;
+    skos:definition "The demand pole of the lifecycle: a party expresses a need or query. Abstraction of Beckn search/select."@en ;
+    prov:wasDerivedFrom as:Question ;
+    rdfs:comment "Borrowed from ActivityStreams 2.0 as:Question by abstraction (NFR-9 provenance). NOT owl:equivalentClass: exact AS2 activity subtyping of the triad is UNVERIFIED (carried from the facet-5 spike)."@en ;
+    skos:scopeNote "Use only as the object of grop:phase to mark the demand pole of an interaction. One shared designator across ALL interactions; do not instantiate per-interaction request events from it."@en .
+
+grop:Offer a grop:Phase ;
+    rdfs:label "Offer"@en ;
+    skos:prefLabel "Offer"@en ;
+    skos:definition "The proposition pole of the lifecycle: a party proposes to meet a demand. Abstraction of Beckn catalog/on_search."@en ;
+    prov:wasDerivedFrom as:Offer ;
+    rdfs:comment "Borrowed from ActivityStreams 2.0 as:Offer by abstraction. Carries NO commercial schema:Offer semantics (that is a concrete-protocol noun, F5-1). NOT owl:equivalentClass (subtyping UNVERIFIED)."@en ;
+    skos:scopeNote "Use only as the object of grop:phase to mark the proposition pole. Pricing, catalog and commercial offer semantics never attach here — they ride the message lane of a concrete protocol (F5-1 boundary)."@en .
+
+grop:Commit a grop:Phase ;
+    rdfs:label "Commit"@en ;
+    skos:prefLabel "Commit"@en ;
+    skos:definition "The binding pole of the lifecycle: the parties bind to a proposition. Abstraction of Beckn init/confirm."@en ;
+    prov:wasDerivedFrom as:Accept ;
+    rdfs:comment "Borrowed from ActivityStreams 2.0 as:Accept by abstraction. NOT owl:equivalentClass (subtyping UNVERIFIED)."@en ;
+    skos:scopeNote "Use only as the object of grop:phase to mark the binding pole. Settlement, fulfilment and payment semantics are concrete-protocol matter; the kernel records only that the parties bound."@en .
+
+grop:phase a owl:ObjectProperty ;
+    rdfs:label "has interaction phase"@en ;
+    skos:prefLabel "has interaction phase"@en ;
+    rdfs:range grop:Phase ;
+    skos:definition "Assigns the kernel lifecycle phase of an interaction. The object MUST be one of the closed triad; G1b fires on any node carrying a grop:phase outside {grop:Request, grop:Offer, grop:Commit}, whatever the node's class."@en ;
+    rdfs:comment "No rdfs:domain: the property applies to any interaction node regardless of its (possibly domain-typed) class, so minimality cannot be laundered by re-typing the subject (ST-3)."@en ;
+    skos:scopeNote "Attach to any interaction node, whatever its class; the object MUST be one of the closed triad. Do not specialize this property to widen the phase set — G1b fires on any grop:phase value outside {Request, Offer, Commit}."@en .
+
+############################
+# Roles — reused DIRECTLY from ActivityStreams 2.0 (no mint)
+############################
+
+# The kernel reuses as:actor / as:object / as:target directly (AS2 is already
+# estate-resident: ontologies/methodology/kif-ks/srcb.ttl). No re-mint. This
+# annotation records the reuse decision and its provenance without redefining
+# the AS2 terms.
+grop:rolesBorrow a rdf:Statement ;
+    rdfs:label "kernel role vocabulary = ActivityStreams 2.0"@en ;
+    skos:prefLabel "kernel role vocabulary borrow"@en ;
+    skos:definition "The kernel expresses interaction roles with as:actor (who acts), as:object (what is acted on) and as:target (toward whom), reused directly from ActivityStreams 2.0 without re-minting."@en ;
+    rdfs:comment "Annotation node only: it records the reuse decision and its provenance (NFR-9) without redefining the AS2 terms. It carries no runtime semantics and is never referenced by interaction data."@en ;
+    skos:scopeNote "Documentation-only individual. Never use grop:rolesBorrow in interaction data; use the AS2 properties as:actor / as:object / as:target directly."@en ;
+    prov:wasDerivedFrom as:actor , as:object , as:target .
+
+############################
+# Two lanes — own mint (resolves D-F5-1: context _|_ message binding)
+############################
+
+grop:context a owl:ObjectProperty ;
+    rdfs:label "governing lane (context)"@en ;
+    skos:prefLabel "context lane"@en ;
+    skos:definition "The governing/addressing lane of an interaction: routing, identity, provenance — PII-shielded, kept ORTHOGONAL to the payload. One of the two constitutionally-separated lanes of a kernel interaction."@en ;
+    rdfs:comment "Own kernel mint: no external vocabulary ships the two-lane context _|_ message separation as an importable RDF primitive (Beckn has it as an OpenAPI pattern; the Holon CG gestures at it without a stable IRI). This is the logged D-F5-1 debt, resolved here. Design-borrow from the Beckn context lane."@en ;
+    skos:scopeNote "Governing/addressing lane ONLY: routing, identity, provenance. Payload content never rides this lane; the two lanes are constitutionally orthogonal, which is what keeps the governing side PII-shielded and separately governable."@en .
+
+grop:message a owl:ObjectProperty ;
+    rdfs:label "payload lane (message)"@en ;
+    skos:prefLabel "message lane"@en ;
+    skos:definition "The payload lane of an interaction: the substantive content exchanged, kept ORTHOGONAL to the governing/addressing lane. One of the two constitutionally-separated lanes of a kernel interaction."@en ;
+    rdfs:comment "Own kernel mint (D-F5-1). Commerce/domain weight can only ride this lane; composite minimality (G1b AND F5-1 AND F5-3) evaluates the payload lane so weight cannot smuggle past phase closure alone (ST-1). Design-borrow from the Beckn message lane."@en ;
+    skos:scopeNote "Payload lane ONLY: the substantive content exchanged. Domain and commerce weight is admissible here (and only here) at the concrete-protocol level; governing/addressing metadata never rides this lane."@en .
+
+############################
+# Polarity — the two poles a party plays (Beckn BAP/BPP abstraction)
+############################
+
+grop:demandRole a owl:ObjectProperty ;
+    rdfs:label "demand-side role"@en ;
+    skos:prefLabel "demand role"@en ;
+    skos:definition "Marks the party playing the demand pole of an interaction (the requester side). Abstraction of the Beckn BAP (Beckn Application Platform) role."@en ;
+    rdfs:comment "Polarity is expressed at the kernel as a role assignment, carrying no commercial/accounting frame (that belongs to concrete protocols such as ValueFlows)."@en ;
+    skos:scopeNote "Marks the demand pole only. The kernel mints NO role class: the estate-level realisation of the pole is party:PartyRole via the party socle (O-GROP-1 resolved 2026-07-07); buyer/consumer commercial framing belongs to concrete protocols."@en .
+
+grop:offerRole a owl:ObjectProperty ;
+    rdfs:label "offer-side role"@en ;
+    skos:prefLabel "offer role"@en ;
+    skos:definition "Marks the party playing the offer pole of an interaction (the proposing side). Abstraction of the Beckn BPP (Beckn Provider Platform) role."@en ;
+    rdfs:comment "Mirror of grop:demandRole: a kernel-level role assignment with no commercial/accounting frame (provider/seller semantics belong to concrete protocols such as ValueFlows)."@en ;
+    skos:scopeNote "Marks the offer pole only. As with the demand pole, the kernel mints NO role class — the estate-level realisation is party:PartyRole via the party socle (O-GROP-1)."@en .
+
+############################
+# Trust — attestation, not central authority (borrow W3C VC 2.0 / DID)
+############################
+
+grop:attestation a owl:ObjectProperty ;
+    rdfs:label "attestation"@en ;
+    skos:prefLabel "attestation"@en ;
+    skos:definition "Trust carried by attestation rather than a central authority: an interaction (or party) references a verifiable attestation of its claims. Borrows the W3C Verifiable Credentials 2.0 / DID model; binds to the NextGraph attestation socle (Omyn-SECRET)."@en ;
+    prov:wasDerivedFrom cred:VerifiableCredential ;
+    rdfs:comment "Trust filler only: the kernel names the attestation hook; the credential/proof suite is supplied by the borrowed VC 2.0 layer, not re-minted here."@en ;
+    skos:scopeNote "Names the trust HOOK only: point it at a verifiable attestation. Credential formats, proof suites, revocation and verification logic live in the borrowed VC 2.0 / DID layer, never in the kernel."@en .
+
+############################
+# Native conformance predicate (G2 constitutive membership)
+############################
+
+grop:speaks a owl:ObjectProperty ;
+    rdfs:label "speaks (native GROP conformance)"@en ;
+    skos:prefLabel "speaks"@en ;
+    rdfs:range grop:Kernel ;
+    skos:definition "The constitutive membership predicate: a Knowledge Space declares grop:speaks grop:kernel to bind natively to the generic runtime operating protocol. Presence of this binding is enforced as a class-level invariant of every KS (gate G2), a sibling of Offline-First."@en ;
+    rdfs:comment "No rdfs:domain naming a KS class: declaring a domain would make the kernel reference a downstream construct (bra0:KnowledgeSpace), breaching cohesion (G4). The KS-side constitutive invariant bra0:speaksProtocol (core/knowledge-space.ttl) is an upward specialization of this predicate (rdfs:subPropertyOf grop:speaks)."@en ;
+    skos:scopeNote "Declared BY a Knowledge Space, with grop:kernel as the only legitimate object (G2 pins the value). Do not use it to point at concrete protocols — optional protocol bindings go through the KS-side operatingModel pointer, not through the conformance predicate."@en .
+
+############################
+# Derivation target (G3 — concrete protocols descend from the kernel)
+############################
+
+grop:ConcreteProtocol a owl:Class ;
+    rdfs:label "concrete operating protocol"@en ;
+    skos:prefLabel "concrete protocol"@en ;
+    skos:definition "A downstream, contextual operating protocol derived from the kernel per terrain/domain (SEMIC Core -> Application-Profile pattern). Loosely coupled and pluggable; a KS binds to it optionally by resolvable pointer (bra0:operatingModel). ValueFlows is the first such protocol (the value-chain / economic-network profile)."@en ;
+    rdfs:comment "Every grop:ConcreteProtocol MUST carry prov:wasDerivedFrom grop:kernel (gate G3). Derivation is necessary-not-sufficient: the profile's own interactions must also pass G1b (no non-kernel phase, ST-3). This class is a derivation TARGET declared by the kernel; the kernel holds no edge TO any instance (G4)."@en ;
+    skos:scopeNote "Type downstream protocol SPECIFICATIONS only (e.g. grop:valueflows in protocols/valueflows.ttl); instances live outside this file (G4). A conforming instance carries prov:wasDerivedFrom grop:kernel and keeps its interactions inside the kernel triad."@en .
