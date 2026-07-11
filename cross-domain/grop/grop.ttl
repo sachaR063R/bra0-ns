@@ -52,11 +52,11 @@
 #   G4  kernel cohesion (upward-only dependency)
 #   composite minimality = G1b AND F5-1 AND F5-3 evaluated at the GROP lane.
 #
-# STATUS: 0.1.1 — DRAFT (borrow characterization, ST-6/ST-7 ratified 2026-07-07;
-#   B1 lexical lift + license IRI + versionIRI applied 2026-07-10 per the Keet
-#   audit grop-quality-2026-07-10.md, annotations only, zero structural change).
-#   NOT published. Intended home schema.bra0.org/cross-domain/grop (publication
-#   gated by the ontology-quality whitelist). Structure + labels English.
+# STATUS: 0.2.0 — Audited + published (whitelist badge = omat: level, ADR-133).
+#   Keet 6-dim audit grop-quality-2026-07-10.md (S-B' floor 9/9); published
+#   2026-07-11 at schema.bra0.org/cross-domain/grop (both whitelist gates).
+#   0.2.0 adds machine-readable OntoClean meta-typing (R4 / F-SB-5, borrowed
+#   party:ontoCleanType, annotations only). Structure + labels English.
 #   Registers native-GROP per the KS-GROP seam change-spec; the KS-side
 #   constitutive-invariant edit (bra0:speaksProtocol) lives in core/knowledge-space.ttl.
 # =============================================================================
@@ -82,10 +82,10 @@
     vann:preferredNamespaceUri "https://schema.bra0.org/cross-domain/grop#" ;
     dcterms:creator "sachaR063R" ;
     dcterms:created "2026-07-07"^^xsd:date ;
-    dcterms:modified "2026-07-10"^^xsd:date ;
+    dcterms:modified "2026-07-11"^^xsd:date ;
     dcterms:license <https://creativecommons.org/licenses/by-sa/4.0/> ;
-    owl:versionInfo "0.1.1" ;
-    owl:versionIRI <https://schema.bra0.org/cross-domain/grop/0.1.1> .
+    owl:versionInfo "0.2.0" ;
+    owl:versionIRI <https://schema.bra0.org/cross-domain/grop/0.2.0> .
 
 ############################
 # Kernel identity (G2 pins this node)
@@ -234,3 +234,20 @@ grop:ConcreteProtocol a owl:Class ;
     skos:definition "A downstream, contextual operating protocol derived from the kernel per terrain/domain (SEMIC Core -> Application-Profile pattern). Loosely coupled and pluggable; a KS binds to it optionally by resolvable pointer (bra0:operatingModel). ValueFlows is the first such protocol (the value-chain / economic-network profile)."@en ;
     rdfs:comment "Every grop:ConcreteProtocol MUST carry prov:wasDerivedFrom grop:kernel (gate G3). Derivation is necessary-not-sufficient: the profile's own interactions must also pass G1b (no non-kernel phase, ST-3). This class is a derivation TARGET declared by the kernel; the kernel holds no edge TO any instance (G4)."@en ;
     skos:scopeNote "Type downstream protocol SPECIFICATIONS only (e.g. grop:valueflows in protocols/valueflows.ttl); instances live outside this file (G4). A conforming instance carries prov:wasDerivedFrom grop:kernel and keeps its interactions inside the kernel triad."@en .
+
+############################
+# OntoClean / UFO meta-typing — machine-readable (R4 / F-SB-5, ADR-129 §2.1)
+############################
+
+# Borrow: party:ontoCleanType is the estate's single OntoClean annotation
+# property (party socle, ADR-129); reused directly, no re-mint (Conciseness).
+# Values transcribe the sidecar prose analysis (alignments/grop-bfo-2020.ttl
+# header, resolved 2026-07-10): all three kernel classes are rigid Kinds.
+# Laws: L1 holds vacuously (no internal subsumption, no anti-rigid class);
+# L2 holds (the demand/offer poles are deliberately NOT minted as classes —
+# O-GROP-1 / AP-TR-4). Prefix declared here, next to its only use.
+@prefix party: <https://schema.bra0.org/cross-domain/party#> .
+
+grop:Kernel           party:ontoCleanType "Kind" .   # +R +I +U — identity criterion = the normative contract content; exactly one instance (G2)
+grop:Phase            party:ontoCleanType "Kind" .   # +R +I — identity criterion = position in the lifecycle; enumeration closed at three (G1b)
+grop:ConcreteProtocol party:ontoCleanType "Kind" .   # +R +I — derivation from the kernel is an IMMUTABLE historical property (G3), never an anti-rigid Role

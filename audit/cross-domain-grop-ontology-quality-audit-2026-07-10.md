@@ -344,3 +344,60 @@ cross-domain/grop/grop.ttl;Audited;audit/cross-domain-grop-ontology-quality-audi
 
 Re-audit delta closed 2026-07-11 — S-B′ (same session chain). Sacha countersignature required
 for promotion and every publication act.
+
+# S-B″ — F-SB-5 lift delta (2026-07-11, kernel 0.2.0)
+
+Scope: closes finding F-SB-5 (R4 machine-readable OntoClean). Annotation-only kernel edit,
+Sacha GO 2026-07-11 ("go tous, dans l'ordre").
+
+## Change
+
+- `grop.ttl` 0.1.1 → **0.2.0**: appended OntoClean section — `party:ontoCleanType "Kind"` on
+  all three kernel classes (borrowed from the party socle, ADR-129 §2.1; no re-mint), values
+  transcribing the sidecar prose analysis verbatim (Kernel +R+I+U · Phase +R+I · ConcreteProtocol
+  +R+I; L1 vacuous, L2 holds — O-GROP-1). STATUS header prose fixed (was "DRAFT / NOT published",
+  now Audited + published per ADR-133 badge-is-level). **All line anchors L94-L237 preserved**
+  (section appended at EOF, STATUS rewritten at iso-line-count): zero companion anchor churn.
+- New gate `queries/ontoclean-coverage-gate.rq` — every local `owl:Class` must carry the
+  annotation; 0 rows = PASS.
+- Sidecar `alignments/grop-bfo-2020.ttl`: R4 marked DONE (header comment only).
+- Companions `grop.shapes.ttl` / `grop.shex` / style guide: version tracking 0.2.0; node
+  contract, shapes and parity UNCHANGED.
+
+## Mechanical evidence (run LIVE 2026-07-11)
+
+| Check | Result | Status |
+|---|---|---|
+| rudof shacl-validate (kernel 0.2.0 + valueflows) | No Errors found | **PROVEN** |
+| G1b/G2/G3/G4/ST4 + F5-1/F5-2 artifact gates (Oxigraph) | 0 rows each | **PROVEN** |
+| BFO grounding gate | 0 rows | **PROVEN** |
+| OntoClean triples loaded | 3/3, all "Kind" | **PROVEN** |
+| OntoClean coverage gate | 0 rows | **PROVEN** |
+| Coverage gate NEGATIVE CONTROL | mutated copy (Phase annotation dropped) fires 1 row | **PROVEN** — gate live |
+
+## ADR-134 re-pinning (supersedes the S-B′ table)
+
+| Artifact | Version | Pin (git hash-object) |
+|---|---|---|
+| grop.ttl | 0.2.0 | `b7f3ce62` |
+| grop.shapes.ttl | 0.2.0 | `770e6718` |
+| grop.shex | 0.2.0 | `90f5f8e1` |
+| grop-style-guide.md | — | `e2ded932` |
+| alignments/grop-bfo-2020.ttl | 0.2.0 (R4 note) | `88f6d053` |
+| queries/ontoclean-coverage-gate.rq | new | `386f6b18` |
+
+## Findings status
+
+| Finding | Status |
+|---|---|
+| F-SB-1 | **CLOSED** — valueflows live-triple map committed b1d777e (Sacha GO 2026-07-11) |
+| F-SB-5 | **LIFTED** — this delta; Accuracy warning falls |
+| F-SB-6 | OPEN — cq: audit next (same GO chain) |
+| F-SB-8 | OPEN — parity/coverage scripts next (same GO chain) |
+
+## Restated verdict
+
+**Floor 9/9 PASS; Accuracy warning (F-SB-5) lifted. Aggregate: PASS — AUDITED
+(`omat:Audited`) carried forward to `cross-domain/grop` 0.2.0, pin `b7f3ce62`.**
+Whitelist re-pin rows (both gates) and bra0-ns re-stage remain Sacha-only acts,
+executed under the same 2026-07-11 GO.

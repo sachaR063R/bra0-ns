@@ -41,5 +41,5 @@ evidence-os/edcc/edcc-domain-holon.ttl;DRAFT;audit/evidence-os-ontology-quality-
 cross-domain/party/party-role.tbox.ttl;Published;audit/cross-domain-party-ontology-quality-audit-2026-06-21.md;2026-06-21
 cross-domain/retroeng/retroeng.ttl;Published;audit/cross-domain-retroeng-ontology-quality-audit-2026-04-20.md;2026-06-21
 
-# GROP interop kernel 0.1.1 — Keet 6-dim S-B + S-B' delta (floor 9/9), pin 7ede6bba (ADR-134)
+# GROP interop kernel 0.2.0 — Keet 6-dim S-B + S-B' + S-B'' deltas (floor 9/9), pin b7f3ce62 (ADR-134)
 cross-domain/grop/grop.ttl;Audited;audit/cross-domain-grop-ontology-quality-audit-2026-07-10.md;2026-07-11
