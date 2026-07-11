@@ -63,6 +63,18 @@ jobs:
             rudof data -r turtle "$ttl_path" > /dev/null
           done < /tmp/whitelist.txt
 
+      - name: Landing-generator registry tests (pytest)
+        run: |
+          set -euo pipefail
+          # Guards the CANONICAL_TTL / MIRRORS / STATIC_LANDINGS registries in
+          # build_namespace_landings.py against drift: every publication that
+          # adds a whitelist row must extend the generator registry, or the
+          # registry-shape test fails here instead of the deploy-time E2E
+          # probe (grop 0.1.1 incident, 2026-07-11: generator drifted two
+          # publications behind while the suite sat red and unwired).
+          pip install --quiet pytest
+          python3 -m pytest tests/test_build_namespace_landings.py -q
+
       - name: SHACL falsifiability harness (real SHACL, not parse-only)
         run: |
           set -euo pipefail
