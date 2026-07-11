@@ -35,6 +35,8 @@ WHITELIST = ROOT / "docs-published.txt"
 # Decision A verdict D — Q-NS-2 pattern (ABox under edgy: TBox parent).
 # `cross-domain/party` + `cross-domain/retroeng` join as the C-R1 first deploy
 # onto the IRI train (party socle audited 2026-06-21; retroeng now public).
+# `cross-domain/grop` joins with the 0.1.1 Audited publication (Keet S-B +
+# S-B' delta, whitelist row 2026-07-11).
 CANONICAL_TTL: dict[str, str] = {
     "agent-service-contract": "agent-service-contract.ttl",
     "essence-kernel": "essence-kernel.ttl",
@@ -45,6 +47,7 @@ CANONICAL_TTL: dict[str, str] = {
     "cross-domain/edgy/motivation-registry": "motivation-registry.ttl",
     "cross-domain/party": "party-role.tbox.ttl",
     "cross-domain/retroeng": "retroeng.ttl",
+    "cross-domain/grop": "grop.ttl",
 }
 
 # ADR-058 §2.4 + ADR-060 §3 — foreign-namespace mirrors.
