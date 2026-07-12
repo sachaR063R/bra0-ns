@@ -37,6 +37,8 @@ WHITELIST = ROOT / "docs-published.txt"
 # onto the IRI train (party socle audited 2026-06-21; retroeng now public).
 # `cross-domain/grop` joins with the 0.1.1 Audited publication (Keet S-B +
 # S-B' delta, whitelist row 2026-07-11).
+# `cross-domain/cq` joins with the 0.1.0 Audited publication (ADR-130 §2.5
+# pilot, Keet audit 2026-07-11, whitelist row 2026-07-12).
 CANONICAL_TTL: dict[str, str] = {
     "agent-service-contract": "agent-service-contract.ttl",
     "essence-kernel": "essence-kernel.ttl",
@@ -48,6 +50,7 @@ CANONICAL_TTL: dict[str, str] = {
     "cross-domain/party": "party-role.tbox.ttl",
     "cross-domain/retroeng": "retroeng.ttl",
     "cross-domain/grop": "grop.ttl",
+    "cross-domain/cq": "cq.ttl",
 }
 
 # ADR-058 §2.4 + ADR-060 §3 — foreign-namespace mirrors.

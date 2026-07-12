@@ -462,8 +462,8 @@ def test_verify_count_fails_when_mismatch(tmp_path, monkeypatch):
 # ---------------------------------------------------------------------------
 
 
-def test_canonical_ttl_covers_ten_pylode_rendered_directories():
-    """ADR-060 §3 + Co-STORM 2026-04-28 S1 Decision A — ten canonical landings.
+def test_canonical_ttl_covers_eleven_pylode_rendered_directories():
+    """ADR-060 §3 + Co-STORM 2026-04-28 S1 Decision A — eleven canonical landings.
 
     `cross-domain/edgy/` joins the canonical set: edgy is a bra0-authored
     cross-domain ontology hosted at https://schema.bra0.org/cross-domain/edgy#.
@@ -473,6 +473,7 @@ def test_canonical_ttl_covers_ten_pylode_rendered_directories():
     `cross-domain/party` + `cross-domain/retroeng` join in the C-R1 first
     deploy onto the IRI train (2026-06-21).
     `cross-domain/grop` joins with the 0.1.1 Audited publication (2026-07-11).
+    `cross-domain/cq` joins with the 0.1.0 Audited publication (2026-07-12).
     `evidence-os/query/` remains a static landing (SHACL-only).
     """
     assert set(B.CANONICAL_TTL) == {
@@ -486,6 +487,7 @@ def test_canonical_ttl_covers_ten_pylode_rendered_directories():
         "cross-domain/party",
         "cross-domain/retroeng",
         "cross-domain/grop",
+        "cross-domain/cq",
     }
 
 
