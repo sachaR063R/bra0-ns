@@ -43,3 +43,6 @@ cross-domain/retroeng/retroeng.ttl;Published;audit/cross-domain-retroeng-ontolog
 
 # GROP interop kernel 0.2.0 — Keet 6-dim S-B + S-B' + S-B'' deltas (floor 9/9), pin b7f3ce62 (ADR-134)
 cross-domain/grop/grop.ttl;Audited;audit/cross-domain-grop-ontology-quality-audit-2026-07-10.md;2026-07-11
+
+# cq: applicability-ladder scheme 0.1.0 (ADR-130 §2.5 pilot) — Keet 6-dim floor 9/9 after lift, pin 4be42171 (ADR-134)
+cross-domain/cq/cq.ttl;Audited;audit/cross-domain-cq-ontology-quality-audit-2026-07-11.md;2026-07-12

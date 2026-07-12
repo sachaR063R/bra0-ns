@@ -1,0 +1,223 @@
+# cq: — Competency-Question Applicability Ladder (ADR-130 §2.5 realization, PILOT)
+# =============================================================================
+# PROVENANCE: this file realizes, verbatim, the indexing scheme specified in
+# _bmad/docs/adr-130-competency-question-applicability-ladder.md §2.5 ("Indexing
+# scheme spec (A2)"). ADR-130 supplements the TBox/ABox binary with a graded
+# applicability ladder (vertical altitude axis) crossed with an orthogonal
+# contextual-frame axis; every competency question is indexed on both. Off-scale
+# evaluation is, by construction, a false-GAP (posed above the binding rung) or
+# a vacuous-PASS (posed below, without a grounded population) — ADR-130 §2.1, §4.
+#
+# PILOT RESOLUTIONS (recorded here as the realization's working positions):
+#   Q-130-4 — the cq: scheme lives in its OWN cross-domain module
+#             (ontologies/cross-domain/cq/), and is itself a rung-L1 artefact:
+#             it grounds on no domain (ADR-130 §2.5 last line).
+#   Q-130-5 — term-rung is ASSERTED per term via cq:definedAtScale (this file
+#             mints the vehicle). The DRYer alternative — deriving term-rung by
+#             SPARQL from an ontology→rung map — is a NAMED FOLLOW-UP, not built
+#             here (no such map exists yet; P1 forbids minting it speculatively).
+#   Q-130-6 — contextual frames are SCALE-INVARIANT labels: they carry no
+#             altitude of their own (ADR-130 §5 provisional position, adopted
+#             for the pilot). Hence frames never carry cq:definedAtScale.
+#
+# PILOT STATUS: ADR-130 stays PROPOSED. This mint + the GROP corpus
+# (grop/grop-cqs.ttl) + the two gates (cq.shapes.ttl SHACL well-formedness,
+# queries/binding-coherence-gate.rq Oxigraph SPARQL) constitute the pilot.
+# The party / banking / Indosuez retro-index required for ACCEPTED is DEFERRED.
+#
+# CLOSED MINT (P1 least power): exactly the §2.5 scheme — 2 classes, 4 object
+# properties + 1 datatype property, 4 rung individuals, 1 SKOS scheme + 5 frame
+# concepts. Nothing else. The 4-rung ladder is the closed v0.1 enumeration
+# (ADR-130 §2.2, Q-130-1 resolved); the frame scheme is OPEN (Q-130-2 resolved)
+# and seeded with the canonical set + cq:foundational (justified at its entry).
+#
+# GATES over any cq:-indexed corpus: well-formedness = cq.shapes.ttl (SHACL
+# Core ONLY — rudof 0.2.8 silently no-ops sh:sparql, ADR-128); binding-coherence
+# = queries/binding-coherence-gate.rq (standalone Oxigraph SPARQL, 0 rows =
+# PASS). BFO systematic grounding: alignments/cq-bfo-2020.ttl +
+# queries/grounding-gate-bfo.rq (Keet §3.7 / ADR-129 §2.4 discipline).
+#
+# STATUS: 0.1.0 — DRAFT (pilot). Author sachaR063R. License CC BY-SA 4.0.
+# =============================================================================
+
+@prefix cq:      <https://schema.bra0.org/cross-domain/cq#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix vann:    <http://purl.org/vocab/vann/> .
+
+<https://schema.bra0.org/cross-domain/cq>
+    a owl:Ontology ;
+    rdfs:label "Competency-question applicability ladder"@en , "Échelle d'applicabilité des questions de compétence"@fr ;
+    rdfs:comment "Realization of the ADR-130 §2.5 indexing scheme: a competency question carries exactly one binding rung on a closed 4-rung altitude ladder (upper / cross-domain / domain / grounded-context, integer ordinals 0..3) and a set of 1..n contextual frames from an open SKOS scheme. cq:asksAbout names the interrogated terms; cq:definedAtScale asserts each term's own rung (Q-130-5 pilot vehicle) so the binding-coherence gate can detect guaranteed false-GAPs. The scheme is itself a cross-domain (rung L1) artefact: it grounds on no domain."@en ;
+    skos:scopeNote "Additive annotation only: TBox/ABox statements of indexed corpora are untouched (ADR-130 §3, no retro-break). This module indexes competency questions; it never carries the questions' subject-matter vocabulary."@en ;
+    vann:preferredNamespacePrefix "cq" ;
+    vann:preferredNamespaceUri "https://schema.bra0.org/cross-domain/cq#" ;
+    dcterms:creator "sachaR063R" ;
+    dcterms:license <https://creativecommons.org/licenses/by-sa/4.0/> ;
+    dcterms:created "2026-07-10"^^xsd:date ;
+    dcterms:modified "2026-07-10"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    owl:versionIRI <https://schema.bra0.org/cross-domain/cq/0.1.0> .
+
+############################
+# Classes
+############################
+
+cq:CompetencyQuestion a owl:Class ;
+    rdfs:label "competency question"@en , "question de compétence"@fr ;
+    skos:prefLabel "competency question"@en ;
+    skos:definition "A question a knowledge artefact must be able to answer, indexed on two orthogonal axes: exactly one binding rung on the applicability ladder (cq:appliesAtScale) and one or more contextual frames (cq:contextualFrame). Its verdict is trustworthy only when evaluated at its declared scale."@en ;
+    rdfs:comment "ADR-130 §2.4 indexing rule. A CQ is answerable only where all its terms are bound; its binding rung is the LOWEST ordinal at which all its cq:asksAbout terms are defined (§2.2). Posed above that rung it is a false-GAP; posed below without a grounded population it is a vacuous-PASS."@en ;
+    skos:scopeNote "Instances live in per-corpus CQ files (e.g. grop/grop-cqs.ttl, cq-cqs.ttl), never in this scheme module. Well-formedness is gated by cq.shapes.ttl; scale coherence by queries/binding-coherence-gate.rq."@en .
+
+cq:ScaleRung a owl:Class ;
+    rdfs:label "scale rung"@en , "barreau d'échelle"@fr ;
+    skos:prefLabel "scale rung"@en ;
+    skos:definition "A rung of the vertical applicability ladder: an altitude of ontological abstraction at which terms are bound and competency questions are answerable. Each rung carries exactly one integer ordinal (cq:scaleOrdinal) so 'answerable at this rung or below' is a monotonic comparison."@en ;
+    rdfs:comment "ADR-130 §2.2, Q-130-1 resolved: the v0.1 enumeration is CLOSED at four members (cq:upper, cq:crossDomain, cq:domain, cq:groundedContext), mapping 1:1 onto the live architecture (BFO upper · cross-domain socles · KS modules · deployed projection). Least power (P1) forbids open-ending what the architecture already closes."@en ;
+    skos:scopeNote "An intermediate rung (e.g. a mid-level between ordinals 0 and 1) can later be inserted by ordinal without renumbering (§2.2); until then the four individuals below are the whole extension."@en .
+
+############################
+# Properties
+############################
+
+cq:appliesAtScale a owl:ObjectProperty ;
+    rdfs:label "applies at scale"@en , "s'applique à l'échelle"@fr ;
+    skos:prefLabel "applies at scale"@en ;
+    rdfs:domain cq:CompetencyQuestion ;
+    rdfs:range cq:ScaleRung ;
+    skos:definition "Binds a competency question to exactly one rung — its determinate binding rung, the lowest ordinal at which all its terms are defined."@en ;
+    rdfs:comment "ADR-130 §2.4: exactly one rung per CQ (cardinality enforced by cq.shapes.ttl, minCount 1 / maxCount 1). One home altitude keeps the false-GAP / vacuous-PASS logic crisp; the CQ inherits downward to more grounded rungs."@en ;
+    skos:scopeNote "Coherence with the rungs of the CQ's cq:asksAbout terms is the binding-coherence gate (queries/binding-coherence-gate.rq), a graph-level Oxigraph check — never an axiom here."@en .
+
+cq:scaleOrdinal a owl:DatatypeProperty ;
+    rdfs:label "scale ordinal"@en , "ordinal d'échelle"@fr ;
+    skos:prefLabel "scale ordinal"@en ;
+    rdfs:domain cq:ScaleRung ;
+    rdfs:range xsd:integer ;
+    skos:definition "The integer altitude of a rung (0 = most abstract). Makes 'answerable at this rung or below' a monotonic integer comparison and lets an intermediate rung be inserted by ordinal without renumbering."@en ;
+    rdfs:comment "ADR-130 §2.2. v0.1 assigns 0..3 to the closed four-rung backbone. Exactly one ordinal per rung (enforced by cq.shapes.ttl)."@en ;
+    skos:scopeNote "The ordinal is a comparison device, never an identifier: rungs are identified by their IRIs."@en .
+
+cq:contextualFrame a owl:ObjectProperty ;
+    rdfs:label "contextual frame"@en , "cadre contextuel"@fr ;
+    skos:prefLabel "contextual frame"@en ;
+    rdfs:domain cq:CompetencyQuestion ;
+    rdfs:range skos:Concept ;
+    skos:definition "The lens (or lenses) through which a competency question matters — regulatory, commercial, data-governance, operational, foundational, or a later-seeded frame of cq:FrameScheme. A CQ carries a set of 1..n frames."@en ;
+    rdfs:comment "ADR-130 §2.3 (Q-130-2 resolved): the frame axis is ORTHOGONAL to altitude — the same L2 term is interrogated by a regulatory frame and a data-governance frame. Frames are scale-invariant labels (Q-130-6 pilot position): they never carry cq:definedAtScale."@en ;
+    skos:scopeNote "Range is any skos:Concept in cq:FrameScheme; the scheme is deliberately OPEN (domain-specific frames are unbounded — a closed list would force churn at every new KS)."@en .
+
+cq:asksAbout a owl:ObjectProperty ;
+    rdfs:label "asks about"@en , "interroge"@fr ;
+    skos:prefLabel "asks about"@en ;
+    rdfs:domain cq:CompetencyQuestion ;
+    rdfs:range rdfs:Resource ;
+    skos:definition "The term(s) or shape(s) a competency question interrogates: a class, a property, or a SHACL shape. Consumed by the binding-coherence gate."@en ;
+    rdfs:comment "ADR-130 §2.4 / §2.6: for each CQ, the maximum cq:scaleOrdinal among the cq:definedAtScale rungs of its cq:asksAbout terms must be ≤ the CQ's declared cq:appliesAtScale ordinal — otherwise the CQ is a guaranteed false-GAP and the gate returns it."@en ;
+    skos:scopeNote "Name the REAL terms of the question, never evidence used to answer it (the ADR-130 §4 altitude subtlety: the LEI property is L1, the LEI presence constraint is L2 — conflating them is AP-TR-4 at CQ level)."@en .
+
+cq:definedAtScale a owl:ObjectProperty ;
+    rdfs:label "defined at scale"@en , "défini à l'échelle"@fr ;
+    skos:prefLabel "defined at scale"@en ;
+    rdfs:range cq:ScaleRung ;
+    skos:definition "Asserts, per term, the rung at which the term is defined. This is the Q-130-5 pilot assertion vehicle: term-rung is stated explicitly on each term referenced by a cq:asksAbout."@en ;
+    rdfs:comment "Q-130-5 pilot resolution: ASSERTED per term. The alternative — DERIVING term-rung by a SPARQL locating the defining ontology's rung — needs an ontology→rung map that does not exist yet; building that map and switching the gate to derivation is a NAMED FOLLOW-UP (P1: no speculative mint)."@en ;
+    skos:scopeNote "No rdfs:domain: any resource a CQ asks about (class, property, shape, deployed-population designator) may carry a rung. Frames never carry it (Q-130-6, scale-invariant)."@en .
+
+############################
+# The closed 4-rung ladder (ADR-130 §2.2, Q-130-1 resolved)
+############################
+
+cq:upper a cq:ScaleRung ;
+    rdfs:label "upper"@en , "supérieur"@fr ;
+    skos:prefLabel "upper"@en ;
+    cq:scaleOrdinal 0 ;
+    skos:definition "Rung 0: foundational categories and meta-laws are bound here — BFO 2020, OntoClean L1/L2."@en ;
+    rdfs:comment "ADR-130 §2.2 row 0. Example CQ: 'Does any anti-rigid type subsume a rigid type?'"@en ;
+    skos:scopeNote "bra0 locus: BFO 2020 (ISO/IEC 21838-2), OntoClean laws."@en .
+
+cq:crossDomain a cq:ScaleRung ;
+    rdfs:label "cross-domain"@en , "transverse aux domaines"@fr ;
+    skos:prefLabel "cross-domain"@en ;
+    cq:scaleOrdinal 1 ;
+    skos:definition "Rung 1: the domain-agnostic socle backbone is bound here — party socle, edgy:, re:, grop:, and this cq: scheme itself."@en ;
+    rdfs:comment "ADR-130 §2.2 row 1. Example CQ: 'Is Party a Category (not a Kind)?' The cq: scheme is itself an L1 artefact (§2.5, Q-130-4)."@en ;
+    skos:scopeNote "bra0 locus: ontologies/cross-domain/* socles."@en .
+
+cq:domain a cq:ScaleRung ;
+    rdfs:label "domain"@en , "domaine"@fr ;
+    skos:prefLabel "domain"@en ;
+    cq:scaleOrdinal 2 ;
+    skos:definition "Rung 2: the vocabulary and policy of a regulated or business domain are bound here — banking, wealth, FAM."@en ;
+    rdfs:comment "ADR-130 §2.2 row 2. Example CQ: 'Must every LegalEntity carry a well-formed LEI?' — a presence CONSTRAINT is a domain policy even when the property it constrains is L1 (§4 altitude subtlety)."@en ;
+    skos:scopeNote "bra0 locus: KS domain modules."@en .
+
+cq:groundedContext a cq:ScaleRung ;
+    rdfs:label "grounded context"@en , "contexte ancré"@fr ;
+    skos:prefLabel "grounded context"@en ;
+    cq:scaleOrdinal 3 ;
+    skos:definition "Rung 3: a deployed projection together with its population is bound here — a concrete establishment's bundle and fixtures."@en ;
+    rdfs:comment "ADR-130 §2.2 row 3. Example CQ: 'Which clients of THIS establishment lack an LEI?' A domain constraint is only meaningfully PASS/FAIL against a grounded population at this rung (§4 vacuous-PASS demonstration)."@en ;
+    skos:scopeNote "bra0 locus: deployed projections + fixtures (e.g. the Indosuez bundle)."@en .
+
+############################
+# Contextual-frame scheme (ADR-130 §2.3, Q-130-2 resolved: OPEN)
+############################
+
+cq:FrameScheme a skos:ConceptScheme ;
+    rdfs:label "contextual-frame scheme"@en , "schéma des cadres contextuels"@fr ;
+    skos:prefLabel "contextual-frame scheme"@en ;
+    skos:definition "The open SKOS scheme of lenses through which competency questions matter. Seeded with the ADR-130 §2.3 canonical set plus cq:foundational; extensible without a version cut (frames are domain-specific and unbounded)."@en ;
+    rdfs:comment "Q-130-2 resolved: a closed list is refused — it would force churn at every new KS. Frames are scale-invariant (Q-130-6): orthogonal to the rung ladder."@en ;
+    skos:scopeNote "New frames are added as skos:Concept + skos:inScheme cq:FrameScheme in the consuming corpus or, when estate-wide, here."@en .
+
+cq:regulatory a skos:Concept ;
+    skos:inScheme cq:FrameScheme ;
+    rdfs:label "regulatory"@en , "réglementaire"@fr ;
+    skos:prefLabel "regulatory"@en ;
+    skos:definition "The compliance lens: the CQ matters because a regulation or standard mandates the answer (e.g. ISO 17442 LEI conformance)."@en ;
+    rdfs:comment "ADR-130 §2.3 canonical seed."@en ;
+    skos:scopeNote "Scale-invariant (Q-130-6)."@en .
+
+cq:commercial a skos:Concept ;
+    skos:inScheme cq:FrameScheme ;
+    rdfs:label "commercial"@en , "commercial"@fr ;
+    skos:prefLabel "commercial"@en ;
+    skos:definition "The business-value lens: the CQ matters for offer, demand, or client-relationship reasons."@en ;
+    rdfs:comment "ADR-130 §2.3 canonical seed."@en ;
+    skos:scopeNote "Scale-invariant (Q-130-6)."@en .
+
+cq:dataGovernance a skos:Concept ;
+    skos:inScheme cq:FrameScheme ;
+    rdfs:label "data governance"@en , "gouvernance des données"@fr ;
+    skos:prefLabel "data governance"@en ;
+    skos:definition "The stewardship lens: the CQ matters for identifier completeness, provenance, quality, or custody of data."@en ;
+    rdfs:comment "ADR-130 §2.3 canonical seed."@en ;
+    skos:scopeNote "Scale-invariant (Q-130-6)."@en .
+
+cq:operational a skos:Concept ;
+    skos:inScheme cq:FrameScheme ;
+    rdfs:label "operational"@en , "opérationnel"@fr ;
+    skos:prefLabel "operational"@en ;
+    skos:definition "The run-the-system lens: the CQ matters for deployment, conformance-in-operation, or day-to-day process reasons."@en ;
+    rdfs:comment "ADR-130 §2.3 canonical seed."@en ;
+    skos:scopeNote "Scale-invariant (Q-130-6)."@en .
+
+# cq:foundational — seeded BEYOND the §2.3 canonical four, with justification:
+# (a) ADR-130 §4 itself indexes its first worked-example CQ ("No anti-rigid
+#     subsumes a rigid type") under the frame "foundational"; (b) the delivered
+#     pilot corpus grop/grop-cqs.ttl already uses cq:foundational on CQ-G1/G2/G3,
+#     CQ-S1/S2/S4 and CQ-C3. The scheme is OPEN (Q-130-2), so this seed is a
+#     legitimate extension, recorded here so the frame resolves in-scheme.
+cq:foundational a skos:Concept ;
+    skos:inScheme cq:FrameScheme ;
+    rdfs:label "foundational"@en , "fondationnel"@fr ;
+    skos:prefLabel "foundational"@en ;
+    skos:definition "The formal-rigor lens: the CQ matters because upper-ontology grounding, OntoClean law compliance, or structural soundness of the artefact itself is at stake."@en ;
+    rdfs:comment "Used by ADR-130 §4 (worked example row 1) and by the grop-cqs.ttl pilot corpus; seeded here so the open scheme (Q-130-2) resolves it. A frame is a LENS, not an altitude: cq:foundational on an L1 CQ does not make the CQ an L0 question (Q-130-6)."@en ;
+    skos:scopeNote "Scale-invariant (Q-130-6)."@en .
