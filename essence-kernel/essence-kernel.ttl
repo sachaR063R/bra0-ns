@@ -1,49 +1,42 @@
 @prefix ess:  <https://schema.bra0.org/essence-kernel#> .
-@prefix bfo:  <http://purl.obolibrary.org/obo/BFO_> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix owl:  <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
 @prefix dct:  <http://purl.org/dc/terms/> .
 @prefix vann: <http://purl.org/vocab/vann/> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix bfo:  <http://purl.obolibrary.org/obo/BFO_> .
 
 # ══════════════════════════════════════════════════════════════
 # Essence Kernel Ontology (ess:)
-# OMG Essence 2.0 (Jacobson et al. 2013) — OWL formalization
-# Version: 1.0.0 — 2026-04-03
-#
-# BFO-grounded reconstruction. Source of truth: OMG Essence 2.0 spec.
-#
-# Design choices:
-# - States are individuals, not classes
-# - Areas are individuals, not a class hierarchy
-# - No owl:equivalentClass abuse
-# - Single predecessorOf property
-# - All properties declared with domain/range
-# - Disjointness axioms on top-level classes
-# - External alignments in separate modules
-#
-# Coverage: 7 alphas × all states = 41 states (100%)
-#           6 competencies, 5 competency levels
-#           15 activity spaces, 3 areas of concern
-#           = 77 named individuals
+# Version 1.0.0 — 2026-04-03
+# OWL formalization of the OMG Essence 2.0 Kernel (Jacobson et al.
+# 2013). Defines the universal elements of software engineering:
+# alphas, activity spaces, competencies. BFO-grounded.
 # ══════════════════════════════════════════════════════════════
 
 <https://schema.bra0.org/essence-kernel#> a owl:Ontology ;
   rdfs:label "Essence Kernel Ontology"@en ;
-  rdfs:comment "OWL formalization of the OMG Essence 2.0 Kernel (Jacobson et al. 2013). Defines the universal elements of software engineering: Alphas (things to work with), Activity Spaces (things to do), and Competencies (capabilities required). BFO-grounded."@en ;
+  rdfs:comment "OWL formalization of the OMG Essence 2.0 Kernel (Jacobson et al. 2013). Defines the universal elements of software engineering: Alphas (things to work with), Activity Spaces (things to do), and Competencies (capabilities required). BFO-grounded reconstruction with the OMG Essence 2.0 specification as source of truth. Design choices: states are individuals (not classes); areas are individuals (not a class hierarchy); no owl:equivalentClass abuse; single predecessorOf property; all properties declared with domain and range; disjointness axioms on top-level classes; external alignments isolated in separate modules. Coverage: 7 alphas with all states = 41 named state individuals (100%); 6 competencies and 5 competency levels; 15 activity spaces; 3 areas of concern; total 77 named individuals."@en ;
+  dct:license <https://www.omg.org/legal/ipr.htm> ;
   dct:created "2026-04-03"^^xsd:date ;
   dct:creator <did:ng:o:sacha> ;
-  owl:versionInfo "1.0.0" ;
+  owl:versionInfo "1.0.1" ;
+  owl:versionIRI <https://schema.bra0.org/essence-kernel/1.0.1> ;
   vann:preferredNamespacePrefix "ess" ;
   vann:preferredNamespaceUri "https://schema.bra0.org/essence-kernel#" ;
   dct:source "OMG Essence 2.0 (formal/18-10-02)" ;
-  dct:license <https://www.omg.org/legal/ipr.htm> ;
   dct:rights "OWL formalization of an OMG specification. Governed by OMG's non-assertion covenant (Royalty-Free implementation rights)." .
 
 # ══════════════════════════════════════════════════════════════
-# CLASSES
+# Grounding stack
+#   - Upper ontology   → BFO 2020 (continuants, occurrents, dependent continuants)
+#   - Concept layer    → SKOS (skos:Concept, skos:ConceptScheme for state schemes)
+#   - Source spec      → OMG Essence 2.0 (Jacobson et al. 2013)
 # ══════════════════════════════════════════════════════════════
+
+# ── Classes ────────────────────────────────────────────────────
 
 ess:KernelElement a owl:Class ;
   rdfs:subClassOf bfo:0000001 ;  # BFO:Entity
@@ -84,9 +77,7 @@ ess:AreaOfConcern a owl:Class ;
 [] a owl:AllDisjointClasses ;
   owl:members ( ess:Alpha ess:Competency ess:ActivitySpace ess:AreaOfConcern ess:AlphaState ess:CompetencyLevel ) .
 
-# ══════════════════════════════════════════════════════════════
-# PROPERTIES
-# ══════════════════════════════════════════════════════════════
+# ── Properties ─────────────────────────────────────────────────
 
 ess:belongsToArea a owl:ObjectProperty ;
   rdfs:domain ess:KernelElement ;
@@ -145,9 +136,7 @@ ess:hasState a owl:ObjectProperty ;
   rdfs:comment "Links an alpha to its possible states."@en ;
   owl:inverseOf ess:stateOf .
 
-# ══════════════════════════════════════════════════════════════
-# INDIVIDUALS — AREAS OF CONCERN (3)
-# ══════════════════════════════════════════════════════════════
+# ── Individuals — Areas of Concern (3) ─────────────────────────
 
 ess:CustomerArea a ess:AreaOfConcern ;
   rdfs:label "Customer"@en ;
@@ -161,9 +150,7 @@ ess:EndeavorArea a ess:AreaOfConcern ;
   rdfs:label "Endeavor"@en ;
   rdfs:comment "Everything to do with the team, and the way they approach their work."@en .
 
-# ══════════════════════════════════════════════════════════════
-# INDIVIDUALS — ALPHAS (7)
-# ══════════════════════════════════════════════════════════════
+# ── Individuals — Alphas (7) ───────────────────────────────────
 
 # ── Customer Area ────────────────────────────────────────────
 
@@ -206,9 +193,7 @@ ess:WayOfWorking a ess:Alpha ;
   ess:belongsToArea ess:EndeavorArea ;
   rdfs:comment "The tailored set of practices and tools used by the team to guide and support their work."@en .
 
-# ══════════════════════════════════════════════════════════════
-# INDIVIDUALS — ALPHA STATES (41)
-# ══════════════════════════════════════════════════════════════
+# ── Individuals — Alpha States (41) ────────────────────────────
 
 # ── Opportunity States (6) ───────────────────────────────────
 
@@ -463,9 +448,7 @@ ess:way-of-working-retired a ess:AlphaState ;
   ess:stateOf ess:WayOfWorking ; ess:stateOrder 6 ;
   rdfs:comment "The way of working is no longer in use by the team."@en .
 
-# ══════════════════════════════════════════════════════════════
-# INDIVIDUALS — COMPETENCIES (6)
-# ══════════════════════════════════════════════════════════════
+# ── Individuals — Competencies (6) ─────────────────────────────
 
 ess:StakeholderRepresentation a ess:Competency ;
   rdfs:label "Stakeholder Representation"@en ;
@@ -497,9 +480,7 @@ ess:Management a ess:Competency ;
   ess:belongsToArea ess:EndeavorArea ;
   rdfs:comment "Ability to coordinate, plan, and track the work done by a team."@en .
 
-# ══════════════════════════════════════════════════════════════
-# INDIVIDUALS — COMPETENCY LEVELS (5)
-# ══════════════════════════════════════════════════════════════
+# ── Individuals — Competency Levels (5) ────────────────────────
 
 ess:Assists a ess:CompetencyLevel ;
   rdfs:label "Assists"@en ;
@@ -530,9 +511,7 @@ ess:Innovates a ess:CompetencyLevel ;
   ess:stateOrder 5 ;
   rdfs:comment "A recognized expert, able to extend the concepts to new contexts and inspire others."@en .
 
-# ══════════════════════════════════════════════════════════════
-# INDIVIDUALS — ACTIVITY SPACES (15)
-# ══════════════════════════════════════════════════════════════
+# ── Individuals — Activity Spaces (15) ─────────────────────────
 
 # ── Customer Activity Spaces (4) ─────────────────────────────
 
